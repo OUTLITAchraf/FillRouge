@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            $table->tinyInteger('rating')->checkBetween(1,5);
+            $table->text('comment')->nullable();
+            $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description');
+            $table->decimal('price',10,2);
+            $table->enum('status',['pending','approved','rejected'])->default('pending');
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('provider_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

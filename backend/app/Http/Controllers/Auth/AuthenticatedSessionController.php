@@ -13,26 +13,38 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        $user = $request->user();
 
-        return response()->noContent();
+        if ($user->role === "provider" && $user->status !== 'approved') {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Your account is pending approval. Please wait for admin validation.',
+            ], 403);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+        $user = $user->load('roles');
+
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $user,
+            'token'=> $token,
+        ], 200);
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        $request->user()->currentAccessToken()->delete();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ], 200);
     }
 }

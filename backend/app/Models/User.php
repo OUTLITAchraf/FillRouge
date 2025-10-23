@@ -25,7 +25,8 @@ class User extends Authenticatable implements LaratrustUser
         'email',
         'password',
         'addresse',
-        'status'
+        'status',
+        'service_id'
     ];
 
     /**
@@ -47,4 +48,8 @@ class User extends Authenticatable implements LaratrustUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function service(){
+        return $this->hasOne(Service::class,'provider_id');
+    }
 }

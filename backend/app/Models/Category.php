@@ -13,4 +13,8 @@ class Category extends Model
         'name',
         'display_name'
     ];
+
+    public function services(){
+        return $this->hasMany(Service::class);
+    }
 }

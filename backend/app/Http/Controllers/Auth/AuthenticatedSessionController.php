@@ -19,13 +19,17 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if ($user->role === "provider" && $user->status !== 'approved') {
-            Auth::logout();
+        if ($user->hasRole("provider") && $user->status === 'pending') {
             return response()->json([
                 'message' => 'Your account is pending approval. Please wait for admin validation.',
             ], 403);
         }
 
+        if ($user->hasRole("provider") && $user->status === 'rejected'){
+            return response()->json([
+                "message" => "Your account have been rejected by admin",
+            ], 403);
+        }
         $token = $user->createToken('auth_token')->plainTextToken;
         $user = $user->load('roles');
 

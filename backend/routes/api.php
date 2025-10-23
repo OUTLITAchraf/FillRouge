@@ -60,4 +60,9 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 
 Route::middleware(["auth:sanctum","role:admin"])->group(function(){
     Route::put("/admin/update-status/{user}",[UserController::class, "updateStatus"]);
+
+    Route::get("/categories",[CategoryController::class, 'index']);
+    Route::post("/create-category",[CategoryController::class, 'store']);
+    Route::put("/update-category/{category}",[CategoryController::class, 'update']);
+    Route::delete("/delete-category/{category}",[CategoryController::class, 'destroy']);
 });

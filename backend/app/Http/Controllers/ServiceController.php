@@ -78,6 +78,8 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service)
     {
+
+        $this->authorize('update', $service);
         $validated = $request->validate([
             'title' => 'nullable|string',
             'description' => 'nullable|string',
@@ -94,6 +96,7 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        $this->authorize('delete',$service);
         try {
 
             $service = DB::transaction(function () use ($service) {

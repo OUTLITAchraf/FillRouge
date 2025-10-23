@@ -23,7 +23,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|in:user,provider',
+            'role' => 'nullable|in:user,provider',
         ]);
 
         $user = User::create([
@@ -32,8 +32,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'status' => $request->role === 'provider' ? 'pending' : 'approved',
         ]);
-
-        $user->addRole($request->role);
+        $role = $request->role?$request->role:'admin';
+        $user->addRole($role);
 
         event(new Registered($user));
 

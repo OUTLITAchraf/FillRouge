@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('price',10,2);
             $table->enum('status',['pending','approved','rejected'])->default('pending');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('provider_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('provider_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

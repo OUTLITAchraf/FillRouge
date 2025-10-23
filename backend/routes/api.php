@@ -59,15 +59,21 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
 
-
-Route::middleware(["auth:sanctum","role:provider"])->group(function (){
-    Route::post("/create-service",[ServiceController::class, 'store']);
+Route::middleware('auth:sanctum')->group(function (){
+    Route::get('/service/{service}',[ServiceController::class, 'show']);
 });
-Route::middleware(["auth:sanctum","role:admin"])->group(function(){
-    Route::put("/admin/update-status/{user}",[UserController::class, "updateStatus"]);
 
-    Route::get("/categories",[CategoryController::class, 'index']);
-    Route::post("/create-category",[CategoryController::class, 'store']);
-    Route::put("/update-category/{category}",[CategoryController::class, 'update']);
-    Route::delete("/delete-category/{category}",[CategoryController::class, 'destroy']);
+Route::middleware(['auth:sanctum','role:provider'])->group(function (){
+    Route::get('/services',[ServiceController::class, 'index']);
+    Route::post('/create-service',[ServiceController::class, 'store']);
+    Route::put('/update-service/{service}',[ServiceController::class, 'update']);
+    Route::delete('/delete-service/{service}',[ServiceController::class, 'destroy']);
+});
+Route::middleware(['auth:sanctum','role:admin'])->group(function(){
+    Route::put('/admin/update-status/{user}',[UserController::class, 'updateStatus']);
+
+    Route::get('/categories',[CategoryController::class, 'index']);
+    Route::post('/create-category',[CategoryController::class, 'store']);
+    Route::put('/update-category/{category}',[CategoryController::class, 'update']);
+    Route::delete('/delete-category/{category}',[CategoryController::class, 'destroy']);
 });

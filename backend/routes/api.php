@@ -61,11 +61,13 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
 
-    
+
 Route::middleware('auth:sanctum')->group(function (){
     Route::get('/services',[ServiceController::class, 'index']);
     Route::get('/service/{service}',[ServiceController::class, 'show']);
     Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
+
+    Route::delete('/delete-review/{review}',[ReviewController::class, 'destroy']);
 });
 
 

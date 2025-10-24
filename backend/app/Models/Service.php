@@ -22,7 +22,7 @@ class Service extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function user(){
+    public function provider(){
         return $this->belongsTo(User::class,'provider_id');
     }
 

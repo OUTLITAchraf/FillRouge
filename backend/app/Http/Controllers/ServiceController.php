@@ -14,12 +14,20 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $user->load('roles');
+        $this->authorize('viewAny', Service::class);
 
-        if ($user->roles->contains('name', 'provider')) {
-            $services = Service::where('provider_id',$user->id)->get();
+        $query = Service::query();
+
+        if ($user?->hasRole('admin')) {
+
+            $services = $query->get();
+
+        } elseif ($user?->hasRole('provider')) {
+
+            $services = $query->where('provider_id', $user->id)->get();
+
         } else {
-            $services = Service::all();
+            $services = $query->where('status', 'approved')->get();
         }
 
         return response()->json([
@@ -30,10 +38,10 @@ class ServiceController extends Controller
 
     public function show(Service $service)
     {
-
+        $this->authorize('view',$service);
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
-            'service' => $service->load('user')
+            'service' => $service->load('category','provider','reviews')
         ], 201);
     }
     public function store(Request $request)

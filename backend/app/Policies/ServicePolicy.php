@@ -11,9 +11,9 @@ class ServicePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user)
+    public function viewAny(?User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -21,7 +21,15 @@ class ServicePolicy
      */
     public function view(User $user, Service $service)
     {
-        //
+        if ($user && $user->hasRole('admin')){
+            return true;
+        }
+
+        if ($user && $user->hasRole('provider')) {
+            return $user->id === $service->provider_id;
+        }
+
+        return $service->status === 'approved';
     }
 
     /**

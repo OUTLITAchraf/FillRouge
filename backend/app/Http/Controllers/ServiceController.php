@@ -119,4 +119,17 @@ class ServiceController extends Controller
             ], 500);
         }
     }
+
+    public function updateStatus(Request $request,Service $service){
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected'
+        ]);
+
+        $service->update($validated);
+
+        return response()->json([
+            'message' => 'Status Of Service Updated successfully',
+            'service' => $service
+        ], 201);
+    }
 }

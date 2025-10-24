@@ -80,4 +80,6 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function(){
     Route::post('/create-category',[CategoryController::class, 'store']);
     Route::put('/update-category/{category}',[CategoryController::class, 'update']);
     Route::delete('/delete-category/{category}',[CategoryController::class, 'destroy']);
+
+    Route::put('/service/update-status/{service}',[ServiceController::class, 'updateStatus']);
 });

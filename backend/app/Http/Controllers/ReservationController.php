@@ -10,6 +10,12 @@ class ReservationController extends Controller
 {
     public function store(Request $request,Service $service)
     {
+        if($service->status === 'pending' || $service->status === 'rejected'){
+            return response()->json([
+                'message' => 'This service not avaible for reservation'
+            ], 403);
+        }
+
         $request->validate([
             'date' => 'required|date'
         ]);

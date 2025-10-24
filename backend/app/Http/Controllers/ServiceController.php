@@ -11,9 +11,16 @@ use Illuminate\Support\Facades\Log;
 class ServiceController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $services = Service::all();
+        $user = $request->user();
+        $user->load('roles');
+
+        if ($user->roles->contains('name', 'provider')) {
+            $services = Service::where('provider_id',$user->id)->get();
+        } else {
+            $services = Service::all();
+        }
 
         return response()->json([
             'message' => 'Services Fetched Successfully',
@@ -21,7 +28,8 @@ class ServiceController extends Controller
         ], 201);
     }
 
-    public function show(Service $service) {
+    public function show(Service $service)
+    {
 
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
@@ -96,10 +104,11 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
-        $this->authorize('delete',$service);
+        $this->authorize('delete', $service);
         try {
 
-            $service = DB::transaction(function () use ($service) {
+            $service = DB::transaction(
+                function () use ($service) {
                     $service->user->update(['service_id' => null]);
                     $service->delete();
 
@@ -111,7 +120,6 @@ class ServiceController extends Controller
                 'message' => 'Service Deleted Successfully',
                 'service' => $service
             ], 201);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Error deleting service',
@@ -120,7 +128,8 @@ class ServiceController extends Controller
         }
     }
 
-    public function updateStatus(Request $request,Service $service){
+    public function updateStatus(Request $request, Service $service)
+    {
         $validated = $request->validate([
             'status' => 'required|in:approved,rejected'
         ]);

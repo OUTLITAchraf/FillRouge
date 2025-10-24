@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function index(){
+        $users = User::where('name','!=','Admin')->get();
+        return response()->json([
+            "message" => "Users Retrieved Successfully",
+            "users" => $users->load('roles'),
+        ], 201);
+    }
+
     public function updateStatus(Request $request,User $user){
         $auth_user = $request->user();
 

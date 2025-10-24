@@ -17,10 +17,10 @@ class Reservation extends Model
     ];
 
     public function service(){
-        $this->belongsTo(Service::class);
+        return $this->belongsTo(Service::class);
     }
 
-    public function user(){
-        $this->belongsTo(User::class, 'client_id');
+    public function client(){
+        return $this->belongsTo(User::class, 'client_id');
     }
 }

@@ -61,15 +61,17 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
 Route::middleware('auth:sanctum')->group(function (){
+    Route::get('/services',[ServiceController::class, 'index']);
     Route::get('/service/{service}',[ServiceController::class, 'show']);
     Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum','role:provider'])->group(function (){
-    Route::get('/services',[ServiceController::class, 'index']);
     Route::post('/create-service',[ServiceController::class, 'store']);
     Route::put('/update-service/{service}',[ServiceController::class, 'update']);
     Route::delete('/delete-service/{service}',[ServiceController::class, 'destroy']);
+
+    Route::put('/reservation/update-status/{reservation}',[ReservationController::class, 'updateStatus']);
 });
 Route::middleware(['auth:sanctum','role:admin'])->group(function(){
     Route::put('/admin/update-status/{user}',[UserController::class, 'updateStatus']);

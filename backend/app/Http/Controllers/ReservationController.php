@@ -33,8 +33,24 @@ class ReservationController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'You Reserved This Service Successfully',
+            'message' => 'You Reserved In This Service Successfully',
             'reservatuon' => $reservation
+        ], 201);
+    }
+
+    public function updateStatus(Request $request,Reservation $reservation){
+        $this->authorize('updateStatus',$reservation);
+
+        $validated = $request->validate([
+            'status' => 'required|in:accepted,refused,completed,cancelled'
+        ]);
+
+        $reservation->update($validated);
+        $reservation->load('service','client');
+
+        return response()->json([
+            'message' => 'Status Of Reservation Updated Successfully',
+            'reservation' => $reservation
         ], 201);
     }
 }

@@ -27,6 +27,6 @@ class Service extends Model
     }
 
     public function reservations(){
-        $this->hasMany(Reservation::class);
+        return $this->hasMany(Reservation::class);
     }
 }

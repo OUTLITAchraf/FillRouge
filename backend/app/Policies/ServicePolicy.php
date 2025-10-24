@@ -35,7 +35,7 @@ class ServicePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Service $service)
+    public function update(User $user, Service $service): bool
     {
         // Admins can update any service
         if ($user->role === 'admin') {
@@ -49,7 +49,7 @@ class ServicePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Service $service)
+    public function delete(User $user, Service $service): bool
     {
         // Admins can delete any service
         if ($user->role === 'admin') {

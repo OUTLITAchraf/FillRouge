@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 
@@ -61,6 +62,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 
 Route::middleware('auth:sanctum')->group(function (){
     Route::get('/service/{service}',[ServiceController::class, 'show']);
+    Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum','role:provider'])->group(function (){

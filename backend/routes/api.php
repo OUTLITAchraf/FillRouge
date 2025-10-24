@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
 
@@ -60,11 +61,19 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
 
+    
 Route::middleware('auth:sanctum')->group(function (){
     Route::get('/services',[ServiceController::class, 'index']);
     Route::get('/service/{service}',[ServiceController::class, 'show']);
     Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
 });
+
+
+Route::middleware(['auth:sanctum','role:user'])->group(function (){
+    Route::post('/service/{service}/review',[ReviewController::class, 'store']);
+    Route::put('/update-review/{review}',[ReviewController::class, 'update']);
+});
+
 
 Route::middleware(['auth:sanctum','role:provider'])->group(function (){
     Route::post('/create-service',[ServiceController::class, 'store']);
@@ -73,6 +82,8 @@ Route::middleware(['auth:sanctum','role:provider'])->group(function (){
 
     Route::put('/reservation/update-status/{reservation}',[ReservationController::class, 'updateStatus']);
 });
+
+
 Route::middleware(['auth:sanctum','role:admin'])->group(function(){
     Route::put('/admin/update-status/{user}',[UserController::class, 'updateStatus']);
 

@@ -56,4 +56,8 @@ class User extends Authenticatable implements LaratrustUser
     public function reservations(){
         return $this->hasMany(Reservation::class, 'client_id');
     }
+
+    public function reviews(){
+        return $this->hasMany(Review::class, 'client_id');
+    }
 }

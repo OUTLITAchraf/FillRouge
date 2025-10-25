@@ -19,7 +19,7 @@ class ServicePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Service $service)
+    public function view(?User $user, Service $service)
     {
         if ($user && $user->hasRole('admin')){
             return true;

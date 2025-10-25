@@ -31,7 +31,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Services Fetched Successfully',
-            'services' => $services
+            'services' => $services->load('category', 'provider')
         ], 201);
     }
 

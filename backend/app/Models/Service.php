@@ -18,6 +18,11 @@ class Service extends Model
         'provider_id'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
     public function category(){
         return $this->belongsTo(Category::class, 'category_id');
     }

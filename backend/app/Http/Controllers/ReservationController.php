@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
+    public function index(Request $request){
+        $user = $request->user();
+
+        $reservations = Reservation::where('service_id',$user->service_id)->get();
+
+        return response()->json([
+            'message' => 'Reservation Fetched Successfully',
+            'reservation' => $reservations,
+            'user' => $user
+        ], 201);
+    }
     public function store(Request $request,Service $service)
     {
         if($service->status === 'pending' || $service->status === 'rejected'){

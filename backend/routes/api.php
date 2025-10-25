@@ -72,6 +72,7 @@ Route::middleware(['auth:sanctum','role:provider'])->group(function (){
     Route::put('/update-service/{service}',[ServiceController::class, 'update']);
     Route::delete('/delete-service/{service}',[ServiceController::class, 'destroy']);
 
+    Route::get('/reservations',[ReservationController::class, 'index']);
     Route::put('/reservation/update-status/{reservation}',[ReservationController::class, 'updateStatus']);
 });
 

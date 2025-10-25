@@ -48,9 +48,13 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum')->name('logout');
 
 
+Route::get('/services',[ServiceController::class, 'index']);
+Route::get('/service/{service}',[ServiceController::class, 'show']);
+Route::get('/services/category/{category}',[ServiceController::class, 'bycategory']);
+Route::get('/search-service',[ServiceController::class, 'searchByProvider']);
+
+
 Route::middleware('auth:sanctum')->group(function (){
-    Route::get('/services',[ServiceController::class, 'index']);
-    Route::get('/service/{service}',[ServiceController::class, 'show']);
     Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
 
     Route::delete('/delete-review/{review}',[ReviewController::class, 'destroy']);
@@ -82,4 +86,6 @@ Route::middleware(['auth:sanctum','role:admin'])->group(function(){
     Route::delete('/delete-category/{category}',[CategoryController::class, 'destroy']);
 
     Route::put('/service/update-status/{service}',[ServiceController::class, 'updateStatus']);
+
+    Route::get('/reviews',[ReviewController::class, 'index']);
 });

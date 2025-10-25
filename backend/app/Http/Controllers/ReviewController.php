@@ -8,8 +8,15 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function index(){
+        $reviews = Review::all();
+
+        return response()->json([
+            'message' => 'Review Fetched Successfully',
+            'reviews' => $reviews
+        ], 201);
+    }
     public function store(Request $request,Service $service){
-        $this->authorize('create');
 
         $request->validate([
             'rating' => 'required|int',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Service;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,11 +22,9 @@ class ServiceController extends Controller
         if ($user?->hasRole('admin')) {
 
             $services = $query->get();
-
         } elseif ($user?->hasRole('provider')) {
 
             $services = $query->where('provider_id', $user->id)->get();
-
         } else {
             $services = $query->where('status', 'approved')->get();
         }
@@ -38,10 +37,10 @@ class ServiceController extends Controller
 
     public function show(Service $service)
     {
-        $this->authorize('view',$service);
+        $this->authorize('view', $service);
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
-            'service' => $service->load('category','provider','reviews')
+            'service' => $service->load('category', 'provider', 'reviews')
         ], 201);
     }
     public function store(Request $request)
@@ -146,6 +145,36 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Status Of Service Updated successfully',
+            'service' => $service
+        ], 201);
+    }
+
+    public function bycategory(Category $category)
+    {
+        $services = Service::where('category_id', $category->id)->get();
+
+        return response()->json([
+            'message' => 'Services With Filter Fetched Successfully',
+            'services' => $services
+        ], 201);
+    }
+
+    public function searchByProvider(Request $request)
+    {
+        $providerName = $request->input('provider_name');
+
+        $service = Service::whereHas('provider', function ($query) use ($providerName) {
+            $query->where('name', 'like', '%' . $providerName . '%');
+        })->get();
+
+        if ($service->isEmpty()) {
+            return response()->json([
+                'message' => 'There no service by this provider'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Search An Service By Provider Completed Successfully',
             'service' => $service
         ], 201);
     }

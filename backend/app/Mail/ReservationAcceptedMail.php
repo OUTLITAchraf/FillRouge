@@ -16,7 +16,7 @@ class ReservationAcceptedMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public $user)
+    public function __construct(public $reservation)
     {
         //
     }
@@ -39,7 +39,8 @@ class ReservationAcceptedMail extends Mailable
         return new Content(
             view: 'emails.reservation.reservation-accepted',
             with: [
-                'user' => $this->user,
+                'reservation' => $this->reservation,
+                'client' => $this->reservation->client
             ]
         );
     }

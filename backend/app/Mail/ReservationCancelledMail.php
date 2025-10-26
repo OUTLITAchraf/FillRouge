@@ -16,7 +16,7 @@ class ReservationCancelledMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public $reservation)
     {
         //
     }
@@ -37,7 +37,11 @@ class ReservationCancelledMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.reservation.reservation-cancelled',
+            with: [
+                'reservation' => $this->reservation,
+                'client' => $this->reservation->client
+            ]
         );
     }
 

@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ServiceApprovedMail;
-use App\Mail\ServiceRejectedMail;
+use App\Events\ServiceApproved;
+use App\Events\ServiceRejected;
 use App\Models\Category;
 use App\Models\Service;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 class ServiceController extends Controller
 {
@@ -160,9 +158,9 @@ class ServiceController extends Controller
         $service->load('provider','category');
 
         if($service->status == 'approved'){
-            Mail::to($service->provider->email)->send(new ServiceApprovedMail($service));
+            event(new ServiceApproved($service));
         } else {
-            Mail::to($service->provider->email)->send(new ServiceRejectedMail($service));
+            event(new ServiceRejected($service));
         }
 
         return response()->json([

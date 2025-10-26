@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ProviderApprovedMail;
+use App\Mail\ProviderRejectedMail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
 
 
@@ -33,6 +36,13 @@ class UserController extends Controller
         }
 
         $user->update($validated);
+
+        if ($user->status === 'approved') {
+            Mail::to($user->email)->send(new ProviderApprovedMail($user));
+        } else {
+            Mail::to($user->email)->send(new ProviderRejectedMail($user));
+        }
+
         return response()->json([
             "message" => "Status Updated Successfully",
             "provider" => $user

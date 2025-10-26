@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Provider Approved</title>
+    <title>Account Status Update</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -23,7 +23,8 @@
         }
         
         .email-header {
-            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            /* Changed to a red gradient for rejection/alert */
+            background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
             padding: 40px 30px;
             text-align: center;
             color: #FFFFFF;
@@ -65,36 +66,15 @@
         }
         
         .highlight {
-            color: #2ECC71;
+            /* Changed highlight color to red */
+            color: #E74C3C;
             font-weight: 700;
         }
         
-        .cta-container {
-            text-align: center;
-            margin: 35px 0;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
-            color: #FFFFFF;
-            text-decoration: none;
-            padding: 16px 40px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-            transition: transform 0.3s;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
-        }
-        
+        /* Styles for features-box are left in case you want to add a "Reasons" box later */
         .features-box {
-            background: rgba(46, 204, 113, 0.05);
-            border-left: 4px solid #2ECC71;
+            background: rgba(231, 76, 60, 0.05); /* Red-tinted background */
+            border-left: 4px solid #E74C3C; /* Red border */
             padding: 20px;
             border-radius: 8px;
             margin: 30px 0;
@@ -120,8 +100,9 @@
         }
         
         .features-list li:before {
-            content: "✓ ";
-            color: #2ECC71;
+            /* Changed icon to a cross */
+            content: "✗ ";
+            color: #E74C3C;
             font-weight: 700;
             margin-right: 8px;
         }
@@ -139,12 +120,9 @@
             opacity: 0.9;
         }
         
-        .footer-links {
-            margin-top: 20px;
-        }
-        
+        /* Footer links styles are kept, but HTML is removed as requested */
         .footer-links a {
-            color: #2ECC71;
+            color: #E74C3C; /* Matched to new theme */
             text-decoration: none;
             margin: 0 10px;
             font-size: 14px;
@@ -186,10 +164,6 @@
                 font-size: 24px;
             }
             
-            .cta-button {
-                padding: 14px 30px;
-                font-size: 15px;
-            }
         }
     </style>
 </head>
@@ -197,57 +171,45 @@
     <div class="email-container">
         <!-- Header -->
         <div class="email-header">
-            <div class="header-icon">🎉</div>
-            <h1 class="header-title">Account Approved!</h1>
+            <!-- Changed Icon -->
+            <div class="header-icon">ℹ️</div> 
+            <!-- Changed Title -->
+            <h1 class="header-title">Account Status Update</h1>
         </div>
         
         <!-- Body -->
         <div class="email-body">
-            <div class="greeting">Hello {{ $user->name }},</div>
+            {{-- Use the $provider variable passed from ProviderRejectedMail --}}
+            <div class="greeting">Hello {{ $provider->name }},</div>
             
             <p class="message">
-                Great news! Your provider account has been <span class="highlight">approved</span> and you're now ready to start offering your services on Fidarek.
+                We are writing to inform you about an update regarding your provider account application on {{ config('app.name') }}.
             </p>
             
             <p class="message">
-                You can now access your provider dashboard and begin creating your first service listing to connect with customers across Morocco.
+                After a careful review, we regret to inform you that your application has <span class="highlight">not been approved</span> at this time.
             </p>
-            
-            <!-- CTA Button -->
-            <div class="cta-container">
-                <a href="{{ config('app.url') }}/login" class="cta-button">Login to Your Dashboard</a>
-            </div>
-            
-            <!-- Features Box -->
-            <div class="features-box">
-                <div class="features-title">What's Next?</div>
-                <ul class="features-list">
-                    <li>Create your first service listing</li>
-                    <li>Set your pricing and availability</li>
-                    <li>Start receiving booking requests</li>
-                    <li>Build your reputation with customer reviews</li>
-                </ul>
-            </div>
+
             
             <p class="message">
-                If you have any questions or need assistance getting started, our support team is here to help!
+                **This decision is based on the assessment of your resume and skills.** At this time, your profile does not meet the minimum experience and skill requirements needed to offer services on our platform.
+            </p>
+            
+            <p class="message">
+                If you wish to get more detailed feedback on your application or discuss future opportunities, please feel free to contact our support team.
             </p>
             
             <!-- Signature -->
             <div class="signature">
-                <div class="signature-name">Thank you for joining us!</div>
+                <div class="signature-name">We wish you the best,</div>
                 <div class="signature-team">The {{ config('app.name') }} Team</div>
             </div>
         </div>
         
         <!-- Footer -->
         <div class="email-footer">
-            <div class="footer-text">{{ config('app.name') }} - Morocco's Leading Service Platform</div>
-            <div class="footer-links">
-                <a href="{{ config('app.url') }}">Website</a> |
-                <a href="{{ config('app.url') }}/help">Help Center</a> |
-                <a href="{{ config('app.url') }}/contact">Contact Us</a>
-            </div>
+            <div class="footer-text">{{ config('app.name') }} - Your Platform Name</div>
+                    
             <div class="footer-text" style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
                 © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
             </div>

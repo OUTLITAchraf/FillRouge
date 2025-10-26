@@ -35,9 +35,9 @@ class ProviderApprovedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.provider-approved',
+            view: 'emails.provider.provider-approved',
             with: [
-                'user' => $this->user, // pass data to the email
+                'provider' => $this->user, // pass data to the email
             ]
         );
     }

@@ -9,14 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ProviderRejectedMail extends Mailable
+class ServiceApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $user)
+    public function __construct(public $service)
     {
         //
     }
@@ -27,7 +27,7 @@ class ProviderRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Provider Rejected Mail',
+            subject: 'Service Approved Mail',
         );
     }
 
@@ -37,9 +37,11 @@ class ProviderRejectedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.provider.provider-rejected',
+            view: 'emails.service.service-approved',
             with: [
-                'provider' => $this->user, // pass data to the email
+                'service' => $this->service,
+                'provider' => $this->service->provider,
+                'category' => $this->service->category
             ]
         );
     }

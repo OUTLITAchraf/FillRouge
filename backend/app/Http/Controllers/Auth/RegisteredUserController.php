@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ProviderRegisterMail;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
@@ -36,6 +38,12 @@ class RegisteredUserController extends Controller
         $user->addRole($role);
 
         event(new Registered($user));
+
+        $admin = User::where('name','admin')->first();
+
+        if ($user->roles->contains('name','provider')) {
+            Mail::to($admin)->send(new ProviderRegisterMail($user));
+        }
 
         return response()->json([
             'message' => 'User registered successfully',

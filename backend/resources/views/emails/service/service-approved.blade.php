@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Provider Application Update</title>
+    <title>Service Approved</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -23,7 +23,7 @@
         }
         
         .email-header {
-            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
             padding: 40px 30px;
             text-align: center;
             color: #FFFFFF;
@@ -65,45 +65,34 @@
         }
         
         .highlight {
-            color: #E67E22;
+            color: #2ECC71;
             font-weight: 700;
         }
         
-        .info-box {
-            background: rgba(230, 126, 34, 0.05);
-            border-left: 4px solid #E67E22;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 30px 0;
+        .cta-container {
+            text-align: center;
+            margin: 35px 0;
         }
         
-        .info-title {
-            font-size: 18px;
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            color: #FFFFFF !important;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 12px;
             font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 15px;
+            font-size: 16px;
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+            transition: transform 0.3s;
         }
         
-        .reasons-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
         }
         
-        .reasons-list li {
-            padding: 8px 0;
-            color: #2C3E50;
-            font-size: 15px;
-        }
-        
-        .reasons-list li:before {
-            content: "• ";
-            color: #E67E22;
-            font-weight: 700;
-            margin-right: 8px;
-        }
-        
-        .next-steps-box {
+        .features-box {
             background: rgba(46, 204, 113, 0.05);
             border-left: 4px solid #2ECC71;
             padding: 20px;
@@ -111,27 +100,27 @@
             margin: 30px 0;
         }
         
-        .next-steps-title {
+        .features-title {
             font-size: 18px;
             font-weight: 700;
             color: #2C3E50;
             margin-bottom: 15px;
         }
         
-        .steps-list {
+        .features-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
         
-        .steps-list li {
+        .features-list li {
             padding: 8px 0;
             color: #2C3E50;
             font-size: 15px;
         }
         
-        .steps-list li:before {
-            content: "→ ";
+        .features-list li:before {
+            content: "✓ ";
             color: #2ECC71;
             font-weight: 700;
             margin-right: 8px;
@@ -148,18 +137,6 @@
             margin: 5px 0;
             font-size: 14px;
             opacity: 0.9;
-        }
-        
-        .footer-links {
-            margin-top: 20px;
-        }
-        
-        .footer-links a {
-            color: #2ECC71;
-            text-decoration: none;
-            margin: 0 10px;
-            font-size: 14px;
-            font-weight: 600;
         }
         
         .signature {
@@ -179,19 +156,6 @@
             font-size: 14px;
         }
         
-        .note {
-            background: #FFF3E0;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-size: 15px;
-            color: #2C3E50;
-        }
-        
-        .note strong {
-            color: #E67E22;
-        }
-        
         @media only screen and (max-width: 600px) {
             .email-container {
                 margin: 0;
@@ -209,6 +173,11 @@
             .header-title {
                 font-size: 24px;
             }
+            
+            .cta-button {
+                padding: 14px 30px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
@@ -216,70 +185,53 @@
     <div class="email-container">
         <!-- Header -->
         <div class="email-header">
-            <div class="header-icon">📋</div>
-            <h1 class="header-title">Application Status Update</h1>
+            <div class="header-icon">🚀</div>
+            <h1 class="header-title">Service Is Live!</h1>
         </div>
         
         <!-- Body -->
         <div class="email-body">
-            <div class="greeting">Hello {{ $user->name }},</div>
+            {{-- Use the $provider variable for the greeting --}}
+            <div class="greeting">Hello {{ $provider->name }},</div>
             
             <p class="message">
-                Thank you for your interest in becoming a service provider on {{ config('app.name') }}. After careful review of your application, we regret to inform you that we are <span class="highlight">unable to approve</span> your provider account at this time.
+                Congratulations! We are pleased to inform you that your service, <span class="highlight">"{{ $service->title }}"</span>, has been officially <span class="highlight">approved</span> by the admin team.
             </p>
             
             <p class="message">
-                We understand this may be disappointing, and we want to be transparent about the decision.
+                Your service is now visible to all customers on the platform under the **{{ $category->name }}** category and is ready to receive bookings.
             </p>
             
-            <!-- Reasons Box -->
-            <div class="info-box">
-                <div class="info-title">Common reasons for rejection include:</div>
-                <ul class="reasons-list">
-                    <li>Incomplete profile information</li>
-                    <li>Missing required documentation or certifications</li>
-                    <li>Service area not currently covered</li>
-                    <li>Insufficient professional experience verification</li>
-                    <li>Application does not meet our quality standards</li>
-                </ul>
+            <!-- CTA Button -->
+            <div class="cta-container">
+                {{-- Assuming a route to view the live service --}}
+                <a href="{{ config('app.url') }}/services/{{ $service->id }}" class="cta-button">View Your Live Service</a>
             </div>
             
-            <!-- Note -->
-            <div class="note">
-                <strong>Good News:</strong> This decision is not permanent. You're welcome to reapply once you've addressed the concerns or gained additional qualifications.
-            </div>
-            
-            <!-- Next Steps Box -->
-            <div class="next-steps-box">
-                <div class="next-steps-title">What You Can Do Next:</div>
-                <ul class="steps-list">
-                    <li>Review and update your profile with complete information</li>
-                    <li>Gather any missing certifications or documentation</li>
-                    <li>Gain more experience in your service area</li>
-                    <li>Contact our support team for specific feedback</li>
-                    <li>Reapply after 30 days</li>
+            <!-- Features Box -->
+            <div class="features-box">
+                <div class="features-title">What Happens Next?</div>
+                <ul class="features-list">
+                    <li>Monitor your dashboard for new booking requests.</li>
+                    <li>You are now able to serve customers!</li>
                 </ul>
             </div>
             
             <p class="message">
-                Thank you for your understanding, and we hope to see you reapply in the future!
+                We are excited to see your service thrive on {{ config('app.name') }}. Best of luck!
             </p>
             
             <!-- Signature -->
             <div class="signature">
-                <div class="signature-name">Best regards,</div>
+                <div class="signature-name">Best Regards,</div>
                 <div class="signature-team">The {{ config('app.name') }} Team</div>
             </div>
         </div>
         
-        <!-- Footer -->
+        <!-- Footer (No links, as requested for the rejected email, maintaining consistency) -->
         <div class="email-footer">
-            <div class="footer-text">{{ config('app.name') }} - Morocco's Leading Service Platform</div>
-            <div class="footer-links">
-                <a href="{{ config('app.url') }}">Website</a> |
-                <a href="{{ config('app.url') }}/help">Help Center</a> |
-                <a href="{{ config('app.url') }}/contact">Contact Us</a>
-            </div>
+            <div class="footer-text">{{ config('app.name') }} - Your Platform Name</div>
+            
             <div class="footer-text" style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
                 © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
             </div>

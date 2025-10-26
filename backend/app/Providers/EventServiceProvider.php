@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\ProviderApproved;
 use App\Events\ProviderRegistered;
+use App\Listeners\SendProviderApprovedMail;
 use App\Listeners\SendProviderRegisteredMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,6 +25,10 @@ class EventServiceProvider extends ServiceProvider
         
         ProviderRegistered::class => [
             SendProviderRegisteredMail::class,
+        ],
+
+        ProviderApproved::class => [
+            SendProviderApprovedMail::class,
         ]
     ];
 

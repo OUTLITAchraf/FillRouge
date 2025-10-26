@@ -248,7 +248,7 @@
                     </tr>
                     <tr>
                         <th>Price</th>
-                        <td>{{ $reservation->service->price }}</td>
+                        <td>{{ $reservation->service->price }} DH</td>
                     </tr>
                 </tbody>
             </table>

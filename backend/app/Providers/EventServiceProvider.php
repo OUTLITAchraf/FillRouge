@@ -5,11 +5,19 @@ namespace App\Providers;
 use App\Events\ProviderApproved;
 use App\Events\ProviderRegistered;
 use App\Events\ProviderRejected;
+use App\Events\ReservationAccepted;
+use App\Events\ReservationCancelled;
+use App\Events\ReservationCompleted;
+use App\Events\ReservationRefused;
 use App\Events\ServiceApproved;
 use App\Events\ServiceRejected;
 use App\Listeners\SendProviderApprovedMail;
 use App\Listeners\SendProviderRegisteredMail;
 use App\Listeners\SendProviderRejectedMail;
+use App\Listeners\SendReservationAcceptedMail;
+use App\Listeners\SendReservationCancelledMail;
+use App\Listeners\SendReservationCompletedMail;
+use App\Listeners\SendReservationRefusedMail;
 use App\Listeners\SendServiceApprovedMail;
 use App\Listeners\SendServiceRejectedMail;
 use Illuminate\Auth\Events\Registered;
@@ -47,7 +55,23 @@ class EventServiceProvider extends ServiceProvider
 
         ServiceRejected::class => [
             SendServiceRejectedMail::class,
-        ]
+        ],
+
+        ReservationAccepted::class => [
+            SendReservationAcceptedMail::class,
+        ],
+
+        ReservationRefused::class => [
+            SendReservationRefusedMail::class,
+        ],
+
+        ReservationCancelled::class => [
+            SendReservationCancelledMail::class,
+        ],
+
+        ReservationCompleted::class => [
+            SendReservationCompletedMail::class,
+        ],
     ];
 
     /**

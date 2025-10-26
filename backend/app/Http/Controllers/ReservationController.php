@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ReservationAccepted;
+use App\Events\ReservationCancelled;
+use App\Events\ReservationCompleted;
+use App\Events\ReservationRefused;
 use App\Mail\ReservationAcceptedMail;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\ReservationCompletedMail;
@@ -73,13 +77,13 @@ class ReservationController extends Controller
         $client = $reservation->client;
 
         if($reservation->status == 'accepted'){
-            Mail::to($client->email)->send(new ReservationAcceptedMail($reservation));
+            event(new ReservationAccepted($reservation));
         } elseif ($reservation->status == 'refused'){
-            Mail::to($client->email)->send(new ReservationRefusedMail($reservation));
+            event(new ReservationRefused($reservation));
         } elseif ($reservation->status == 'completed'){
-            Mail::to($client->email)->send(new ReservationCompletedMail($reservation));
+            event(new ReservationCompleted($reservation));
         } else {
-            Mail::to($client->email)->send(new ReservationCancelledMail($reservation));
+            event(new ReservationCancelled($reservation));
         }
         return response()->json([
             'message' => 'Status Of Reservation Updated Successfully',

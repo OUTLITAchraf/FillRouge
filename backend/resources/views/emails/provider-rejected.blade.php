@@ -137,48 +137,6 @@
             margin-right: 8px;
         }
         
-        .cta-container {
-            text-align: center;
-            margin: 35px 0;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
-            color: #FFFFFF;
-            text-decoration: none;
-            padding: 16px 40px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
-            transition: transform 0.3s;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.4);
-        }
-        
-        .cta-button-secondary {
-            display: inline-block;
-            background: transparent;
-            color: #E67E22;
-            text-decoration: none;
-            padding: 14px 38px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            border: 2px solid #E67E22;
-            margin-left: 10px;
-            transition: all 0.3s;
-        }
-        
-        .cta-button-secondary:hover {
-            background: #E67E22;
-            color: #FFFFFF;
-        }
-        
         .email-footer {
             background-color: #2C3E50;
             padding: 30px;
@@ -250,20 +208,6 @@
             
             .header-title {
                 font-size: 24px;
-            }
-            
-            .cta-button {
-                padding: 14px 30px;
-                font-size: 15px;
-                display: block;
-                margin-bottom: 10px;
-            }
-            
-            .cta-button-secondary {
-                padding: 14px 30px;
-                font-size: 15px;
-                display: block;
-                margin-left: 0;
             }
         }
     </style>

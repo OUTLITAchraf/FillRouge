@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 class ReservationController extends Controller
 {
     public function index(Request $request){
-        $user = $request->user();
+        $provider = $request->user();
 
-        $reservations = Reservation::where('service_id',$user->service_id)->get();
+        $reservations = Reservation::where('service_id',$provider->service_id)->get();
 
         return response()->json([
             'message' => 'Reservation Fetched Successfully',
-            'reservation' => $reservations,
-            'user' => $user
+            'reservation' => $reservations->load('client'),
+            'provider' => $provider
         ], 201);
     }
     public function store(Request $request,Service $service)

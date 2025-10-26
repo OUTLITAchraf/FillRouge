@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reservation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'status',
@@ -15,6 +16,8 @@ class Reservation extends Model
         'client_id',
         'service_id'
     ];
+
+    protected $dates = ['delete_at'];
 
     public function service(){
         return $this->belongsTo(Service::class);

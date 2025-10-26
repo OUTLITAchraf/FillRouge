@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
+
 
 class UserController extends Controller
 {
-    public function index(){
-        $users = User::where('name','!=','Admin')->get();
+    public function index()
+    {
+        $users = User::where('name', '!=', 'Admin')->get();
         return response()->json([
             "message" => "Users Retrieved Successfully",
             "users" => $users->load('roles'),
         ], 201);
     }
 
-    public function updateStatus(Request $request,User $user){
+    public function updateStatus(Request $request, User $user)
+    {
         $auth_user = $request->user();
 
         $validated = $request->validate([
@@ -32,6 +36,25 @@ class UserController extends Controller
         return response()->json([
             "message" => "Status Updated Successfully",
             "provider" => $user
+        ], 201);
+    }
+
+    public function destroy(User $user)
+    {
+        $user->delete();
+        return response()->json([
+            'message' => 'User Soft Deleted Successfully',
+            'user' => $user
+        ], 201);
+    }
+
+    public function restore($id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->restore();
+        return response()->json([
+            'message' => 'User restored successfully',
+            'user' => $user
         ], 201);
     }
 }

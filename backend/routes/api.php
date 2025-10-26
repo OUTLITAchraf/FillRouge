@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum','role:user'])->group(function (){
 });
 
 
-Route::middleware(['auth:sanctum','role:provider'])->group(function (){
+Route::middleware(['auth:sanctum'])->group(function (){
     Route::post('/create-service',[ServiceController::class, 'store']);
     Route::put('/update-service/{service}',[ServiceController::class, 'update']);
     Route::delete('/delete-service/{service}',[ServiceController::class, 'destroy']);
@@ -80,13 +80,18 @@ Route::middleware(['auth:sanctum','role:provider'])->group(function (){
 Route::middleware(['auth:sanctum','role:admin'])->group(function(){
     Route::get('/admin/users',[UserController::class, 'index']);
     Route::put('/admin/update-status/{user}',[UserController::class, 'updateStatus']);
+    Route::delete('/admin/delete-user/{user}',[UserController::class, 'destroy']);
+    Route::post('/admin/user/{id}/restore',[UserController::class, 'restore']);
+    Route::post('/admin/service/{id}/restore',[ServiceController::class, 'restore']);
+    Route::post('/admin/review/{id}/restore',[ReviewController::class, 'restore']);
+    Route::post('/admin/category/{id}/restore',[CategoryController::class, 'restore']);
 
-    Route::get('/categories',[CategoryController::class, 'index']);
-    Route::post('/create-category',[CategoryController::class, 'store']);
-    Route::put('/update-category/{category}',[CategoryController::class, 'update']);
-    Route::delete('/delete-category/{category}',[CategoryController::class, 'destroy']);
+    Route::get('/admin/categories',[CategoryController::class, 'index']);
+    Route::post('/admin/create-category',[CategoryController::class, 'store']);
+    Route::put('/admin/update-category/{category}',[CategoryController::class, 'update']);
+    Route::delete('/admin/delete-category/{category}',[CategoryController::class, 'destroy']);
 
-    Route::put('/service/update-status/{service}',[ServiceController::class, 'updateStatus']);
+    Route::put('/admin/service/update-status/{service}',[ServiceController::class, 'updateStatus']);
 
-    Route::get('/reviews',[ReviewController::class, 'index']);
+    Route::get('/admin/reviews',[ReviewController::class, 'index']);
 });

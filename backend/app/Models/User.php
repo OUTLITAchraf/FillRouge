@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laratrust\Traits\HasRolesAndPermissions;
@@ -13,7 +14,7 @@ use Laratrust\Contracts\LaratrustUser;
 
 class User extends Authenticatable implements LaratrustUser
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
+    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -36,10 +37,10 @@ class User extends Authenticatable implements LaratrustUser
      */
     protected $hidden = [
         'password',
-        'remember_token',
-        'created_at',
-        'updated_at'
+        'remember_token'
     ];
+
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that should be cast.
@@ -51,15 +52,55 @@ class User extends Authenticatable implements LaratrustUser
         'password' => 'hashed',
     ];
 
-    public function service(){
-        return $this->hasOne(Service::class,'provider_id');
+        protected static function booted()
+    {
+        static::deleting(function ($user) {
+            $user->tokens()->delete();
+            // Nullify provider_id in services when user soft deleted
+            $user->service()->withTrashed()->update(['provider_id' => null]);
+
+            // Optional: soft delete reservations and reviews made by this user
+            $user->reservations()->delete();
+            $user->reviews()->delete();
+        });
+
+
+        static::restoring(function ($user) {
+            // Restore the user's service if it exists
+            if ($service = Service::onlyTrashed()->where('provider_id', $user->id)->first()) {
+                $service->restore();
+            }
+
+            // Restore related reservations
+            Reservation::onlyTrashed()
+                ->where('client_id', $user->id)
+                ->get()
+                ->each(function ($reservation) {
+                    $reservation->restore();
+                });
+
+            // Restore related reviews
+            Review::onlyTrashed()
+                ->where('client_id', $user->id)
+                ->get()
+                ->each(function ($review) {
+                    $review->restore();
+                });
+        });
     }
 
-    public function reservations(){
+    public function service()
+    {
+        return $this->hasOne(Service::class, 'provider_id');
+    }
+
+    public function reservations()
+    {
         return $this->hasMany(Reservation::class, 'client_id');
     }
 
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany(Review::class, 'client_id');
     }
 }

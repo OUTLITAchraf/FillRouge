@@ -8,15 +8,17 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $reviews = Review::all();
 
         return response()->json([
             'message' => 'Review Fetched Successfully',
-            'reviews' => $reviews
+            'reviews' => $reviews->load('user')
         ], 201);
     }
-    public function store(Request $request,Service $service){
+    public function store(Request $request, Service $service)
+    {
 
         $request->validate([
             'rating' => 'required|int',
@@ -25,7 +27,7 @@ class ReviewController extends Controller
 
         $user = $request->user();
 
-        $exists = Review::where('client_id',$user->id)->where('service_id',$service->id)->exists();
+        $exists = Review::where('client_id', $user->id)->where('service_id', $service->id)->exists();
 
         if ($exists) {
             return response()->json([
@@ -46,9 +48,10 @@ class ReviewController extends Controller
         ], 201);
     }
 
-    public function update(Request $request,Review $review){
+    public function update(Request $request, Review $review)
+    {
 
-        $this->authorize('update',$review);
+        $this->authorize('update', $review);
 
         $validated = $request->validate([
             'rating' => 'nullable|int',
@@ -63,13 +66,25 @@ class ReviewController extends Controller
         ]);
     }
 
-    public function destroy(Review $review){
-        $this->authorize('delete',$review);
+    public function destroy(Review $review)
+    {
+        $this->authorize('delete', $review);
 
         $review->delete();
 
         return response()->json([
             'message' => 'Review Deleted Successfully',
+            'review' => $review
+        ], 201);
+    }
+
+    public function restore($id)
+    {
+        $review = Review::withTrashed()->findOrFail($id);
+        $review->restore();
+
+        return response()->json([
+            'message' => 'Review restored successfully',
             'review' => $review
         ], 201);
     }

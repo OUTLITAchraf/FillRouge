@@ -46,7 +46,7 @@ class ServicePolicy
     public function update(User $user, Service $service): bool
     {
         // Admins can update any service
-        if ($user->role === 'admin') {
+        if ($user->hasRole('admin')) {
             return true;
         }
 
@@ -60,7 +60,7 @@ class ServicePolicy
     public function delete(User $user, Service $service): bool
     {
         // Admins can delete any service
-        if ($user->role === 'admin') {
+        if ($user->hasRole('admin')) {
             return true;
         }
 

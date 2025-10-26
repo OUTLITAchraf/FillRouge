@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -18,24 +19,43 @@ class Service extends Model
         'provider_id'
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at'
-    ];
+    protected $dates = ['deleted_at'];
 
-    public function category(){
+    protected static function booted()
+    {
+        static::deleting(function ($service) {
+            $service->reservations()->delete();
+            $service->reviews()->delete();
+        });
+
+        static::restoring(function ($service) {
+            if ($service->provider()->exists()) {
+                $service->provider()->update(['service_id' => $service->id]);
+            }
+
+            $service->reservations()->onlyTrashed()->get()->each->restore();
+            $service->reviews()->onlyTrashed()->get()->each->restore();
+        });
+    }
+
+
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function provider(){
-        return $this->belongsTo(User::class,'provider_id');
+    public function provider()
+    {
+        return $this->belongsTo(User::class, 'provider_id');
     }
 
-    public function reservations(){
+    public function reservations()
+    {
         return $this->hasMany(Reservation::class);
     }
 
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany(Review::class);
     }
 }

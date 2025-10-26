@@ -40,7 +40,7 @@ class ServiceController extends Controller
         $this->authorize('view', $service);
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
-            'service' => $service->load('category', 'provider', 'reviews')
+            'service' => $service->load('category', 'provider', 'reviews.user')
         ], 201);
     }
     public function store(Request $request)
@@ -116,7 +116,7 @@ class ServiceController extends Controller
 
             $service = DB::transaction(
                 function () use ($service) {
-                    $service->user->update(['service_id' => null]);
+                    $service->provider?->update(['service_id' => null]);
                     $service->delete();
 
                     return $service;
@@ -134,6 +134,18 @@ class ServiceController extends Controller
             ], 500);
         }
     }
+
+    public function restore($id)
+    {
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->restore();
+
+        return response()->json([
+            'message' => 'Service restored successfully',
+            'service' => $service
+        ], 201);
+    }
+
 
     public function updateStatus(Request $request, Service $service)
     {
@@ -155,7 +167,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Services With Filter Fetched Successfully',
-            'services' => $services
+            'services' => $services->load('provider')
         ], 201);
     }
 
@@ -175,7 +187,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Search An Service By Provider Completed Successfully',
-            'service' => $service
+            'service' => $service->load('provider')
         ], 201);
     }
 }

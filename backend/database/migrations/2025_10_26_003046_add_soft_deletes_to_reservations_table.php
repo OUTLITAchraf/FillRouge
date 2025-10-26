@@ -11,11 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('display_name');
-            $table->timestamps();
+        Schema::table('reservations', function (Blueprint $table) {
             $table->softDeletes();
         });
     }
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::table('reservations', function (Blueprint $table) {
+            //
+        });
     }
 };

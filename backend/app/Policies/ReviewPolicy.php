@@ -45,7 +45,7 @@ class ReviewPolicy
      */
     public function delete(User $user, Review $review): bool
     {
-        if ($user->role === 'admin'){
+        if ($user->hasRole('admin')){
             return true;
         }
 

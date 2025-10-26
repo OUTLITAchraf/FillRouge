@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Events\ProviderApproved;
 use App\Events\ProviderRegistered;
+use App\Events\ProviderRejected;
 use App\Listeners\SendProviderApprovedMail;
 use App\Listeners\SendProviderRegisteredMail;
+use App\Listeners\SendProviderRejectedMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
 
         ProviderApproved::class => [
             SendProviderApprovedMail::class,
+        ],
+
+        ProviderRejected::class => [
+            SendProviderRejectedMail::class,
         ]
     ];
 

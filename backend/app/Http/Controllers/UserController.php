@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ProviderApproved;
+use App\Events\ProviderRejected;
 use App\Mail\ProviderApprovedMail;
 use App\Mail\ProviderRejectedMail;
 use App\Models\User;
@@ -41,7 +42,7 @@ class UserController extends Controller
         if ($user->status === 'approved') {
             event(new ProviderApproved($user));
         } else {
-            Mail::to($user->email)->send(new ProviderRejectedMail($user));
+            event(new ProviderRejected($user));
         }
 
         return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\ProviderRegistered;
 use App\Http\Controllers\Controller;
 use App\Mail\ProviderRegisterMail;
 use App\Models\User;
@@ -41,8 +42,8 @@ class RegisteredUserController extends Controller
 
         $admin = User::where('name','admin')->first();
 
-        if ($user->roles->contains('name','provider')) {
-            Mail::to($admin)->send(new ProviderRegisterMail($user));
+        if ($user->hasRole('provider')) {
+            event(new ProviderRegistered($user));
         }
 
         return response()->json([

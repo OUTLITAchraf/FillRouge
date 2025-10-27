@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('status',['pending','accepted','refused','completed','cancelled'])->default('pending');
             $table->dateTime('date');
+            $table->text('description');
             $table->foreignId('client_id')->contrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->contrained()->onDelete('cascade');
             $table->timestamps();

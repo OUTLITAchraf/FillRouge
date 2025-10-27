@@ -35,12 +35,10 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'status' => $request->role === 'provider' ? 'pending' : 'approved',
         ]);
-        $role = $request->role?$request->role:'admin';
+        $role = $request->role ? $request->role : 'admin';
         $user->addRole($role);
 
         event(new Registered($user));
-
-        $admin = User::where('name','admin')->first();
 
         if ($user->hasRole('provider')) {
             event(new ProviderRegistered($user));

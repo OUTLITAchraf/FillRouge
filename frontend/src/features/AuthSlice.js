@@ -11,7 +11,12 @@ export const userRegister = createAsyncThunk(
       console.log("Reseponse :", response);
     } catch (error) {
       console.log("Error :", error);
-      return rejectWithValue(error);
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      }
+
+      // Fallback for network/non-response errors
+      return rejectWithValue({ message: error.message || "Network Error" });
     }
   }
 );
@@ -21,7 +26,9 @@ const AuthSlice = createSlice({
   initialState: {
     userRegister: {
       status: "idle",
-      error: null,
+    },
+    userLogin: {
+      status: "idle",
     },
   },
   reducers: {},
@@ -29,18 +36,15 @@ const AuthSlice = createSlice({
     builder
       .addCase(userRegister.pending, (state, action) => {
         state.userRegister.status = "loading";
-        state.userRegister.error = null;
 
         console.log("Register Pending:", action);
       })
       .addCase(userRegister.fulfilled, (state, action) => {
         (state.userRegister.status = "success"),
-          (state.userRegister.error = null),
           console.log("Register Fulfilled:", action);
       })
       .addCase(userRegister.rejected, (state, action) => {
         state.userRegister.status = "failde";
-        state.userRegister.error = action;
 
         console.log("Register Rejected:", action);
       });

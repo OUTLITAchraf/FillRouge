@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userRegister } from "../features/AuthSlice";
+import { userRegister } from "../../features/AuthSlice";
 
 // Validation Schema
 const providerSchema = yup
@@ -59,13 +59,13 @@ const providerSchema = yup
   .required();
 
 const ProviderRegisterPage = () => {
-  const { status, error } = useSelector((state)=>state.auth.userRegister);
+  const { status } = useSelector((state) => state.auth.userRegister);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log('Status in store :',status);
-  
-  
+  console.log('Status in store :', status);
+
+  const [generalError, setGeneralError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -74,6 +74,7 @@ const ProviderRegisterPage = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
   } = useForm({
     resolver: yupResolver(providerSchema),
   });
@@ -81,6 +82,8 @@ const ProviderRegisterPage = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
+    setGeneralError(null);
+
     try {
       // Add role as provider
       const formData = {
@@ -88,21 +91,38 @@ const ProviderRegisterPage = () => {
         role: "provider",
       };
 
-      console.log('Data of Provider :',formData);
-      
-      // Send to your API
-      const response = await dispatch(userRegister(formData))
+      const response = await dispatch(userRegister(formData));
 
-      console.log('Reseponse :',response);
-      
+      if (response.meta.requestStatus === 'rejected') {
+        const errorPayload = response.payload;
 
-      if (response && status == 'success' && !error) {
-        alert(
-          "Registration successful! Please wait for admin approval to access your account."
-        );
-      } 
+        if (errorPayload && errorPayload.errors) {
+          const backendErrors = errorPayload.errors;
+
+          Object.keys(backendErrors).forEach(fieldName => {
+            setError(fieldName, {
+              type: 'server',
+              message: backendErrors[fieldName][0],
+            });
+          });
+
+          if (errorPayload.message) {
+            setGeneralError(errorPayload.message);
+          }
+
+        } else if (errorPayload && errorPayload.message) {
+          setGeneralError(errorPayload.message);
+        } else {
+          setGeneralError("Registration failed due to an unknown error.");
+        }
+
+      } else if (response.meta.requestStatus === 'fulfilled') {
+        // SUCCESS LOGIC
+        navigate("/login")
+      }
     } catch (error) {
       console.error("Error:", error);
+      setGeneralError("An unexpected client-side error occurred. Please try again.");
     }
   };
 
@@ -129,10 +149,19 @@ const ProviderRegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 lg:flex">
+      <Link
+        to="/"
+        className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block" // Hidden on small screens, fixed on large
+        aria-label="Return to Home"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      </Link>
 
       {/* 1. Info Section */}
       <div
-        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:min-h-screen"
+        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-20 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center"
       >
         <div className="max-w-xl mx-auto">
 
@@ -172,13 +201,22 @@ const ProviderRegisterPage = () => {
       </div>
 
       {/* 2. Registration Form Container (Right Side) */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 lg:w-1/2">
+      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 lg:w-1/2 ">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Create Provider Account</h1>
               <p className="text-gray-600">Fill in your details to get started</p>
             </div>
+
+            {generalError && (
+              <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-800 font-semibold">{generalError}</p>
+                </div>
+              </div>
+            )}
 
             {/* Important Notice */}
             <div className="mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg">
@@ -398,7 +436,7 @@ const ProviderRegisterPage = () => {
                 disabled={status == 'loading'}
                 className="w-full bg-gradient-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-6"
               >
-                {status == 'loading'  ? (
+                {status == 'loading' ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />

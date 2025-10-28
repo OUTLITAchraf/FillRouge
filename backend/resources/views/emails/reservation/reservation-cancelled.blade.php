@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Reservation Cancelled</title>
     <meta charset="UTF-8">
@@ -74,7 +75,8 @@
             overflow: hidden;
         }
 
-        .details-table th, .details-table td {
+        .details-table th,
+        .details-table td {
             padding: 15px;
             text-align: left;
             font-size: 15px;
@@ -118,8 +120,10 @@
         }
 
         .info-box {
-            background: rgba(231, 76, 60, 0.05); /* Red-tinted background */
-            border-left: 4px solid #E74C3C; /* Red border */
+            background: rgba(231, 76, 60, 0.05);
+            /* Red-tinted background */
+            border-left: 4px solid #E74C3C;
+            /* Red border */
             padding: 20px;
             border-radius: 8px;
             margin: 30px 0;
@@ -194,6 +198,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <!-- Header -->
@@ -208,7 +213,7 @@
             <div class="greeting">Hello {{ $client->name }},</div>
 
             <p class="message">
-                This is a notification that your reservation for the service: 
+                This is a notification that your reservation for the service:
                 **{{ $reservation->service->title }}** has been officially **cancelled**.
             </p>
 
@@ -226,6 +231,10 @@
                         <td>{{ $reservation->service->provider->name}}</td>
                     </tr>
                     <tr>
+                        <th>Phone</th>
+                        <td>{{ $reservation->service->provider->phone }}</td>
+                    </tr>
+                    <tr>
                         <th>Original Date & Time</th>
                         {{-- Assuming 'date' is a field on the reservation model --}}
                         <td>{{ \Carbon\Carbon::parse($reservation->date)->format('F d, Y \a\t h:i A') ?? 'N/A' }}</td>
@@ -240,13 +249,15 @@
             <!-- Next Steps Box -->
             <div class="info-box">
                 <h3>Next Steps</h3>
-                <p><strong>Rebooking:</strong> You may book a new time slot with the provider or explore similar services on our platform.</p>
+                <p><strong>Rebooking:</strong> You may book a new time slot with the provider or explore similar
+                    services on our platform.</p>
             </div>
 
             <!-- CTA Button -->
             <div class="cta-container">
                 {{-- Assuming a route to the client's reservations dashboard --}}
-                <a href="{{ config('app.url') }}/client/dashboard/reservations" class="cta-button">View My Reservations</a>
+                <a href="{{ config('app.url') }}/client/dashboard/reservations" class="cta-button">View My
+                    Reservations</a>
             </div>
 
             <p class="message" style="margin-top: 25px;">
@@ -270,4 +281,5 @@
         </div>
     </div>
 </body>
+
 </html>

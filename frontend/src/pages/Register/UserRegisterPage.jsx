@@ -12,9 +12,9 @@ import {
   EyeOff,
   CheckCircle2,
   AlertCircle,
-  Home, 
-  CalendarCheck, 
-  Star, 
+  Home,
+  CalendarCheck,
+  Star,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -58,7 +58,7 @@ const userSchema = yup
   })
   .required();
 
-const UserRegisterPage = () => { 
+const UserRegisterPage = () => {
   const { status } = useSelector((state) => state.auth.userRegister);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const UserRegisterPage = () => {
     watch,
     setError,
   } = useForm({
-    resolver: yupResolver(userSchema), 
+    resolver: yupResolver(userSchema),
   });
 
   const password = watch("password");
@@ -143,7 +143,7 @@ const UserRegisterPage = () => {
   const passwordStrength = getPasswordStrength(password);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 lg:flex">
+    <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
         className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block"
@@ -156,51 +156,52 @@ const UserRegisterPage = () => {
 
       {/* 1. Info Section */}
       <div
-        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-20 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center"
+        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0"
       >
         <div className="max-w-xl mx-auto">
 
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
-              <Home className="w-10 h-10" /> 
+              <Home className="w-10 h-10" />
             </div>
           </div>
 
           <div className="flex items-center gap-4 mb-8 justify-center md:justify-start lg:justify-center">
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">Create Your Free Account</h2> 
+              <h2 className="text-3xl md:text-4xl font-bold">Create Your Free Account</h2>
               <p className="text-green-100 text-lg">Start booking services instantly</p>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-6 max-w-4xl mx-auto lg:max-w-none">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-lg mb-2">Find Local Professionals</h3>
-              <p className="text-sm opacity-90">Easily search and connect with service providers near you.</p>
+          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" /> {/* Sizing Change */}
+              <h3 className="font-semibold text-base mb-1">Find Local Professionals</h3> {/* Sizing Change */}
+              <p className="text-xs opacity-90">Easily search and connect with service providers near you.</p> {/* Sizing Change */}
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CalendarCheck className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" /> 
-              <h3 className="font-semibold text-lg mb-2">Manage Your Bookings</h3>
-              <p className="text-sm opacity-90">Keep track of all your appointments in one place.</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <CalendarCheck className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" /> {/* Sizing Change */}
+              <h3 className="font-semibold text-base mb-1">Manage Your Bookings</h3> {/* Sizing Change */}
+              <p className="text-xs opacity-90">Keep track of all your appointments in one place.</p> {/* Sizing Change */}
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <Star className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" /> 
-              <h3 className="font-semibold text-lg mb-2">Read Real Reviews</h3>
-              <p className="text-sm opacity-90">Make informed choices based on other users' feedback.</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <Star className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" /> {/* Sizing Change */}
+              <h3 className="font-semibold text-base mb-1">Read Real Reviews</h3> {/* Sizing Change */}
+              <p className="text-xs opacity-90">Make informed choices based on other users' feedback.</p> {/* Sizing Change */}
             </div>
           </div>
         </div>
       </div>
 
       {/* 2. Registration Form Container */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 lg:w-1/2 ">
+      <div className="py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:flex-grow">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Create User Account</h1> 
+              <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Create User Account</h1>
               <p className="text-gray-600">Fill in your details to get started</p>
             </div>
 
@@ -427,7 +428,7 @@ const UserRegisterPage = () => {
                     Creating Account...
                   </span>
                 ) : (
-                  'Create User Account' 
+                  'Create User Account'
                 )}
               </button>
 

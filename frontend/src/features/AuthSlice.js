@@ -21,6 +21,27 @@ export const userRegister = createAsyncThunk(
   }
 );
 
+export const userLogin = createAsyncThunk(
+  "auth/login",
+  async (data, { rejectWithValue }) => {
+    try {
+      console.log("data is :", data);
+
+      let response = await api.post("/login", data);
+      console.log("Reseponse :", response);
+    } catch (error) {
+      console.log("Error :", error);
+      if (error.response && error.response.data) {
+        // This returns { message: "The given data was invalid.", errors: { ... } }
+        return rejectWithValue(error.response.data);
+      }
+
+      // Fallback for network/non-response errors
+      return rejectWithValue({ message: error.message || "Network Error" });
+    }
+  }
+);
+
 const AuthSlice = createSlice({
   name: "auth",
   initialState: {
@@ -47,6 +68,22 @@ const AuthSlice = createSlice({
         state.userRegister.status = "failde";
 
         console.log("Register Rejected:", action);
+      });
+
+    builder
+      .addCase(userLogin.pending, (state, action) => {
+        state.userLogin.status = "loading";
+
+        console.log("Login Pending:", action);
+      })
+      .addCase(userLogin.fulfilled, (state, action) => {
+        (state.userLogin.status = "success"),
+          console.log("Login Fulfilled:", action);
+      })
+      .addCase(userLogin.rejected, (state, action) => {
+        state.userLogin.status = "failde";
+
+        console.log("Login Rejected:", action);
       });
   },
 });

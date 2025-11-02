@@ -148,7 +148,7 @@ const ProviderRegisterPage = () => {
   const passwordStrength = getPasswordStrength(password);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 lg:flex">
+    <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
         className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block" // Hidden on small screens, fixed on large
@@ -161,7 +161,7 @@ const ProviderRegisterPage = () => {
 
       {/* 1. Info Section */}
       <div
-        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-20 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center"
+        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0"
       >
         <div className="max-w-xl mx-auto">
 
@@ -178,22 +178,23 @@ const ProviderRegisterPage = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-6 max-w-4xl mx-auto lg:max-w-none">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-lg mb-2">Get More Customers</h3>
-              <p className="text-sm opacity-90">Reach thousands of potential clients looking for your services</p>
+          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
+              <h3 className="font-semibold text-base mb-1">Get More Customers</h3>
+              <p className="text-xs opacity-90">Reach thousands of potential clients looking for your services</p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-lg mb-2">Manage Your Business</h3>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
+              <h3 className="font-semibold text-base mb-1">Manage Your Business</h3>
               <p className="text-sm opacity-90">Easy dashboard to handle bookings and track your earnings</p>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-10 h-10 mb-3 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-lg mb-2">Build Your Reputation</h3>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
+              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
+              <h3 className="font-semibold text-base mb-1">Build Your Reputation</h3>
               <p className="text-sm opacity-90">Earn reviews and ratings to grow your business</p>
             </div>
           </div>
@@ -201,7 +202,7 @@ const ProviderRegisterPage = () => {
       </div>
 
       {/* 2. Registration Form Container (Right Side) */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 lg:w-1/2 ">
+      <div className="py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:flex-grow">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">

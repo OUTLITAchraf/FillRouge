@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: Hex-monograms;
+  src: url("./assets/fonts/Hex-monograms.ttf");
+}
+
+@font-face {
+  font-family: HEXCO;
+  src: url("./assets/fonts/HEXCO/HEXCO.otf");
+}
+
+@font-face {
+  font-family: HEXCO-ornate;
+  src: url("./assets/fonts/Hex-ornate.otf");
+}
+
+@font-face {
+  font-family: cetrinn;
+  src: url("./assets/fonts/cetrinn.otf");
+}
+
+@font-face {
+  font-family: menante-italic;
+  src: url("./assets/fonts/menante-italic.otf");
+}
+
+@font-face {
+  font-family: menante-regular;
+  src: url("./assets/fonts/menante-regular.otf");
+}
+
+@theme {
+  --font-Hex-monograms: Hex-monograms, "sans-serif";
+  --font-HEXCO: HEXCO, "sans-serif";
+  --font-HEXCO-ornate: HEXCO-ornate, "sans-serif";
+  --font-cetrinn: cetrinn, "sans-serif";
+  --font-menante-italic: menante-italic, "sans-serif";
+  --font-menante-regular: menante-regular, "sans-serif";
+}

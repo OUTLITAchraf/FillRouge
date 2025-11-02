@@ -18,21 +18,37 @@ class ServiceController extends Controller
         $user = $request->user();
         $this->authorize('viewAny', Service::class);
 
-        $query = Service::query();
+        $query = Service::query()->with(['provider', 'category']);
 
-        if ($user?->hasRole('admin')) {
-
-            $services = $query->get();
-        } elseif ($user?->hasRole('provider')) {
-
-            $services = $query->where('provider_id', $user->id)->get();
-        } else {
-            $services = $query->where('status', 'approved')->get();
+        if ($user?->hasRole('provider')) {
+            $query->where('provider_id', $user->id);
+        } elseif (!$user?->hasRole('admin')) {
+            $query->where('status', 'approved');
         }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('provider_name')) {
+            $query->whereHas('provider', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->provider_name}%");
+            });
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        $services = $query->paginate(10);
 
         return response()->json([
             'message' => 'Services Fetched Successfully',
-            'services' => $services->load('category', 'provider')
+            'services' => $services,
         ], 201);
     }
 
@@ -155,9 +171,9 @@ class ServiceController extends Controller
         ]);
 
         $service->update($validated);
-        $service->load('provider','category');
+        $service->load('provider', 'category');
 
-        if($service->status == 'approved'){
+        if ($service->status == 'approved') {
             event(new ServiceApproved($service));
         } else {
             event(new ServiceRejected($service));

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Sparkles,
   Droplet,
@@ -17,34 +17,43 @@ import {
   CheckCircle2,
   MessageSquare,
   Calendar,
-  TrendingUp
-} from 'lucide-react';
+  TrendingUp,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "../features/ServiceSlice";
 
-const categories = [
-  { name: 'cleaning', display_name: 'Cleaning', icon: Sparkles },
-  { name: 'plumbing', display_name: 'Plumbing', icon: Droplet },
-  { name: 'electricity', display_name: 'Electricity', icon: Zap },
-  { name: 'painting', display_name: 'Painting', icon: PaintBucket },
-  { name: 'carpentry', display_name: 'Carpentry', icon: Hammer },
-  { name: 'gardening', display_name: 'Gardening', icon: Leaf },
-  { name: 'moving', display_name: 'Moving', icon: Truck },
-  { name: 'appliance_repair', display_name: 'Appliance Repair', icon: Wrench },
-  { name: 'babysitting', display_name: 'Babysitting', icon: Baby },
-  { name: 'tutoring', display_name: 'Tutoring', icon: GraduationCap },
-];
+const categoryIcons = { 
+  cleaning: Sparkles ,
+  plumbing: Droplet ,
+  electricity: Zap ,
+  painting: PaintBucket ,
+  carpentry: Hammer ,
+  gardening: Leaf ,
+  moving: Truck ,
+  appliance_repair: Wrench ,
+  babysitting: Baby ,
+  tutoring: GraduationCap 
+}
+;
+function HomePage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useDispatch();
+  const { categories } = useSelector((state) => state.services);
 
-const HomePage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  console.log(categories);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log('Searching for provider:', searchQuery);
+    console.log("Searching for provider:", searchQuery);
     // Add your search logic here
   };
 
   return (
     <>
-
       {/* Hero Section with Search */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-green-50 pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Decorative Background Elements */}
@@ -111,13 +120,14 @@ const HomePage = () => {
               Browse Services
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Find the perfect professional for your needs from our wide range of trusted local services
+              Find the perfect professional for your needs from our wide range
+              of trusted local services
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {categories.map((category) => {
-              const IconComponent = category.icon;
+            {categories?.map((category) => {
+              const Icon= categoryIcons[category.name.toLowerCase()] || categoryIcons.default;
               return (
                 <Link
                   key={category.name}
@@ -125,7 +135,7 @@ const HomePage = () => {
                   className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group"
                 >
                   <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <IconComponent className="w-8 h-8 text-[#2ECC71]" />
+                    <Icon className="w-8 h-8 text-[#2ECC71]" />
                   </div>
                   <h3 className="font-bold text-[#2C3E50] mb-1">
                     {category.display_name}
@@ -154,9 +164,12 @@ const HomePage = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">1</span>
               </div>
-              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">Search Service</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
+                Search Service
+              </h3>
               <p className="text-gray-600">
-                Browse categories or search for the specific provider you need in your area
+                Browse categories or search for the specific provider you need
+                in your area
               </p>
             </div>
 
@@ -164,9 +177,12 @@ const HomePage = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">2</span>
               </div>
-              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">Choose Provider</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
+                Choose Provider
+              </h3>
               <p className="text-gray-600">
-                Compare profiles, ratings, and reviews to find the best match for your needs
+                Compare profiles, ratings, and reviews to find the best match
+                for your needs
               </p>
             </div>
 
@@ -174,9 +190,12 @@ const HomePage = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
-              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">Book Online</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
+                Book Online
+              </h3>
               <p className="text-gray-600">
-                Select your preferred time, describe your problem, and confirm your booking instantly
+                Select your preferred time, describe your problem, and confirm
+                your booking instantly
               </p>
             </div>
 
@@ -184,9 +203,12 @@ const HomePage = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">4</span>
               </div>
-              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">Track & Review</h3>
+              <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
+                Track & Review
+              </h3>
               <p className="text-gray-600">
-                Monitor your request status in real-time and rate your experience
+                Monitor your request status in real-time and rate your
+                experience
               </p>
             </div>
           </div>
@@ -217,7 +239,8 @@ const HomePage = () => {
                   Verified Professionals
                 </h3>
                 <p className="text-gray-600">
-                  All service providers are thoroughly vetted and verified for your safety
+                  All service providers are thoroughly vetted and verified for
+                  your safety
                 </p>
               </div>
             </div>
@@ -233,7 +256,8 @@ const HomePage = () => {
                   Trusted Reviews
                 </h3>
                 <p className="text-gray-600">
-                  Read authentic reviews from real customers to make informed decisions
+                  Read authentic reviews from real customers to make informed
+                  decisions
                 </p>
               </div>
             </div>
@@ -297,7 +321,8 @@ const HomePage = () => {
                   Local Services
                 </h3>
                 <p className="text-gray-600">
-                  Find trusted professionals in your area across all major Moroccan cities
+                  Find trusted professionals in your area across all major
+                  Moroccan cities
                 </p>
               </div>
             </div>
@@ -316,7 +341,8 @@ const HomePage = () => {
             Ready to Grow Your Business?
           </h2>
           <p className="text-xl mb-8 text-gray-300">
-            Join thousands of service providers already growing their business on Fidarek. Start receiving bookings today!
+            Join thousands of service providers already growing their business
+            on Fidarek. Start receiving bookings today!
           </p>
           <Link
             to="/provider/register"
@@ -328,6 +354,6 @@ const HomePage = () => {
       </section>
     </>
   );
-};
+}
 
 export default HomePage;

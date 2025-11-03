@@ -48,50 +48,51 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum')->name('logout');
 
 
-Route::get('/services',[ServiceController::class, 'index']);
-Route::get('/service/{service}',[ServiceController::class, 'show']);
-Route::get('/services/category/{category}',[ServiceController::class, 'bycategory']);
-Route::get('/search-service',[ServiceController::class, 'searchByProvider']);
+Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/service/{service}', [ServiceController::class, 'show']);
+Route::get('/services/category/{category}', [ServiceController::class, 'bycategory']);
+Route::get('/search-service', [ServiceController::class, 'searchByProvider']);
+
+Route::get('/categories', [CategoryController::class, 'index']);
 
 
-Route::middleware('auth:sanctum')->group(function (){
-    Route::post('/service/{service}/reserve',[ReservationController::class, 'store']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/service/{service}/reserve', [ReservationController::class, 'store']);
 
-    Route::delete('/delete-review/{review}',[ReviewController::class, 'destroy']);
+    Route::delete('/delete-review/{review}', [ReviewController::class, 'destroy']);
 });
 
 
-Route::middleware(['auth:sanctum','role:user'])->group(function (){
-    Route::post('/service/{service}/review',[ReviewController::class, 'store']);
-    Route::put('/update-review/{review}',[ReviewController::class, 'update']);
+Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+    Route::post('/service/{service}/review', [ReviewController::class, 'store']);
+    Route::put('/update-review/{review}', [ReviewController::class, 'update']);
 });
 
 
-Route::middleware(['auth:sanctum'])->group(function (){
-    Route::post('/create-service',[ServiceController::class, 'store']);
-    Route::put('/update-service/{service}',[ServiceController::class, 'update']);
-    Route::delete('/delete-service/{service}',[ServiceController::class, 'destroy']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/create-service', [ServiceController::class, 'store']);
+    Route::put('/update-service/{service}', [ServiceController::class, 'update']);
+    Route::delete('/delete-service/{service}', [ServiceController::class, 'destroy']);
 
-    Route::get('/reservations',[ReservationController::class, 'index']);
-    Route::put('/reservation/update-status/{reservation}',[ReservationController::class, 'updateStatus']);
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::put('/reservation/update-status/{reservation}', [ReservationController::class, 'updateStatus']);
 });
 
 
-Route::middleware(['auth:sanctum','role:admin'])->group(function(){
-    Route::get('/admin/users',[UserController::class, 'index']);
-    Route::put('/admin/update-status/{user}',[UserController::class, 'updateStatus']);
-    Route::delete('/admin/delete-user/{user}',[UserController::class, 'destroy']);
-    Route::post('/admin/user/{id}/restore',[UserController::class, 'restore']);
-    Route::post('/admin/service/{id}/restore',[ServiceController::class, 'restore']);
-    Route::post('/admin/review/{id}/restore',[ReviewController::class, 'restore']);
-    Route::post('/admin/category/{id}/restore',[CategoryController::class, 'restore']);
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::put('/admin/update-status/{user}', [UserController::class, 'updateStatus']);
+    Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
+    Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);
+    Route::post('/admin/service/{id}/restore', [ServiceController::class, 'restore']);
+    Route::post('/admin/review/{id}/restore', [ReviewController::class, 'restore']);
+    Route::post('/admin/category/{id}/restore', [CategoryController::class, 'restore']);
 
-    Route::get('/admin/categories',[CategoryController::class, 'index']);
-    Route::post('/admin/create-category',[CategoryController::class, 'store']);
-    Route::put('/admin/update-category/{category}',[CategoryController::class, 'update']);
-    Route::delete('/admin/delete-category/{category}',[CategoryController::class, 'destroy']);
+    Route::post('/admin/create-category', [CategoryController::class, 'store']);
+    Route::put('/admin/update-category/{category}', [CategoryController::class, 'update']);
+    Route::delete('/admin/delete-category/{category}', [CategoryController::class, 'destroy']);
 
-    Route::put('/admin/service/update-status/{service}',[ServiceController::class, 'updateStatus']);
+    Route::put('/admin/service/update-status/{service}', [ServiceController::class, 'updateStatus']);
 
-    Route::get('/admin/reviews',[ReviewController::class, 'index']);
+    Route::get('/admin/reviews', [ReviewController::class, 'index']);
 });

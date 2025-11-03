@@ -74,7 +74,16 @@ const LoginPage = () => {
                 }
 
             } else if (response.meta.requestStatus === 'fulfilled') {
-                alert("Login successful!");
+                const user = response.payload.user;
+                const role = user.roles?.[0]?.name;
+                if ( role === "provider") {
+                    navigate("/provider/dashboard")
+                } else  if ( role === "user") {
+                    navigate("/")
+                } else {
+                    navigate("/admin/dashboard")
+                }
+                
             }
         } catch (error) {
             console.error("Error:", error);

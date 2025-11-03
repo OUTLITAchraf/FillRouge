@@ -1,16 +1,40 @@
-import { useState } from "react";
-import {
-  ChevronDown,
-  User,
-  Calendar,
-  LogOut,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, User, Calendar, LogOut } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
-
-const user = null;
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser, userLogout } from "../features/AuthSlice";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+
+  const dropdownRef = useRef(null);
+
+  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      console.log("User data changed:", user);
+    } else {
+      console.log("User is null");
+    }
+  }, [user]);
 
   const getInitials = (name) => {
     return name
@@ -68,7 +92,7 @@ function UserLayout() {
             {user ? (
               <div className="relative">
                 <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  onClick={toggleUserMenu}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="w-10 h-10 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white font-bold">
@@ -94,19 +118,12 @@ function UserLayout() {
                       className="fixed inset-0 z-10"
                       onClick={() => setShowUserMenu(false)}
                     ></div>
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
+                    <div
+                      ref={dropdownRef}
+                      className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20"
+                    >
                       <Link
-                        to="/profile"
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        <User className="w-5 h-5 text-gray-600" />
-                        <span className="text-gray-700 font-medium">
-                          Profile
-                        </span>
-                      </Link>
-                      <Link
-                        to="/my-reservations"
+                        to="/user/reservation"
                         className="flex items-center gap-3 px-4 py-3 bg-green-50 text-[#2ECC71] transition-colors"
                         onClick={() => setShowUserMenu(false)}
                       >
@@ -117,7 +134,7 @@ function UserLayout() {
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
-                          console.log("Logging out...");
+                          dispatch(userLogout())
                         }}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors w-full text-left"
                       >

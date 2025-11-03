@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Sparkles,
   Droplet,
@@ -33,14 +33,13 @@ const categoryIcons = {
   appliance_repair: Wrench ,
   babysitting: Baby ,
   tutoring: GraduationCap 
-}
-;
+};
+
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { categories } = useSelector((state) => state.services);
-
-  console.log(categories);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -48,8 +47,13 @@ function HomePage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Searching for provider:", searchQuery);
-    // Add your search logic here
+    if (searchQuery.trim()) {
+      navigate(`/services?provider_name=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/services?category_id=${categoryId}`);
   };
 
   return (
@@ -129,9 +133,9 @@ function HomePage() {
             {categories?.map((category) => {
               const Icon= categoryIcons[category.name.toLowerCase()] || categoryIcons.default;
               return (
-                <Link
+                <div
                   key={category.name}
-                  to={`/services/${category.name}`}
+                  onClick={() => handleCategoryClick(category.id)}
                   className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group"
                 >
                   <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -140,7 +144,7 @@ function HomePage() {
                   <h3 className="font-bold text-[#2C3E50] mb-1">
                     {category.display_name}
                   </h3>
-                </Link>
+                </div>
               );
             })}
           </div>

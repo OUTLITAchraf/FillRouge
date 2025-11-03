@@ -17,10 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        $this->call(LaratrustSeeder::class);
+        // $this->call(LaratrustSeeder::class);
 
-        $this->call(CategorySeeder::class);
+        // $this->call(CategorySeeder::class);
 
-        $this->call(AdminSeeder::class);
+        // $this->call(AdminSeeder::class);
+
+        $this->call(ServiceSeeder::class);
     }
 }

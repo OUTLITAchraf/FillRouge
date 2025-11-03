@@ -3,19 +3,23 @@ import { ChevronDown, User, Calendar, LogOut } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, userLogout } from "../features/AuthSlice";
+import Cookies from "js-cookie";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const token = Cookies.get("authToken");
 
   const dropdownRef = useRef(null);
 
   const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
 
   useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
+    if (token) {
+      dispatch(fetchUser());
+    }
+  }, [dispatch, token]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,14 +31,6 @@ function UserLayout() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      console.log("User data changed:", user);
-    } else {
-      console.log("User is null");
-    }
-  }, [user]);
 
   const getInitials = (name) => {
     return name
@@ -81,7 +77,7 @@ function UserLayout() {
                 About Us
               </Link>
               <Link
-                to="/contact"
+                to="/faq"
                 className="text-gray-700 hover:text-[#2ECC71] font-semibold transition-colors"
               >
                 FAQ
@@ -134,7 +130,7 @@ function UserLayout() {
                       <button
                         onClick={() => {
                           setShowUserMenu(false);
-                          dispatch(userLogout())
+                          dispatch(userLogout());
                         }}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors w-full text-left"
                       >

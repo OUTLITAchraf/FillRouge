@@ -44,7 +44,7 @@ class ServiceController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $services = $query->paginate(10);
+        $services = $query->get();
 
         return response()->json([
             'message' => 'Services Fetched Successfully',

@@ -1,36 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown, User, Calendar, LogOut } from "lucide-react";
+import {  useState } from "react";
+import { ChevronDown, Calendar, LogOut } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, userLogout } from "../features/AuthSlice";
-import Cookies from "js-cookie";
+import { userLogout } from "../features/AuthSlice";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const token = Cookies.get("authToken");
+  const { user } = useSelector((state) => state.auth);  
 
-  const dropdownRef = useRef(null);
+  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);  
 
-  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
-
-  useEffect(() => {
-    if (token) {
-      dispatch(fetchUser());
-    }
-  }, [dispatch, token]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowUserMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const getInitials = (name) => {
     return name
@@ -115,7 +95,6 @@ function UserLayout() {
                       onClick={() => setShowUserMenu(false)}
                     ></div>
                     <div
-                      ref={dropdownRef}
                       className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20"
                     >
                       <Link
@@ -162,7 +141,7 @@ function UserLayout() {
       </header>
 
       <main>
-        <Outlet />
+        <Outlet user={user}/>
       </main>
 
       {/* Footer */}

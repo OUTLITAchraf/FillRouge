@@ -3,12 +3,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   Search,
   Filter,
-  ChevronDown,
-  User,
-  Calendar,
-  LogOut,
-  Star,
-  MapPin,
   DollarSign,
   Sparkles,
   Droplet,
@@ -45,10 +39,9 @@ const ServicesPage = () => {
   const [maxPrice, setMaxPrice] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  const { categories, services, fetchServiceStatus } = useSelector(
-    (state) => state.services
-  );
-  const dispatch = useDispatch();
+  const { categories } = useSelector((state) => state.services);
+  const { data, status } = useSelector((state) => state.services.services);
+  const dispatch = useDispatch();    
 
   const providerName = searchParams.get("provider_name");
   const categoryId = searchParams.get("category_id");
@@ -208,11 +201,11 @@ const ServicesPage = () => {
       </div>
 
       {/* Services Grid */}
-      {fetchServiceStatus == "loading" ? (
+      {status == "loading" ? (
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
         </div>
-      ) : services.length === 0 ? (
+      ) : data?.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-4">🔍</div>
           <h3 className="text-2xl font-bold text-gray-700 mb-2">
@@ -225,7 +218,7 @@ const ServicesPage = () => {
       ) : (
         <>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {services.map((service) => {
+            {data?.map((service) => {
               const CategoryIcon =
                 categoryIcons[service.category.name] || Wrench;
 

@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Calendar,
   TrendingUp,
+  Shapes,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../features/ServiceSlice";
@@ -32,7 +33,8 @@ const categoryIcons = {
   moving: Truck ,
   appliance_repair: Wrench ,
   babysitting: Baby ,
-  tutoring: GraduationCap 
+  tutoring: GraduationCap,
+  default: Shapes,
 };
 
 function HomePage() {

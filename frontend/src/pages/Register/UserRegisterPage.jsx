@@ -105,7 +105,7 @@ const UserRegisterPage = () => {
         setGeneralError("Register failed due to an unknown error.")
       }
     } else {
-      navigate("/login");
+      navigate("/");
     }
   };
 

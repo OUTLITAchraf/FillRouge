@@ -41,6 +41,7 @@ class RegisteredUserController extends Controller
         ]);
         $role = $request->role ? $request->role : 'admin';
         $user->addRole($role);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         event(new Registered($user));
 
@@ -50,7 +51,8 @@ class RegisteredUserController extends Controller
 
         return response()->json([
             'message' => 'User registered successfully',
-            'role' => $request->role,
+            'user' => $user,
+            'token' => $token
         ], 201);
     }
 }

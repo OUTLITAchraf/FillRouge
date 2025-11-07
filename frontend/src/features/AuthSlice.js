@@ -10,6 +10,17 @@ export const userRegister = createAsyncThunk(
 
       let response = await api.post("/register", data);
       console.log("Reseponse :", response);
+
+      Cookies.set("authToken", response.data.token, {
+        expires: 7,
+        sameSite: "strict",
+      });
+      Cookies.set("authUser", JSON.stringify(response.data.user), {
+        expires: 7,
+        sameSite: "strict",
+      });
+
+      return response.data;
     } catch (error) {
       console.log("Error :", error);
       return rejectWithValue(error.response.data);
@@ -32,23 +43,13 @@ export const userLogin = createAsyncThunk(
 
       if (error.response.status == 422) {
         return rejectWithValue(error.response.data);
+      } else if (error.response.status == 403) {
+        return rejectWithValue(error.response.data);
       }
 
-      return rejectWithValue({ message: "Login failed due to an unknown error." });
-    }
-  }
-);
-
-export const fetchUser = createAsyncThunk(
-  "auth/fetchUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      let response = await api.get("/user");
-      console.log("Response :", response);
-      return response.data;
-    } catch (error) {
-      console.log("Error :", error);
-
+      return rejectWithValue({
+        message: "Login failed due to an unknown error.",
+      });
     }
   }
 );
@@ -59,10 +60,8 @@ export const userLogout = createAsyncThunk(
     try {
       let response = await api.post("/logout");
       console.log("Response :", response);
-      return response.data;
     } catch (error) {
       console.log("Error :", error);
-
     }
   }
 );
@@ -71,8 +70,7 @@ const AuthSlice = createSlice({
   name: "auth",
   initialState: {
     token: Cookies.get("authToken") ? Cookies.get("authToken") : null,
-    fetchUserStatus: "idle",
-    user: null,
+    user: Cookies.get("authUser") ? JSON.parse(Cookies.get("authUser")) : null,
     userRegister: {
       status: "idle",
     },
@@ -93,6 +91,9 @@ const AuthSlice = createSlice({
       })
       .addCase(userRegister.fulfilled, (state, action) => {
         state.userRegister.status = "success";
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+
 
         console.log("Register Fulfilled:", action);
       })
@@ -112,10 +113,6 @@ const AuthSlice = createSlice({
         state.userLogin.status = "success";
         state.token = action.payload.token;
         state.user = action.payload.user;
-        Cookies.set("authToken", action.payload.token, {
-          expires: 7,
-          sameSite: "strict",
-        });
 
         console.log("Login Fulfilled:", action);
       })
@@ -124,25 +121,6 @@ const AuthSlice = createSlice({
         Cookies.remove("authToken");
 
         console.log("Login Rejected:", action);
-      });
-
-    builder
-      .addCase(fetchUser.pending, (state, action) => {
-        state.fetchUserStatus = "loading";
-        state.user = null;
-
-        console.log("Fetch User Pending:", action);
-      })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.fetchUserStatus = "success";
-        state.user = action.payload.user;
-        console.log("Fetch User Fulfilled:", action);
-      })
-      .addCase(fetchUser.rejected, (state, action) => {
-        state.fetchUserStatus = "failde";
-        state.user = null;
-
-        console.log("Fetch User Rejected:", action);
       });
 
     builder
@@ -155,6 +133,7 @@ const AuthSlice = createSlice({
         state.userLogout.status = "success";
         state.user = null;
         Cookies.remove("authToken");
+        Cookies.remove("authUser");
 
         console.log("User Logout Fulfilled:", action);
       })

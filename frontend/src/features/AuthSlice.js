@@ -12,11 +12,7 @@ export const userRegister = createAsyncThunk(
       console.log("Reseponse :", response);
     } catch (error) {
       console.log("Error :", error);
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
-      }
-
-      return rejectWithValue({ message: error.message || "Network Error" });
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -34,11 +30,11 @@ export const userLogin = createAsyncThunk(
     } catch (error) {
       console.log("Error :", error);
 
-      if (error.response && error.response.data) {
+      if (error.response.status == 422) {
         return rejectWithValue(error.response.data);
       }
 
-      return rejectWithValue({ message: error.message || "Network Error" });
+      return rejectWithValue({ message: "Login failed due to an unknown error." });
     }
   }
 );
@@ -52,11 +48,7 @@ export const fetchUser = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("Error :", error);
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
-      }
 
-      return rejectWithValue({ message: error.message || "Network Error" });
     }
   }
 );
@@ -70,11 +62,7 @@ export const userLogout = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("Error :", error);
-      if (error.response && error.response.data) {
-        return rejectWithValue(error.response.data);
-      }
 
-      return rejectWithValue({ message: error.message || "Network Error" });
     }
   }
 );
@@ -93,7 +81,7 @@ const AuthSlice = createSlice({
     },
     userLogout: {
       status: "idle",
-    }
+    },
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -104,13 +92,14 @@ const AuthSlice = createSlice({
         console.log("Register Pending:", action);
       })
       .addCase(userRegister.fulfilled, (state, action) => {
-        (state.userRegister.status = "success"),
-          console.log("Register Fulfilled:", action);
+        state.userRegister.status = "success";
+
+        console.log("Register Fulfilled:", action);
       })
       .addCase(userRegister.rejected, (state, action) => {
         state.userRegister.status = "failde";
 
-        console.log("Register Rejected:", action);
+        console.log("Register Rejected:", action.payload);
       });
 
     builder
@@ -120,13 +109,13 @@ const AuthSlice = createSlice({
         console.log("Login Pending:", action);
       })
       .addCase(userLogin.fulfilled, (state, action) => {
-        (state.userLogin.status = "success"),
-          (state.token = action.payload.token),
-          (state.user = action.payload.user),
-          Cookies.set("authToken", action.payload.token, {
-            expires: 7,
-            sameSite: "strict",
-          });
+        state.userLogin.status = "success";
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+        Cookies.set("authToken", action.payload.token, {
+          expires: 7,
+          sameSite: "strict",
+        });
 
         console.log("Login Fulfilled:", action);
       })
@@ -158,14 +147,14 @@ const AuthSlice = createSlice({
 
     builder
       .addCase(userLogout.pending, (state, action) => {
-        state.userLogout.status = "pending"
+        state.userLogout.status = "pending";
 
         console.log("User Logout Pending:", action);
       })
       .addCase(userLogout.fulfilled, (state, action) => {
         state.userLogout.status = "success";
         state.user = null;
-        Cookies.remove("authToken")
+        Cookies.remove("authToken");
 
         console.log("User Logout Fulfilled:", action);
       })

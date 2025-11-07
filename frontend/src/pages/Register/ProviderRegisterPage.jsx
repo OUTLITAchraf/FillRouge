@@ -63,8 +63,6 @@ const ProviderRegisterPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log('Status in store :', status);
-
   const [generalError, setGeneralError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -82,47 +80,29 @@ const ProviderRegisterPage = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
-    setGeneralError(null);
+    const formData = {
+      ...data,
+      role: "provider",
+    };
 
-    try {
-      // Add role as provider
-      const formData = {
-        ...data,
-        role: "provider",
-      };
+    const response = await dispatch(userRegister(formData));
 
-      const response = await dispatch(userRegister(formData));
+    if (response.meta.requestStatus === "rejected") {
+      if (response.payload.errors) {
+        setGeneralError(null);
+        const userRegisterErrors = response.payload.errors;
 
-      if (response.meta.requestStatus === 'rejected') {
-        const errorPayload = response.payload;
-
-        if (errorPayload && errorPayload.errors) {
-          const backendErrors = errorPayload.errors;
-
-          Object.keys(backendErrors).forEach(fieldName => {
-            setError(fieldName, {
-              type: 'server',
-              message: backendErrors[fieldName][0],
-            });
+        Object.entries(userRegisterErrors).forEach(([field, messages]) => {
+          setError(field, {
+            type: "server",
+            message: messages[0],
           });
-
-          if (errorPayload.message) {
-            setGeneralError(errorPayload.message);
-          }
-
-        } else if (errorPayload && errorPayload.message) {
-          setGeneralError(errorPayload.message);
-        } else {
-          setGeneralError("Registration failed due to an unknown error.");
-        }
-
-      } else if (response.meta.requestStatus === 'fulfilled') {
-        // SUCCESS LOGIC
-        navigate("/login")
+        });
+      } else {
+        setGeneralError("Register failed due to an unknown error.");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      setGeneralError("An unexpected client-side error occurred. Please try again.");
+    } else {
+      navigate("/login");
     }
   };
 
@@ -154,17 +134,25 @@ const ProviderRegisterPage = () => {
         className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block" // Hidden on small screens, fixed on large
         aria-label="Return to Home"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
       </Link>
 
       {/* 1. Info Section */}
-      <div
-        className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0"
-      >
+      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0">
         <div className="max-w-xl mx-auto">
-
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
               <Briefcase className="w-10 h-10" />
@@ -173,29 +161,44 @@ const ProviderRegisterPage = () => {
 
           <div className="flex items-center gap-4 mb-8 justify-center md:justify-start lg:justify-center">
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">Join as a Service Provider</h2>
-              <p className="text-green-100 text-lg">Start your journey with Fidarek</p>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Join as a Service Provider
+              </h2>
+              <p className="text-green-100 text-lg">
+                Start your journey with Fidarek
+              </p>
             </div>
           </div>
 
           <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
-
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
               <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">Get More Customers</h3>
-              <p className="text-xs opacity-90">Reach thousands of potential clients looking for your services</p>
+              <h3 className="font-semibold text-base mb-1">
+                Get More Customers
+              </h3>
+              <p className="text-xs opacity-90">
+                Reach thousands of potential clients looking for your services
+              </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
               <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">Manage Your Business</h3>
-              <p className="text-sm opacity-90">Easy dashboard to handle bookings and track your earnings</p>
+              <h3 className="font-semibold text-base mb-1">
+                Manage Your Business
+              </h3>
+              <p className="text-sm opacity-90">
+                Easy dashboard to handle bookings and track your earnings
+              </p>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
               <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">Build Your Reputation</h3>
-              <p className="text-sm opacity-90">Earn reviews and ratings to grow your business</p>
+              <h3 className="font-semibold text-base mb-1">
+                Build Your Reputation
+              </h3>
+              <p className="text-sm opacity-90">
+                Earn reviews and ratings to grow your business
+              </p>
             </div>
           </div>
         </div>
@@ -206,15 +209,21 @@ const ProviderRegisterPage = () => {
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Create Provider Account</h1>
-              <p className="text-gray-600">Fill in your details to get started</p>
+              <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">
+                Create Provider Account
+              </h1>
+              <p className="text-gray-600">
+                Fill in your details to get started
+              </p>
             </div>
 
             {generalError && (
               <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800 font-semibold">{generalError}</p>
+                  <p className="text-sm text-red-800 font-semibold">
+                    {generalError}
+                  </p>
                 </div>
               </div>
             )}
@@ -224,9 +233,13 @@ const ProviderRegisterPage = () => {
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-semibold text-amber-900 mb-1">Account Approval Required</h4>
+                  <h4 className="font-semibold text-amber-900 mb-1">
+                    Account Approval Required
+                  </h4>
                   <p className="text-sm text-amber-800">
-                    After registration, your account will be reviewed by our admin team. You will not be able to login until your account is approved. We'll notify you via email once approved.
+                    After registration, your account will be reviewed by our
+                    admin team. You will not be able to login until your account
+                    is approved. We'll notify you via email once approved.
                   </p>
                 </div>
               </div>
@@ -235,21 +248,29 @@ const ProviderRegisterPage = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {/* Full Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Full Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <User className={`w-5 h-5 ${errors.name ? 'text-red-500' : 'text-gray-400'}`} />
+                    <User
+                      className={`w-5 h-5 ${
+                        errors.name ? "text-red-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
-                    {...register('name')}
+                    {...register("name")}
                     type="text"
                     id="name"
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.name
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${
+                      errors.name
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="John Doe"
                   />
                 </div>
@@ -263,21 +284,29 @@ const ProviderRegisterPage = () => {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className={`w-5 h-5 ${errors.email ? 'text-red-500' : 'text-gray-400'}`} />
+                    <Mail
+                      className={`w-5 h-5 ${
+                        errors.email ? "text-red-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
-                    {...register('email')}
+                    {...register("email")}
                     type="email"
                     id="email"
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.email
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${
+                      errors.email
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -291,21 +320,29 @@ const ProviderRegisterPage = () => {
 
               {/* Address */}
               <div>
-                <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Address
                 </label>
                 <div className="relative">
                   <div className="absolute top-3 left-0 pl-4 flex items-center pointer-events-none">
-                    <MapPin className={`w-5 h-5 ${errors.address ? 'text-red-500' : 'text-gray-400'}`} />
+                    <MapPin
+                      className={`w-5 h-5 ${
+                        errors.address ? "text-red-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <textarea
-                    {...register('address')}
+                    {...register("address")}
                     id="address"
                     rows="3"
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all resize-none ${errors.address
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all resize-none ${
+                      errors.address
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="Your complete address (street, city, postal code)"
                   />
                 </div>
@@ -319,21 +356,29 @@ const ProviderRegisterPage = () => {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Phone Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Phone className={`w-5 h-5 ${errors.phone ? 'text-red-500' : 'text-gray-400'}`} />
+                    <Phone
+                      className={`w-5 h-5 ${
+                        errors.phone ? "text-red-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
-                    {...register('phone')}
+                    {...register("phone")}
                     type="tel"
                     id="phone"
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.phone
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${
+                      errors.phone
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="+212 600 000 000"
                   />
                 </div>
@@ -347,21 +392,29 @@ const ProviderRegisterPage = () => {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Lock className={`w-5 h-5 ${errors.password ? 'text-red-500' : 'text-gray-400'}`} />
+                    <Lock
+                      className={`w-5 h-5 ${
+                        errors.password ? "text-red-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
-                    {...register('password')}
-                    type={showPassword ? 'text' : 'password'}
+                    {...register("password")}
+                    type={showPassword ? "text" : "password"}
                     id="password"
-                    className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.password
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${
+                      errors.password
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="••••••••"
                   />
                   <button
@@ -369,7 +422,11 @@ const ProviderRegisterPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
 
@@ -380,10 +437,14 @@ const ProviderRegisterPage = () => {
                       <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full transition-all duration-300 ${passwordStrength.color}`}
-                          style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
+                          style={{
+                            width: `${(passwordStrength.strength / 5) * 100}%`,
+                          }}
                         />
                       </div>
-                      <span className="text-xs font-semibold text-gray-600">{passwordStrength.label}</span>
+                      <span className="text-xs font-semibold text-gray-600">
+                        {passwordStrength.label}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -398,21 +459,31 @@ const ProviderRegisterPage = () => {
 
               {/* Confirm Password */}
               <div>
-                <label htmlFor="password_confirmation" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="password_confirmation"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Lock className={`w-5 h-5 ${errors.password_confirmation ? 'text-red-500' : 'text-gray-400'}`} />
+                    <Lock
+                      className={`w-5 h-5 ${
+                        errors.password_confirmation
+                          ? "text-red-500"
+                          : "text-gray-400"
+                      }`}
+                    />
                   </div>
                   <input
-                    {...register('password_confirmation')}
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    {...register("password_confirmation")}
+                    type={showConfirmPassword ? "text" : "password"}
                     id="password_confirmation"
-                    className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${errors.password_confirmation
-                      ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
-                      : 'border-gray-200 focus:border-[#2ECC71] focus:ring-green-100'
-                      }`}
+                    className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all ${
+                      errors.password_confirmation
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                        : "border-gray-200 focus:border-[#2ECC71] focus:ring-green-100"
+                    }`}
                     placeholder="••••••••"
                   />
                   <button
@@ -420,7 +491,11 @@ const ProviderRegisterPage = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
                 {errors.password_confirmation && (
@@ -434,27 +509,42 @@ const ProviderRegisterPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={status == 'loading'}
+                disabled={status == "loading"}
                 className="w-full bg-gradient-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-6"
               >
-                {status == 'loading' ? (
+                {status == "loading" ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Creating Account...
                   </span>
                 ) : (
-                  'Create Provider Account'
+                  "Create Provider Account"
                 )}
               </button>
 
               {/* Sign In Link */}
               <div className="text-center pt-4">
                 <p className="text-gray-600">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-[#2ECC71] hover:text-[#27AE60] font-bold">
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
+                    className="text-[#2ECC71] hover:text-[#27AE60] font-bold"
+                  >
                     Sign In
                   </Link>
                 </p>

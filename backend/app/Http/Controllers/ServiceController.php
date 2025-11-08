@@ -17,7 +17,7 @@ class ServiceController extends Controller
 
     public function index(Request $request)
     {
-        $user = Auth::guard('sanctum')->user(); 
+        $user = Auth::guard('sanctum')->user();
 
         // Log::info('User from guard:', ['user' => $user]);
 
@@ -31,8 +31,10 @@ class ServiceController extends Controller
             $query->where('status', 'approved');
         }
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        if ($request->filled('category_name')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('name', $request->category_name);
+            });
         }
 
         if ($request->filled('provider_name')) {
@@ -49,7 +51,7 @@ class ServiceController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $services = $query->get();
+        $services = $query->paginate(10);
 
         return response()->json([
             'message' => 'Services Fetched Successfully',

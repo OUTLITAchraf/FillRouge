@@ -23,16 +23,16 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../features/ServiceSlice";
 
-const categoryIcons = { 
-  cleaning: Sparkles ,
-  plumbing: Droplet ,
-  electricity: Zap ,
-  painting: PaintBucket ,
-  carpentry: Hammer ,
-  gardening: Leaf ,
-  moving: Truck ,
-  appliance_repair: Wrench ,
-  babysitting: Baby ,
+const categoryIcons = {
+  cleaning: Sparkles,
+  plumbing: Droplet,
+  electricity: Zap,
+  painting: PaintBucket,
+  carpentry: Hammer,
+  gardening: Leaf,
+  moving: Truck,
+  appliance_repair: Wrench,
+  babysitting: Baby,
   tutoring: GraduationCap,
   default: Shapes,
 };
@@ -41,7 +41,9 @@ function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { categories } = useSelector((state) => state.services);
+  const { categories, fetchCategoriesStatus } = useSelector(
+    (state) => state.services
+  );
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -54,8 +56,8 @@ function HomePage() {
     }
   };
 
-  const handleCategoryClick = (categoryId) => {
-    navigate(`/services?category_id=${categoryId}`);
+  const handleCategoryClick = (categoryName) => {
+    navigate(`/services?category_name=${categoryName}`);
   };
 
   return (
@@ -130,26 +132,33 @@ function HomePage() {
               of trusted local services
             </p>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {categories?.map((category) => {
-              const Icon= categoryIcons[category.name.toLowerCase()] || categoryIcons.default;
-              return (
-                <div
-                  key={category.name}
-                  onClick={() => handleCategoryClick(category.id)}
-                  className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group"
-                >
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Icon className="w-8 h-8 text-[#2ECC71]" />
+          {fetchCategoriesStatus == "loading" ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {categories?.map((category) => {
+                const Icon =
+                  categoryIcons[category.name.toLowerCase()] ||
+                  categoryIcons.default;
+                return (
+                  <div
+                    key={category.name}
+                    onClick={() => handleCategoryClick(category.name)}
+                    className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group"
+                  >
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Icon className="w-8 h-8 text-[#2ECC71]" />
+                    </div>
+                    <h3 className="font-bold text-[#2C3E50] mb-1">
+                      {category.display_name}
+                    </h3>
                   </div>
-                  <h3 className="font-bold text-[#2C3E50] mb-1">
-                    {category.display_name}
-                  </h3>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 

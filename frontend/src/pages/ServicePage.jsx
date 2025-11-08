@@ -31,30 +31,44 @@ const categoryIcons = {
   tutoring: GraduationCap,
 };
 
-const ServicesPage = () => {
+function ServicesPage () {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { categories } = useSelector((state) => state.services);
   const { data, status } = useSelector((state) => state.services.services);
-  const dispatch = useDispatch();    
+  const dispatch = useDispatch();
 
   const providerName = searchParams.get("provider_name");
-  const categoryId = searchParams.get("category_id");
+  const categoryName = searchParams.get("category_name");
 
   // Fetch services (replace with your API call)
   useEffect(() => {
     const filters = {};
 
     if (providerName) filters.provider_name = providerName;
-    if (categoryId) filters.category_id = categoryId;
+    if (categoryName) filters.category_name = categoryName;
+
+    filters.page = currentPage;
+
+    if (searchParams.size == 0) {
+      setSearchParams({ page: currentPage });
+    }
 
     dispatch(fetchServices(filters));
-  }, [dispatch, providerName, categoryId]);
+  }, [
+    dispatch,
+    providerName,
+    categoryName,
+    currentPage,
+    searchParams,
+    setSearchParams,
+  ]);
 
   const handleSearch = (e) => {
     const filters = {};
@@ -71,7 +85,7 @@ const ServicesPage = () => {
   const handleFilter = () => {
     const filters = {};
 
-    if (selectedCategory) filters.category_id = selectedCategory;
+    if (selectedCategory) filters.category_name = selectedCategory;
     if (minPrice) filters.min_price = minPrice;
     if (maxPrice) filters.max_price = maxPrice;
 
@@ -145,8 +159,8 @@ const ServicesPage = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#2ECC71] focus:outline-none"
                 >
                   <option value="">All Categories</option>
-                  {categories.map((cat) => (
-                    <option key={cat.name} value={cat.id}>
+                  {categories?.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
                       {cat.display_name}
                     </option>
                   ))}
@@ -205,7 +219,7 @@ const ServicesPage = () => {
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
         </div>
-      ) : data?.length === 0 ? (
+      ) : data?.data?.length === 0 ? (
         <div className="text-center py-20">
           <div className="text-6xl mb-4">🔍</div>
           <h3 className="text-2xl font-bold text-gray-700 mb-2">
@@ -218,7 +232,7 @@ const ServicesPage = () => {
       ) : (
         <>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-            {data?.map((service) => {
+            {data?.data?.map((service) => {
               const CategoryIcon =
                 categoryIcons[service.category.name] || Wrench;
 
@@ -281,43 +295,50 @@ const ServicesPage = () => {
           </div>
 
           {/* Pagination */}
-          {/* {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Previous
-                </button>
+          {data.data && data.last_page > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-6">
+              <button
+                onClick={() => {
+                  const newPage = Math.max(currentPage - 1, 1);
+                  setCurrentPage(newPage);
+                  setSearchParams({ page: newPage }); // 👈 update URL
+                }}
+                disabled={currentPage === 1}
+                className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
 
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index + 1}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
-                      currentPage === index + 1
-                        ? "bg-[#2ECC71] text-white"
-                        : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-
+              {Array.from({ length: data.last_page }, (_, index) => (
                 <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  key={index + 1}
+                  onClick={() => {
+                    setCurrentPage(index + 1);
+                    setSearchParams({ page: index + 1 }); // 👈 update URL
+                  }}
+                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
+                    currentPage === index + 1
+                      ? "bg-[#2ECC71] text-white"
+                      : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
+                  }`}
                 >
-                  Next
+                  {index + 1}
                 </button>
-              </div>
-            )} */}
+              ))}
+
+              <button
+                onClick={() => {
+                  const newPage = Math.min(currentPage + 1, data.last_page);
+                  setCurrentPage(newPage);
+                  setSearchParams({ page: newPage }); // 👈 update URL
+                }}
+                disabled={currentPage === data.last_page}
+                className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

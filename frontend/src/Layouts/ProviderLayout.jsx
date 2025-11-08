@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Home, Calendar, Star, LogOut, Menu, X } from "lucide-react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { userLogout } from "../features/AuthSlice";
 
 // Provider Layout Component
 export default function ProviderLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const menuItems = [
     {
@@ -19,11 +24,25 @@ export default function ProviderLayout() {
       icon: Calendar,
       path: "/provider/dashboard/reservations",
     },
-    { id: "reviews", label: "Reviews", icon: Star, path: "/provider/dashboard/reviews" },
+    {
+      id: "reviews",
+      label: "Reviews",
+      icon: Star,
+      path: "/provider/dashboard/reviews",
+    },
   ];
 
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
-    <div className="flex h-screen" style={{ backgroundColor: "#ECF0F1" }}>
+    <div className="flex h-screen " style={{ backgroundColor: "#ECF0F1" }}>
       {/* Sidebar */}
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${
@@ -71,7 +90,13 @@ export default function ProviderLayout() {
             </div>
 
             {/* Logout */}
-            <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-[#E67E22] hover:bg-[#E67E22]/10 transition-colors">
+            <button
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-[#E67E22] hover:bg-[#E67E22]/10 transition-colors"
+              onClick={() => {
+                dispatch(userLogout());
+                navigate("/login");
+              }}
+            >
               <LogOut size={20} />
               <span className="font-medium">Logout</span>
             </button>
@@ -106,13 +131,13 @@ export default function ProviderLayout() {
               className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
               style={{ backgroundColor: "#2ECC71" }}
             >
-              JS
+              {getInitials(user.name)}
             </div>
           </div>
         </header>
 
         {/* Outlet - Content will be rendered here */}
-        <div className="p-4 lg:p-8">
+        <div className="p-4">
           <Outlet />
         </div>
       </main>

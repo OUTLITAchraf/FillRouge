@@ -37,6 +37,15 @@ export const userLogin = createAsyncThunk(
       let response = await api.post("/login", data);
       console.log("Reseponse :", response);
 
+      Cookies.set("authToken", response.data.token, {
+        expires: 7,
+        sameSite: "strict",
+      });
+      Cookies.set("authUser", JSON.stringify(response.data.user), {
+        expires: 7,
+        sameSite: "strict",
+      });
+
       return response.data;
     } catch (error) {
       console.log("Error :", error);
@@ -118,7 +127,6 @@ const AuthSlice = createSlice({
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.userLogin.status = "failde";
-        Cookies.remove("authToken");
 
         console.log("Login Rejected:", action);
       });

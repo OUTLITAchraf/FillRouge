@@ -8,17 +8,22 @@ use App\Models\Category;
 use App\Models\Service;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ServiceController extends Controller
 {
 
     public function index(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::guard('sanctum')->user(); 
+
+        // Log::info('User from guard:', ['user' => $user]);
+
         $this->authorize('viewAny', Service::class);
 
-        $query = Service::query()->with(['provider', 'category']);
+        $query = Service::query()->with(['provider', 'category', 'reservations', 'reviews.user']);
 
         if ($user?->hasRole('provider')) {
             $query->where('provider_id', $user->id);

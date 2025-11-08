@@ -53,7 +53,7 @@ class User extends Authenticatable implements LaratrustUser
         'password' => 'hashed',
     ];
 
-        protected static function booted()
+    protected static function booted()
     {
         static::deleting(function ($user) {
             $user->tokens()->delete();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Calendar, Star, User, Mail, Phone, MapPin } from "lucide-react";
+import { Calendar, Star, User, Mail, Phone, MapPin, Edit, Save, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -100,8 +100,9 @@ export default function ProviderDasboardPage() {
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-4 py-2 text-white bg-[#E67E22] hover:bg-[#D35400] rounded-lg transition-colors"
+                  className="flex flex-row gap-2 px-2 py-2 text-white items-center bg-[#E67E22] hover:bg-[#D35400] rounded-lg transition-colors cursor-pointer"
                 >
+                  <Edit className="w-5 h-5" />
                   Edit Profile
                 </button>
               )}
@@ -173,15 +174,17 @@ export default function ProviderDasboardPage() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <button
                     type="submit"
-                    className="flex-1 px-6 py-3 text-white bg-[#2ECC71] hover:bg-[#27AE60] rounded-lg transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white bg-[#2ECC71] hover:bg-[#27AE60] rounded-lg transition-colors font-medium"
                   >
+                    <Save className="w-5 h-5" /> {/* Save icon */}
                     Save Changes
                   </button>
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="flex-1 px-6 py-3 bg-[#ECF0F1] hover:bg-[#BDC3C7] text-[#2C3E50] rounded-lg transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#ECF0F1] hover:bg-[#BDC3C7] text-[#2C3E50] rounded-lg transition-colors font-medium"
                   >
+                    <X className="w-5 h-5" /> {/* Cancel icon */}
                     Cancel
                   </button>
                 </div>
@@ -215,7 +218,7 @@ export default function ProviderDasboardPage() {
 
 const ProfileField = ({ icon, label, value }) => (
   <div className="flex items-start space-x-4">
-    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#2ECC711A]">
+    <div className="w-13 h-13 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#2ECC711A]">
       {icon}
     </div>
     <div className="flex-1">

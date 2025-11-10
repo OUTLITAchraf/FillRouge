@@ -1,48 +1,50 @@
 import React, { useState } from "react";
-import { Home, Calendar, Star, LogOut, Menu, X } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Home, Calendar, Star, LogOut, Menu, X, Users, Layers, Briefcase } from "lucide-react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
 
-// Provider Layout Component
-export default function ProviderLayout() {
+export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const role = user?.roles?.[0]?.name;
 
-  const menuItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: Home,
-      path: "/provider/dashboard",
-    },
-    {
-      id: "reservations",
-      label: "Reservations",
-      icon: Calendar,
-      path: "/provider/dashboard/reservations",
-    },
-    {
-      id: "reviews",
-      label: "Reviews",
-      icon: Star,
-      path: "/provider/dashboard/reviews",
-    },
-  ];
+  // 🔹 Define menu items based on role
+  const menuItems =
+    role === "admin"
+      ? [
+          { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
+          { label: "Users", icon: Users, path: "/admin/users" },
+          { label: "Categories", icon: Layers, path: "/admin/categories" },
+          { label: "Services", icon: Briefcase, path: "/admin/services" },
+          { label: "Reviews", icon: Star, path: "/admin/reviews" },
+        ]
+      : [
+          { label: "Dashboard", icon: Home, path: "/provider/dashboard" },
+          { label: "Service", icon: Briefcase, path: "/provider/service" },
+          { label: "Reservations", icon: Calendar, path: "/provider/reservations" },
+          { label: "Reviews", icon: Star, path: "/provider/reviews" },
+        ];
 
-  const getInitials = (name) => {
-    return name
-      .split(" ")
+  const linkClasses = ({ isActive }) =>
+    `w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium ${
+      isActive
+        ? "bg-[#2ECC71] text-white"
+        : "text-gray-300 hover:bg-gray-700"
+    }`;
+
+  const getInitials = (name) =>
+    name
+      ?.split(" ")
       .map((word) => word[0])
       .join("")
       .toUpperCase()
       .slice(0, 2);
-  };
 
   return (
-    <div className="flex h-screen " style={{ backgroundColor: "#ECF0F1" }}>
+    <div className="flex h-screen" style={{ backgroundColor: "#ECF0F1" }}>
       {/* Sidebar */}
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${
@@ -51,9 +53,11 @@ export default function ProviderLayout() {
         style={{ backgroundColor: "#2C3E50" }}
       >
         <div className="flex flex-col h-full">
-          {/* Logo/Header */}
+          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-600">
-            <h1 className="text-xl font-bold text-white">Provider Panel</h1>
+            <h1 className="text-xl font-bold text-white capitalize">
+              {role} Panel
+            </h1>
             <button
               onClick={() => setIsSidebarOpen(false)}
               className="lg:hidden text-gray-300 hover:text-white"
@@ -62,29 +66,20 @@ export default function ProviderLayout() {
             </button>
           </div>
 
-          {/* Navigation */}
+          {/* Nav Links */}
           <nav className="flex-1 p-4 space-y-2">
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = window.location.pathname === item.path;
+            {menuItems.map(({ label, icon: Icon, path }) => (
+              <NavLink
+                key={path}
+                to={path}
+                onClick={() => setIsSidebarOpen(false)}
+                className={linkClasses}
+              >
+                <Icon size={20} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
 
-              return (
-                <a
-                  key={item.id}
-                  href={item.path}
-                  onClick={() => setIsSidebarOpen(false)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive ? "text-white" : "text-gray-300 hover:bg-gray-700"
-                  }`}
-                  style={isActive ? { backgroundColor: "#2ECC71" } : {}}
-                >
-                  <Icon size={20} />
-                  <span className="font-medium">{item.label}</span>
-                </a>
-              );
-            })}
-
-            {/* Divider */}
             <div className="pt-4">
               <hr className="border-gray-600" />
             </div>
@@ -104,7 +99,7 @@ export default function ProviderLayout() {
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
+      {/* Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -112,9 +107,8 @@ export default function ProviderLayout() {
         />
       )}
 
-      {/* Main Content */}
+      {/* Main content */}
       <main className="flex-1 overflow-y-auto">
-        {/* Header */}
         <header className="bg-white shadow-sm sticky top-0 z-30">
           <div className="flex items-center justify-between p-4 lg:px-8">
             <button
@@ -125,7 +119,7 @@ export default function ProviderLayout() {
               <Menu size={24} />
             </button>
             <h2 className="text-2xl font-bold" style={{ color: "#2C3E50" }}>
-              Provider Dashboard
+              {role} Dashboard
             </h2>
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
@@ -136,7 +130,6 @@ export default function ProviderLayout() {
           </div>
         </header>
 
-        {/* Outlet - Content will be rendered here */}
         <div className="p-4">
           <Outlet />
         </div>

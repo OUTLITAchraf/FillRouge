@@ -47,7 +47,6 @@ function ServicesPage () {
   const providerName = searchParams.get("provider_name");
   const categoryName = searchParams.get("category_name");
 
-  // Fetch services (replace with your API call)
   useEffect(() => {
     const filters = {};
 
@@ -199,7 +198,7 @@ function ServicesPage () {
             <div className="flex justify-end gap-4 mt-4">
               <button
                 onClick={resetFilters}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-semibold"
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-semibold border-1 border-gray-600 rounded-lg"
               >
                 Reset Filters
               </button>
@@ -301,7 +300,7 @@ function ServicesPage () {
                 onClick={() => {
                   const newPage = Math.max(currentPage - 1, 1);
                   setCurrentPage(newPage);
-                  setSearchParams({ page: newPage }); // 👈 update URL
+                  setSearchParams({ page: newPage }); 
                 }}
                 disabled={currentPage === 1}
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -314,7 +313,7 @@ function ServicesPage () {
                   key={index + 1}
                   onClick={() => {
                     setCurrentPage(index + 1);
-                    setSearchParams({ page: index + 1 }); // 👈 update URL
+                    setSearchParams({ page: index + 1 }); 
                   }}
                   className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
                     currentPage === index + 1
@@ -330,7 +329,7 @@ function ServicesPage () {
                 onClick={() => {
                   const newPage = Math.min(currentPage + 1, data.last_page);
                   setCurrentPage(newPage);
-                  setSearchParams({ page: newPage }); // 👈 update URL
+                  setSearchParams({ page: newPage }); 
                 }}
                 disabled={currentPage === data.last_page}
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"

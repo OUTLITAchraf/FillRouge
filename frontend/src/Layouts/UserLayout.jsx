@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { ChevronDown, Calendar, LogOut } from "lucide-react";
 import { Link, Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,10 +7,9 @@ import { userLogout } from "../features/AuthSlice";
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);  
+  const { user } = useSelector((state) => state.auth);
 
-  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);  
-
+  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
 
   const getInitials = (name) => {
     return name
@@ -39,22 +38,16 @@ function UserLayout() {
             {/* Navigation Links */}
             <div className="hidden md:flex items-center gap-8">
               <Link
+                to="/"
+                className="text-gray-700 hover:text-[#2ECC71] font-semibold transition-colors"
+              >
+                Home
+              </Link>
+              <Link
                 to="/services"
                 className="text-gray-700 hover:text-[#2ECC71] font-semibold transition-colors"
               >
                 Services
-              </Link>
-              <Link
-                to="/how-it-works"
-                className="text-gray-700 hover:text-[#2ECC71] font-semibold transition-colors"
-              >
-                How It Works
-              </Link>
-              <Link
-                to="/about"
-                className="text-gray-700 hover:text-[#2ECC71] font-semibold transition-colors"
-              >
-                About Us
               </Link>
               <Link
                 to="/faq"
@@ -94,9 +87,7 @@ function UserLayout() {
                       className="fixed inset-0 z-10"
                       onClick={() => setShowUserMenu(false)}
                     ></div>
-                    <div
-                      className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20"
-                    >
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
                       <Link
                         to="/user/reservation"
                         className="flex items-center gap-3 px-4 py-3 bg-green-50 text-[#2ECC71] transition-colors"
@@ -141,7 +132,7 @@ function UserLayout() {
       </header>
 
       <main>
-        <Outlet user={user}/>
+        <Outlet user={user} />
       </main>
 
       {/* Footer */}
@@ -168,6 +159,14 @@ function UserLayout() {
               <ul className="space-y-2">
                 <li>
                   <Link
+                    to="/"
+                    className="text-gray-400 hover:text-[#2ECC71] transition-colors text-sm"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/services"
                     className="text-gray-400 hover:text-[#2ECC71] transition-colors text-sm"
                   >
@@ -180,14 +179,6 @@ function UserLayout() {
                     className="text-gray-400 hover:text-[#2ECC71] transition-colors text-sm"
                   >
                     For Providers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/blog"
-                    className="text-gray-400 hover:text-[#2ECC71] transition-colors text-sm"
-                  >
-                    Blog & Tips
                   </Link>
                 </li>
                 <li>

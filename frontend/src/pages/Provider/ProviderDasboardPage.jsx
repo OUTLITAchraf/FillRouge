@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Calendar, Star, User, Mail, Phone, MapPin, Edit, Save, X } from "lucide-react";
+import {
+  Calendar,
+  Star,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Edit,
+  Save,
+  X,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -75,12 +85,10 @@ export default function ProviderDasboardPage() {
   };
 
   const calculateAverageRating = () => {
-    if (data[0]?.reviews?.length === 0) return 0;
-    const sum = data[0]?.reviews?.reduce(
-      (acc, review) => acc + review.rating,
-      0
-    );
-    return (sum / data[0]?.reviews?.length).toFixed(1);
+    const reviews = data?.data?.[0]?.reviews;
+    if (!reviews || reviews?.length === 0) return 0;
+    const sum = reviews?.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews?.length).toFixed(1);
   };
 
   return (
@@ -197,12 +205,12 @@ export default function ProviderDasboardPage() {
             <StatCard
               icon={<Calendar color="#2ECC71" size={32} />}
               label="Total Reservations"
-              value={data[0]?.reservations?.length}
+              value={data?.data?.[0]?.reservations?.length}
             />
             <StatCard
               icon={<Star color="#E67E22" size={32} />}
               label="Total Reviews"
-              value={data[0]?.reviews?.length}
+              value={data?.data?.[0]?.reviews?.length}
             />
             <StatCard
               icon={<Star color="#E67E22" fill="#E67E22" size={32} />}
@@ -250,7 +258,9 @@ const StatCard = ({ icon, label, value }) => (
   <div className="bg-white rounded-lg shadow-md p-6 flex items-center justify-between">
     <div>
       <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-3xl font-bold mt-1 text-[#2C3E50]">{value}</p>
+      <p className="text-3xl font-bold mt-1 text-[#2C3E50]">
+        {value ? value : 0}
+      </p>
     </div>
     {icon}
   </div>

@@ -146,7 +146,7 @@ function HomePage() {
                   <div
                     key={category.name}
                     onClick={() => handleCategoryClick(category.name)}
-                    className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group"
+                    className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group cursor-pointer"
                   >
                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Icon className="w-8 h-8 text-[#2ECC71]" />

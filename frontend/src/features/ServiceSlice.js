@@ -42,6 +42,27 @@ export const fetchService = createAsyncThunk(
     }
   }
 );
+
+export const addReview = createAsyncThunk(
+  "service/addReview",
+  async ({rating, comment, service_id}, { rejectWithValue }) => {
+    try {
+      // console.log(rating, comment, service_id);
+      
+      let response = api.post(`/service/${service_id}/add-review`,{
+        rating: rating,
+        comment: comment
+      });
+      console.log('Response :', response);
+      
+
+    } catch (error){
+      console.log('Error :',error);
+      
+    }
+  }
+)
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
@@ -55,6 +76,7 @@ const ServiceSlice = createSlice({
       data: {},
       status: "idle",
     },
+    addReviewStatus: "idle"
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -109,6 +131,23 @@ const ServiceSlice = createSlice({
         state.service.status = "failed";
         console.log("Fetch Service Rejected :", action);
       });
+
+    builder
+      .addCase(addReview.pending, (state, action) => {
+        state.addReviewStatus = 'pending'
+
+        console.log("Add Review Pending :",action);
+      })
+      .addCase(addReview.fulfilled, (state, action) => {
+        state.addReviewStatus = 'success'
+
+        console.log("Add Review Fulfilled :",action);
+      })
+      .addCase(addReview.rejected, (state, action) => {
+        state.addReviewStatus = 'failed'
+
+        console.log("Add Review Rejected :",action);
+      })
   },
 });
 

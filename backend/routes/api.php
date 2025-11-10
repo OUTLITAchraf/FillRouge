@@ -64,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
-    Route::post('/service/{service}/review', [ReviewController::class, 'store']);
+    Route::post('/service/{service}/add-review', [ReviewController::class, 'store']);
     Route::put('/update-review/{review}', [ReviewController::class, 'update']);
 });
 

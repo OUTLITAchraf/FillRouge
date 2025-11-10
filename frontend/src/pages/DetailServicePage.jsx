@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchService } from "../features/ServiceSlice";
+import { addReview, fetchService } from "../features/ServiceSlice";
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
@@ -24,8 +24,6 @@ export default function ServiceDetailPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [editingReview, setEditingReview] = useState(null);
-
-  console.log(data);
 
   useEffect(() => {
     dispatch(fetchService(id));
@@ -47,14 +45,11 @@ export default function ServiceDetailPage() {
         setEditingReview(null);
       } else {
         const newReview = {
-          id: Date.now(),
-          user: "You",
           rating,
           comment: reviewText,
-          date: new Date().toISOString().split("T")[0],
-          isMyReview: true,
+          service_id: data.id
         };
-        setReviews([...reviews, newReview]);
+        dispatch(addReview(newReview))
       }
       setRating(0);
       setReviewText("");

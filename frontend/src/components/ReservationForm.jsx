@@ -21,7 +21,7 @@ const reservationSchema = yup.object().shape({
     .required("Description is required"),
 });
 
-const ReservationForm = ({ onClose }) => {
+const ReservationForm = ({ onClose, onSuccess }) => {
   const { id } = useParams();
 
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ const ReservationForm = ({ onClose }) => {
 
       toast.success("Your Reservation Submited Successfully!");
       reset();
-      onClose(); // close modal
+      onSuccess?.() // close modal
     } catch (error) {
       console.log("Error from model reservation :", error);
       // toast.error()

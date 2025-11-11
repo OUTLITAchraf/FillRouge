@@ -37,7 +37,9 @@ class ServicePolicy
      */
     public function create(User $user)
     {
-        //
+        if ($user->hasRole('provider')) {
+            return true;
+        }
     }
 
     /**

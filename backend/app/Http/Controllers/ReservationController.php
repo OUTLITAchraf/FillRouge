@@ -17,10 +17,11 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $provider = $request->user();
 
-        $reservations = Reservation::where('service_id',$provider->service_id)->get();
+        $reservations = Reservation::where('service_id', $provider->service_id)->get();
 
         return response()->json([
             'message' => 'Reservation Fetched Successfully',
@@ -28,10 +29,11 @@ class ReservationController extends Controller
             'provider' => $provider
         ], 201);
     }
-    public function store(Request $request,Service $service)
+
+
+    public function store(Request $request, Service $service)
     {
-        logger('Request Data', $request->all());
-        if($service->status === 'pending' || $service->status === 'rejected'){
+        if ($service->status === 'pending' || $service->status === 'rejected') {
             return response()->json([
                 'message' => 'This service not avaible for reservation'
             ], 403);
@@ -67,23 +69,25 @@ class ReservationController extends Controller
         ], 201);
     }
 
-    public function updateStatus(Request $request,Reservation $reservation){
-        $this->authorize('updateStatus',$reservation);
+
+    public function updateStatus(Request $request, Reservation $reservation)
+    {
+        $this->authorize('updateStatus', $reservation);
 
         $validated = $request->validate([
             'status' => 'required|in:accepted,refused,completed,cancelled'
         ]);
 
         $reservation->update($validated);
-        $reservation->load('service','client');
+        $reservation->load('service', 'client');
 
         $client = $reservation->client;
 
-        if($reservation->status == 'accepted'){
+        if ($reservation->status == 'accepted') {
             event(new ReservationAccepted($reservation));
-        } elseif ($reservation->status == 'refused'){
+        } elseif ($reservation->status == 'refused') {
             event(new ReservationRefused($reservation));
-        } elseif ($reservation->status == 'completed'){
+        } elseif ($reservation->status == 'completed') {
             event(new ReservationCompleted($reservation));
         } else {
             event(new ReservationCancelled($reservation));

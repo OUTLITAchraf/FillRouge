@@ -34,11 +34,20 @@ export default function ServiceDetailPage() {
     open: false,
     reviewId: null,
   });
-  const [reservitionModel, setReservationModel] = useState(false);  
+  const [reservitionModel, setReservationModel] = useState(false);
+  const [isReserved, setIsReserved] = useState(false);
 
   useEffect(() => {
     dispatch(fetchService(id));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (data?.hasReserved) {
+      setIsReserved(true);
+    } else {
+      setIsReserved(false);
+    }
+  }, [data]);
 
   const handleSubmitReview = async () => {
     if (rating > 0 && reviewText.trim()) {
@@ -239,17 +248,24 @@ export default function ServiceDetailPage() {
 
               {/* Reserve Button */}
               <button
-                className="w-full py-3 px-6 rounded-lg text-white font-semibold text-lg flex items-center justify-center gap-2 bg-[#E67E22] hover:bg-[#D35400] transition-colors"
+                className={`w-full py-3 px-6 rounded-lg text-white font-semibold text-lg flex items-center justify-center gap-2 transition-colors ${
+                  isReserved
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-[#E67E22] hover:bg-[#D35400]"
+                }`}
                 onClick={() => setReservationModel(true)}
               >
                 <Calendar size={20} />
-                Reserve Service
+                {isReserved ? "Reserved" : "Reserve Service"}
               </button>
             </div>
           </div>
         </div>
         {reservitionModel && (
-          <ReservationForm onClose={() => setReservationModel(false)} />
+          <ReservationForm onClose={() => setReservationModel(false)} onSuccess={()=> {
+            setReservationModel(false);
+            dispatch(fetchService(id));
+          }}/>
         )}
 
         {/* Reviews Section */}

@@ -19,11 +19,13 @@ import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import ProviderServicePage from "./pages/Provider/ProviderServicePage";
 import FAQPage from "./pages/FAQPage";
 import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
 
 function App() {
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      {/* <ToastContainer position="top-right" autoClose={3000}/> */}
+      <Toaster richColors position="top-right"/>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

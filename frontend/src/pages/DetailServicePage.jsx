@@ -20,6 +20,7 @@ import {
   updateReview,
 } from "../features/ServiceSlice";
 import { toast } from "react-toastify";
+import ReservationForm from "../components/ReservationForm";
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
@@ -33,6 +34,7 @@ export default function ServiceDetailPage() {
     open: false,
     reviewId: null,
   });
+  const [reservitionModel, setReservationModel] = useState(false);  
 
   useEffect(() => {
     dispatch(fetchService(id));
@@ -236,13 +238,19 @@ export default function ServiceDetailPage() {
               </div>
 
               {/* Reserve Button */}
-              <button className="w-full py-3 px-6 rounded-lg text-white font-semibold text-lg flex items-center justify-center gap-2 bg-[#E67E22] hover:bg-[#D35400] transition-colors">
+              <button
+                className="w-full py-3 px-6 rounded-lg text-white font-semibold text-lg flex items-center justify-center gap-2 bg-[#E67E22] hover:bg-[#D35400] transition-colors"
+                onClick={() => setReservationModel(true)}
+              >
                 <Calendar size={20} />
                 Reserve Service
               </button>
             </div>
           </div>
         </div>
+        {reservitionModel && (
+          <ReservationForm onClose={() => setReservationModel(false)} />
+        )}
 
         {/* Reviews Section */}
         <div className="space-y-10">

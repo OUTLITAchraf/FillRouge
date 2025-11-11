@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->enum('status',['pending','accepte','refuse','completed','cancelled'])->default('pending');
-            $table->dateTime('date');
+            $table->dateTime('reservation_date');
             $table->text('description');
             $table->foreignId('client_id')->contrained('users')->onDelete('cascade');
             $table->foreignId('service_id')->contrained()->onDelete('cascade');

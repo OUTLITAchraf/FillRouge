@@ -24,7 +24,7 @@ class ReservationSeeder extends Seeder
         foreach (range(1, 50) as $i) {
             Reservation::create([
                 'status' => fake()->randomElement(['pending', 'accepte', 'refuse', 'completed', 'cancelled']),
-                'date' => fake()->dateTimeBetween('-1 month', '+2 months')->format('Y-m-d H:i:s'),
+                'reservation_date' => fake()->dateTimeBetween('-1 month', '+2 months')->format('Y-m-d H:i:s'),
                 'description' => fake()->sentence(6),
                 'client_id' => $clients->random(),
                 'service_id' => $services->random(),

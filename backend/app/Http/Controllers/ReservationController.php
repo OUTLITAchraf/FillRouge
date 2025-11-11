@@ -30,6 +30,7 @@ class ReservationController extends Controller
     }
     public function store(Request $request,Service $service)
     {
+        logger('Request Data', $request->all());
         if($service->status === 'pending' || $service->status === 'rejected'){
             return response()->json([
                 'message' => 'This service not avaible for reservation'
@@ -37,7 +38,8 @@ class ReservationController extends Controller
         }
 
         $request->validate([
-            'date' => 'required|date'
+            'reservation_date' => 'required|date',
+            'description' => 'required|string|max:255'
         ]);
 
         $user = $request->user();
@@ -53,7 +55,8 @@ class ReservationController extends Controller
         }
 
         $reservation = Reservation::create([
-            'date' => $request->date,
+            'reservation_date' => $request->reservation_date,
+            'description' => $request->description,
             'client_id' => $user->id,
             'service_id' => $service->id
         ]);

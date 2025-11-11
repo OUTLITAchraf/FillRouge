@@ -79,6 +79,25 @@ export const deleteReview = createAsyncThunk(
   }
 );
 
+export const reserverService = createAsyncThunk(
+  "service/reserverService",
+  async (
+    { description, reservation_date, service_id },
+    { rejectWithValue }
+  ) => {
+    try {
+      let response = await api.post(`/service/${service_id}/reserve`, {
+        description,
+        reservation_date,
+      });
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
@@ -92,6 +111,7 @@ const ServiceSlice = createSlice({
       data: {},
       status: "idle",
     },
+    isReserved: false,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -145,6 +165,20 @@ const ServiceSlice = createSlice({
       .addCase(fetchService.rejected, (state, action) => {
         state.service.status = "failed";
         console.log("Fetch Service Rejected :", action);
+      });
+
+    builder
+      .addCase(reserverService.pending, (state) => {
+        state.isReserved = false;
+        console.log("Reservation Pending.");
+      })
+      .addCase(reserverService.fulfilled, (state) => {
+        state.isReserved = true;
+        console.log("Reservation Fulfilled.");
+      })
+      .addCase(reserverService.rejected, (state) => {
+        state.isReserved = false;
+        console.log("Reservation Rejected.");
       });
   },
 });

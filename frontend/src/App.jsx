@@ -18,10 +18,12 @@ import AdminReviewsPage from "./pages/Admin/AdminReviewsPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import ProviderServicePage from "./pages/Provider/ProviderServicePage";
 import FAQPage from "./pages/FAQPage";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />

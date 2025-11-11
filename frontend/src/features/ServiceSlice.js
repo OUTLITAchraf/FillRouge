@@ -10,6 +10,7 @@ export const fetchCategories = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("Error :", error);
+      return rejectWithValue(error);
     }
   }
 );
@@ -25,6 +26,7 @@ export const fetchServices = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("Error :", error);
+      return rejectWithValue(error);
     }
   }
 );
@@ -39,29 +41,43 @@ export const fetchService = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("Error :", error);
+      return rejectWithValue(error);
     }
   }
 );
 
 export const addReview = createAsyncThunk(
   "service/addReview",
-  async ({rating, comment, service_id}, { rejectWithValue }) => {
-    try {
-      // console.log(rating, comment, service_id);
-      
-      let response = api.post(`/service/${service_id}/add-review`,{
-        rating: rating,
-        comment: comment
-      });
-      console.log('Response :', response);
-      
+  async ({ rating, comment, service_id }) => {
+    // console.log(rating, comment, service_id);
 
-    } catch (error){
-      console.log('Error :',error);
-      
-    }
+    let response = await api.post(`/service/${service_id}/add-review`, {
+      rating,
+      comment,
+    });
+    console.log("Response :", response);
+    return response.data;
   }
-)
+);
+
+export const updateReview = createAsyncThunk(
+  "service/updateReview",
+  async (review) => {
+    let response = await api.put(`/update-review/${review.id}`, review);
+    console.log("Response :", response);
+    return response.data;
+  }
+);
+
+export const deleteReview = createAsyncThunk(
+  "service/deleteReview",
+  async (id) => {
+    let response = await api.delete(`/delete-review/${id}`);
+
+    console.log("Response :", response);
+    return response.data;
+  }
+);
 
 const ServiceSlice = createSlice({
   name: "services",
@@ -76,7 +92,6 @@ const ServiceSlice = createSlice({
       data: {},
       status: "idle",
     },
-    addReviewStatus: "idle"
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -115,7 +130,7 @@ const ServiceSlice = createSlice({
         state.services.status = "failed";
         console.log("Fetch Services Rejected :", action);
       });
-    
+
     builder
       .addCase(fetchService.pending, (state, action) => {
         state.service.status = "loading";
@@ -131,23 +146,6 @@ const ServiceSlice = createSlice({
         state.service.status = "failed";
         console.log("Fetch Service Rejected :", action);
       });
-
-    builder
-      .addCase(addReview.pending, (state, action) => {
-        state.addReviewStatus = 'pending'
-
-        console.log("Add Review Pending :",action);
-      })
-      .addCase(addReview.fulfilled, (state, action) => {
-        state.addReviewStatus = 'success'
-
-        console.log("Add Review Fulfilled :",action);
-      })
-      .addCase(addReview.rejected, (state, action) => {
-        state.addReviewStatus = 'failed'
-
-        console.log("Add Review Rejected :",action);
-      })
   },
 });
 

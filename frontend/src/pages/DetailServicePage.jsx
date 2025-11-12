@@ -10,6 +10,7 @@ import {
   Edit,
   Trash2,
   Send,
+  Loader2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -19,13 +20,15 @@ import {
   fetchService,
   updateReview,
 } from "../features/ServiceSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import ReservationForm from "../components/ReservationForm";
 
 export default function ServiceDetailPage() {
   const { id } = useParams();
   const { data, status } = useSelector((state) => state.services.service);
   const { user } = useSelector((state) => state.auth);
+  const { addReviewStatus, updateReviewStatus, deleteReviewStatus } =
+    useSelector((state) => state.services);
   const dispatch = useDispatch();
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -105,14 +108,15 @@ export default function ServiceDetailPage() {
     setDeleteModal({ open: true, reviewId });
   };
 
-  const handleConfirmDelete = () => {
-    dispatch(deleteReview(deleteModal.reviewId))
-      .unwrap()
-      .then(() => {
-        dispatch(fetchService(data.id));
-        toast.success("Review deleted successfully");
-      })
-      .catch((err) => toast.error(err || "Failed to delete review"));
+  const handleConfirmDelete = async () => {
+    try {
+      await dispatch(deleteReview(deleteModal.reviewId)).unwrap();
+      await dispatch(fetchService(data.id));
+
+      toast.success("Review deleted successfully");
+    } catch (error) {
+      toast.error(error || "Failed to delete review");
+    }
 
     setDeleteModal({ open: false, reviewId: null });
   };
@@ -262,10 +266,13 @@ export default function ServiceDetailPage() {
           </div>
         </div>
         {reservitionModel && (
-          <ReservationForm onClose={() => setReservationModel(false)} onSuccess={()=> {
-            setReservationModel(false);
-            dispatch(fetchService(id));
-          }}/>
+          <ReservationForm
+            onClose={() => setReservationModel(false)}
+            onSuccess={() => {
+              setReservationModel(false);
+              dispatch(fetchService(id));
+            }}
+          />
         )}
 
         {/* Reviews Section */}
@@ -308,11 +315,31 @@ export default function ServiceDetailPage() {
               <div className="flex gap-2">
                 <button
                   onClick={handleSubmitReview}
-                  disabled={rating === 0 || !reviewText.trim()}
+                  disabled={
+                    data?.hasReviewed ||
+                    rating === 0 ||
+                    !reviewText.trim() ||
+                    addReviewStatus === "loading" ||
+                    updateReviewStatus === "loading"
+                  }
                   className="flex-1 py-2 px-4 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-[#2ECC71] hover:bg-[#27AE60] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send size={16} />
-                  {editingReview ? "Update" : "Submit"}
+                  {data?.hasReviewed ? (
+                    "You already Reviewed"
+                  ) : addReviewStatus === "loading" ||
+                    updateReviewStatus === "loading" ? (
+                    <>
+                      <Loader2 className="animate-spin" size={20} />
+                      {editingReview
+                        ? "Updating Review..."
+                        : "Adding Review..."}
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      {editingReview ? "Update" : "Submit"}
+                    </>
+                  )}
                 </button>
                 {editingReview && (
                   <button
@@ -394,9 +421,17 @@ export default function ServiceDetailPage() {
                   </button>
                   <button
                     onClick={handleConfirmDelete}
-                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                    disabled={deleteReviewStatus === "loading"}
+                    className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Delete
+                    {deleteReviewStatus == "loading" ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="animate-spin" size={20} />
+                        Deleting Review ...
+                      </span>
+                    ) : (
+                      "Delete"
+                    )}
                   </button>
                 </div>
               </div>

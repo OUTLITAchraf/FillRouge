@@ -64,21 +64,26 @@ class ServiceController extends Controller
     {
         $this->authorize('view', $service);
         $user = auth()->user();
+
         $hasReserved = false;
-        Log::info('User:', [$user]);
-        Log::info('Status hasReserved before if:', [$hasReserved]);
+        $hasReviewed = false;
+
+        // Log::info('User:', [$user]);
+        // Log::info('Status hasReserved before if:', [$hasReserved]);
 
         if ($user) {
-            Log::info('Status hasReserved in if before search service:', [$hasReserved]);
+            // Log::info('Status hasReserved in if before search service:', [$hasReserved]);
 
             $hasReserved = $service->reservations()->where('client_id', $user->id)->exists();
-            Log::info('Status hasReserved in if after search service:', [$hasReserved]);
+            $hasReviewed = $service->reviews()->where('client_id', $user->id)->exists();
+
+            // Log::info('Status hasReserved in if after search service:', [$hasReserved]);
         }
 
-        Log::info('Status hasReserved after if:', [$hasReserved]);
+        // Log::info('Status hasReserved after if:', [$hasReserved]);
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
-            'service' => $service->load('category', 'provider', 'reviews.user')->setAttribute('hasReserved', $hasReserved)
+            'service' => $service->load('category', 'provider', 'reviews.user')->setAttribute('hasReserved', $hasReserved)->setAttribute('hasReviewed', $hasReviewed)
         ], 201);
     }
 

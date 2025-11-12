@@ -2,8 +2,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Calendar, FileText, X } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { Calendar, FileText, Loader2, X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { reserverService } from "../features/ServiceSlice";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ const reservationSchema = yup.object().shape({
 
 const ReservationForm = ({ onClose, onSuccess }) => {
   const { id } = useParams();
+  const { reservationStatus } = useSelector((state) => state.services);
 
   const dispatch = useDispatch();
   const {
@@ -51,7 +52,7 @@ const ReservationForm = ({ onClose, onSuccess }) => {
 
       toast.success("Your Reservation Submited Successfully!");
       reset();
-      onSuccess?.() // close modal
+      onSuccess?.(); // close modal
     } catch (error) {
       console.log("Error from model reservation :", error);
       // toast.error()
@@ -133,29 +134,23 @@ const ReservationForm = ({ onClose, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors"
-              style={{ backgroundColor: "#ECF0F1", color: "#2C3E50" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#BDC3C7")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#ECF0F1")
-              }
+              className="flex-1 px-6 py-3 rounded-lg font-semibold bg-[#ECF0F1] text-[#2C3E50] transition-colors hover:bg-[#BDC3C7]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors"
-              style={{ backgroundColor: "#E67E22" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#D35400")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#E67E22")
-              }
+              disabled={reservationStatus === "loading"}
+              className="flex-1 px-6 py-3 rounded-lg font-semibold bg-[#E67E22] text-white hover:bg-[#D35400] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Reserve
+              {reservationStatus == "loading" ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin" size={20} />
+                  Reserving ...
+                </span>
+              ) : (
+                "Reserve"
+              )}
             </button>
           </div>
         </form>

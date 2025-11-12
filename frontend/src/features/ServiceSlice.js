@@ -51,12 +51,12 @@ export const addReview = createAsyncThunk(
   async ({ rating, comment, service_id }) => {
     // console.log(rating, comment, service_id);
 
-    let response = await api.post(`/service/${service_id}/add-review`, {
-      rating,
-      comment,
-    });
-    console.log("Response :", response);
-    return response.data;
+      let response = await api.post(`/service/${service_id}/add-review`, {
+        rating,
+        comment,
+      });
+      console.log("Response :", response);
+      return response.data;
   }
 );
 
@@ -111,7 +111,10 @@ const ServiceSlice = createSlice({
       data: {},
       status: "idle",
     },
-    isReserved: false,
+    addReviewStatus: "idle",
+    updateReviewStatus: "idle",
+    deleteReviewStatus: "idle",
+    reservationStatus: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -169,17 +172,69 @@ const ServiceSlice = createSlice({
 
     builder
       .addCase(reserverService.pending, (state) => {
-        state.isReserved = false;
+        state.reservationStatus = "loading";
         console.log("Reservation Pending.");
       })
       .addCase(reserverService.fulfilled, (state) => {
-        state.isReserved = true;
+        state.reservationStatus = "success";
         console.log("Reservation Fulfilled.");
       })
       .addCase(reserverService.rejected, (state) => {
-        state.isReserved = false;
+        state.reservationStatus = "failed";
         console.log("Reservation Rejected.");
       });
+
+    builder
+      .addCase(addReview.pending, (state, action) => {
+        state.addReviewStatus = "loading";
+
+        console.log("Add Review Pending :", action);
+      })
+      .addCase(addReview.fulfilled, (state, action) => {
+        state.addReviewStatus = "success";
+
+        console.log("Add Review Fulfilled :", action);
+      })
+      .addCase(addReview.rejected, (state, action) => {
+        state.addReviewStatus = "failed";
+
+        console.log("Add Review Rejected :", action);
+      });
+
+    builder
+      .addCase(updateReview.pending, (state, action) => {
+        state.updateReviewStatus = "loading";
+
+        console.log("Update Review Pending :", action);
+      })
+      .addCase(updateReview.fulfilled, (state, action) => {
+        state.updateReviewStatus = "success";
+
+        console.log("Update Review Fulfilled :", action);
+      })
+      .addCase(updateReview.rejected, (state, action) => {
+        state.updateReviewStatus = "failed";
+
+        console.log("Update Review Rejected :", action);
+      });
+
+    builder
+      .addCase(deleteReview.pending, (state, action) => {
+        state.deleteReviewStatus = "loading";
+
+        console.log("Delete Review Pending :", action);
+      })
+      .addCase(deleteReview.fulfilled, (state, action) => {
+        state.deleteReviewStatus = "success";
+
+        console.log("Delete Review Fulfilled :", action);
+      })
+      .addCase(deleteReview.rejected, (state, action) => {
+        state.deleteReviewStatus = "failed";
+
+        console.log("Delete Review Rejected :", action);
+      });
+
   },
 });
 

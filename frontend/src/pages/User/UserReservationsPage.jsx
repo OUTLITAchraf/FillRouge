@@ -1,17 +1,59 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, FileText, CheckCircle, XCircle } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  FileText,
+  CheckCircle,
+  XCircle,
+  X,
+  Loader2,
+} from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchReservations } from "../../features/ServiceSlice";
+import {
+  updateStatusReservations,
+  fetchReservations,
+} from "../../features/ServiceSlice";
+import { toast } from "sonner";
 
 const UserReservationsPage = () => {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.services.reservations);
+  const { updateStatusReservationsStatus } = useSelector((state) => state.services);
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    reservation_id: null,
+  });
+  
 
   // Fetch reservations
   useEffect(() => {
     dispatch(fetchReservations());
   }, [dispatch]);
+
+  const confirmDelete = (reservation_id) => {
+    setDeleteModal({ open: true, reservation_id });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const reservation_id = deleteModal.reservation_id;
+      const status = 'cancelled';
+
+      await dispatch(updateStatusReservations({status, reservation_id})).unwrap();
+      await dispatch(fetchReservations());
+
+      toast.success("Reservation Deleted Successfully");
+    } catch (error) {
+      console.log(error);
+      setDeleteModal({ open: true, reservation_id: null });
+    }
+    setDeleteModal({ open: false, reservation_id: null });
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModal({ open: false, reservation_id: null });
+  };
 
   const getStatusConfig = (status) => {
     const configs = {
@@ -185,7 +227,10 @@ const UserReservationsPage = () => {
                         View Service
                       </Link>
                       {reservation.status === "pending" && (
-                        <button className="px-4 py-2 border-2 border-red-500 text-red-600 rounded-lg font-semibold hover:bg-red-50 transition-colors">
+                        <button
+                          className="px-4 py-2 border-2 border-red-500 text-red-600 rounded-lg font-semibold hover:bg-red-50 transition-colors"
+                          onClick={() => confirmDelete(reservation.id)}
+                        >
                           Cancel
                         </button>
                       )}
@@ -196,6 +241,44 @@ const UserReservationsPage = () => {
             })}
           </div>
         </>
+      )}
+      {deleteModal.open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-sm z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-[#2C3E50]">
+                Confirm Cancelle
+              </h2>
+              <button
+                type="button"
+                onClick={handleCancelDelete}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <p className="mb-6">
+              Are you sure you want to cancelle this reservation?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleConfirmDelete}
+                disabled={updateStatusReservationsStatus === "loading"}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {updateStatusReservationsStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Cancelling Reservation ...
+                  </span>
+                ) : (
+                  "Cancelle"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

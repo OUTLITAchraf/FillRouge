@@ -7,6 +7,7 @@ use App\Events\ReservationCancelled;
 use App\Events\ReservationCompleted;
 use App\Events\ReservationRefused;
 use App\Mail\ReservationAcceptedMail;
+use App\Mail\ReservationCancelledByClientMail;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\ReservationCompletedMail;
 use App\Mail\ReservationRefusedMail;
@@ -21,7 +22,6 @@ class ReservationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        Log::info('Auth user', [$user]);
 
         if ($user->hasRole('user')) {
             $reservations = Reservation::where('client_id', $user->id)->get();
@@ -80,14 +80,15 @@ class ReservationController extends Controller
     {
         $this->authorize('updateStatus', $reservation);
 
+        $user = $request->user();
+        Log::info('Sender of request :', [$user]);
+
         $validated = $request->validate([
             'status' => 'required|in:accepted,refused,completed,cancelled'
         ]);
 
         $reservation->update($validated);
         $reservation->load('service', 'client');
-
-        $client = $reservation->client;
 
         if ($reservation->status == 'accepted') {
             event(new ReservationAccepted($reservation));
@@ -96,7 +97,11 @@ class ReservationController extends Controller
         } elseif ($reservation->status == 'completed') {
             event(new ReservationCompleted($reservation));
         } else {
-            event(new ReservationCancelled($reservation));
+            if ($user->hasRole('provider')) {
+                event(new ReservationCancelled($reservation, 'provider'));
+            } else {
+                event(new ReservationCancelled($reservation, 'client'));
+            }
         }
         return response()->json([
             'message' => 'Status Of Reservation Updated Successfully',

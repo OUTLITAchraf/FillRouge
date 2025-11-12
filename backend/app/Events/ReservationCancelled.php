@@ -16,13 +16,15 @@ class ReservationCancelled
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $reservation;
+    public $cancelledBy; 
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Reservation $reservation)
+    public function __construct(Reservation $reservation, string $cancelledBy)
     {
         $this->reservation = $reservation;
+        $this->cancelledBy = $cancelledBy;
     }
 
     /**

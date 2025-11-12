@@ -198,11 +198,11 @@
             <div class="greeting">Hello {{ $client->name }},</div>
             
             <p class="message">
-                We're happy to confirm that your reservation for the service: **{{ $reservation->service->title }}** has been successfully **completed**!
+                We're happy to confirm that your reservation for the service: **<strong>{{ $reservation->service->title }}</strong>** has been successfully **<strong>completed</strong>c**!
             </p>
             
             <p class="message">
-                Your experience with **{{ $reservation->service->provider->name }}** is now finalized. Thank you for using our platform!
+                Your experience with **<strong>{{ $reservation->service->provider->name }}</strong>** is now finalized. Thank you for using our platform!
             </p>
 
             <table class="details-table">
@@ -234,7 +234,7 @@
             <div class="review-prompt">
                 <h3>Tell Us About Your Experience!</h3>
                 <p class="message" style="margin-bottom: 20px;">
-                    Did **{{ $reservation->service->provider->name }}** meet your expectations? Your review helps other clients choose the best service.
+                    Did **<strong>{{ $reservation->service->provider->name }}</strong>** meet your expectations? Your review helps other clients choose the best service.
                 </p>
                 <!-- CTA Button - Review Route -->
                 <div class="cta-container" style="margin: 0;">

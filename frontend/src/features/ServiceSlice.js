@@ -102,11 +102,27 @@ export const fetchReservations = createAsyncThunk(
   "services/fetchReservations",
   async (_, { rejectWithValue }) => {
     try {
-    let response = await api.get("/reservations");
-    console.log("Response Reservation :", response);
-    return response.data;
-    } catch (error){
-      return rejectWithValue(error)
+      let response = await api.get("/reservations");
+      console.log("Response Reservation :", response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const updateStatusReservations = createAsyncThunk(
+  "services/updateStatusReservations",
+  async ({status, reservation_id}, { rejectWithValue }) => {
+    try {
+      
+      let response = await api.put(`/reservation/update-status/${reservation_id}`, {
+        status
+      });
+      console.log("Response Reservation :", response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
     }
   }
 );
@@ -128,10 +144,11 @@ const ServiceSlice = createSlice({
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
     reservationStatus: "idle",
-    reservations:{
-      data:[],
-      status: "idle"
-    }
+    reservations: {
+      data: [],
+      status: "idle",
+    },
+    updateStatusReservationsStatus: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -253,23 +270,39 @@ const ServiceSlice = createSlice({
       });
 
     builder
-      .addCase(fetchReservations.pending, (state, action)=>{
+      .addCase(fetchReservations.pending, (state, action) => {
         state.reservations.status = "loading";
 
         console.log("Fetch Reservation Pending :", action);
       })
-      .addCase(fetchReservations.fulfilled, (state,action) => {
+      .addCase(fetchReservations.fulfilled, (state, action) => {
         state.reservations.status = "success";
         state.reservations.data = action.payload.reservations;
 
         console.log("Fetch Reservation Fulfilled :", action);
       })
-      .addCase(fetchReservations.rejected,(state, action)=>{
+      .addCase(fetchReservations.rejected, (state, action) => {
         state.reservations.status = "failed";
-        
+
         console.log("Fetch Reservation Rejected :", action);
-        
+      });
+
+    builder
+      .addCase(updateStatusReservations.pending, (state, action) => {
+        state.updateStatusReservationsStatus = "loading";
+
+        console.log("Update Status Reservation Pending :", action);
       })
+      .addCase(updateStatusReservations.fulfilled, (state, action) => {
+        state.updateStatusReservationsStatus = "success";
+
+        console.log("Update Status Reservation Fulfilled :", action);
+      })
+      .addCase(updateStatusReservations.rejected, (state, action) => {
+        state.updateStatusReservationsStatus = "failed";
+
+        console.log("Update Status Reservation Rejected :", action);
+      });
   },
 });
 

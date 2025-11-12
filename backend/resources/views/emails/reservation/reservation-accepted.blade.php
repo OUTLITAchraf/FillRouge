@@ -187,7 +187,7 @@
             <div class="greeting">Hello {{ $client->name }},</div>
 
             <p class="message">
-                Great news! The provider has **accepted** your reservation request. All the details for your booking are
+                Great news! The provider has **<strong>accepted</strong>** your reservation request. All the details for your booking are
                 confirmed and listed below.
             </p>
 

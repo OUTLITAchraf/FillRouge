@@ -204,17 +204,17 @@
         <!-- Header -->
         <div class="email-header">
             <div class="header-icon">⚠️</div>
-            <h1 class="header-title">Reservation Cancelled</h1>
+            <h1 class="header-title">Reservation Cancelled by Client</h1>
         </div>
 
         <!-- Body -->
         <div class="email-body">
-            {{-- Use the $client variable for the greeting --}}
-            <div class="greeting">Hello {{ $client->name }},</div>
+            {{-- Greeting for provider --}}
+            <div class="greeting">Hello {{ $provider->name }},</div>
 
             <p class="message">
-                This is a notification that your reservation for the service:
-                **<strong>{{ $reservation->service->title }}</strong>** has been officially **<strong>cancelled</strong>**.
+                This is a notification that the client **<strong>{{ $client->name }}</strong>** has cancelled their reservation 
+                for your service: **<strong>{{ $reservation->service->title }}</strong>**.
             </p>
 
             <table class="details-table">
@@ -227,41 +227,42 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th>Provider</th>
-                        <td>{{ $reservation->service->provider->name}}</td>
+                        <th>Client</th>
+                        <td>{{ $client->name }}</td>
                     </tr>
                     <tr>
-                        <th>Phone</th>
-                        <td>{{ $reservation->service->provider->phone }}</td>
+                        <th>Client Email</th>
+                        <td>{{ $client->email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ $reservation->description }}</td>
                     </tr>
                     <tr>
                         <th>Original Date & Time</th>
-                        {{-- Assuming 'date' is a field on the reservation model --}}
                         <td>{{ \Carbon\Carbon::parse($reservation->date)->format('F d, Y \a\t h:i A') ?? 'N/A' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Price</th>
-                        <td>{{ $reservation->service->price }} DH</td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Next Steps Box -->
+            <!-- Next Steps -->
             <div class="info-box">
                 <h3>Next Steps</h3>
-                <p><strong>Rebooking:</strong> You may book a new time slot with the provider or explore similar
-                    services on our platform.</p>
+                <p>
+                    You may wish to contact the client for clarification or reopen the time slot 
+                    for other potential customers.
+                </p>
             </div>
 
             <!-- CTA Button -->
             <div class="cta-container">
-                {{-- Assuming a route to the client's reservations dashboard --}}
-                <a href="{{ config('app.url') }}/client/dashboard/reservations" class="cta-button">View My
-                    Reservations</a>
+                <a href="{{ config('app.url') }}/provider/dashboard/reservations" class="cta-button">
+                    View My Reservations
+                </a>
             </div>
 
             <p class="message" style="margin-top: 25px;">
-                We apologize for any inconvenience this may cause and thank you for your understanding.
+                Thank you for your professionalism and understanding.
             </p>
 
             <!-- Signature -->
@@ -271,7 +272,7 @@
             </div>
         </div>
 
-        <!-- Footer (No links, maintaining consistency) -->
+        <!-- Footer -->
         <div class="email-footer">
             <div class="footer-text">{{ config('app.name') }} - Your Platform Name</div>
 

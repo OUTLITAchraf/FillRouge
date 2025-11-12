@@ -226,7 +226,7 @@
 
             <p class="message">
                 We're sorry to inform you that your reservation request for the service:
-                **{{ $reservation->service->title }}** has been **refused** by the provider.
+                **<strong>{{ $reservation->service->title }}</strong>** has been **<strong>refused</strong>** by the provider.
             </p>
 
             <p class="message">

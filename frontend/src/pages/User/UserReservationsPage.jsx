@@ -19,12 +19,13 @@ import { toast } from "sonner";
 const UserReservationsPage = () => {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.services.reservations);
-  const { updateStatusReservationsStatus } = useSelector((state) => state.services);
+  const { updateStatusReservationsStatus } = useSelector(
+    (state) => state.services
+  );
   const [deleteModal, setDeleteModal] = useState({
     open: false,
     reservation_id: null,
   });
-  
 
   // Fetch reservations
   useEffect(() => {
@@ -38,17 +39,19 @@ const UserReservationsPage = () => {
   const handleConfirmDelete = async () => {
     try {
       const reservation_id = deleteModal.reservation_id;
-      const status = 'cancelled';
+      const status = "cancelled";
 
-      await dispatch(updateStatusReservations({status, reservation_id})).unwrap();
+      await dispatch(
+        updateStatusReservations({ status, reservation_id })
+      ).unwrap();
+      setDeleteModal({ open: false, reservation_id: null });
+
       await dispatch(fetchReservations());
-
       toast.success("Reservation Deleted Successfully");
     } catch (error) {
       console.log(error);
       setDeleteModal({ open: true, reservation_id: null });
     }
-    setDeleteModal({ open: false, reservation_id: null });
   };
 
   const handleCancelDelete = () => {

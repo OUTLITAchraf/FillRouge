@@ -31,7 +31,7 @@ const categoryIcons = {
   tutoring: GraduationCap,
 };
 
-function ServicesPage () {
+function ServicesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -42,6 +42,10 @@ function ServicesPage () {
 
   const { categories } = useSelector((state) => state.services);
   const { data, status } = useSelector((state) => state.services.services);
+  const { data: reservations } = useSelector(
+    (state) => state.services.reservations
+  );
+
   const dispatch = useDispatch();
 
   const providerName = searchParams.get("provider_name");
@@ -234,6 +238,9 @@ function ServicesPage () {
             {data?.data?.map((service) => {
               const CategoryIcon =
                 categoryIcons[service.category.name] || Wrench;
+              const isReserved = reservations.some(
+                (res) => res.service_id === service.id
+              );
 
               return (
                 <Link
@@ -283,9 +290,17 @@ function ServicesPage () {
                         </span>
                         <span className="text-sm text-gray-600">DH</span>
                       </div>
-                      <button className="px-4 py-2 bg-[#2ECC71] text-white rounded-lg text-sm font-semibold hover:bg-[#27AE60] transition-colors">
-                        Book Now
-                      </button>
+                      {isReserved ? (
+                        <button 
+                        disabled
+                        className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed">
+                          Booked
+                        </button>
+                      ) : (
+                        <button className="px-4 py-2 bg-[#2ECC71] text-white rounded-lg text-sm font-semibold hover:bg-[#27AE60] transition-colors">
+                          Book Now
+                        </button>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -300,7 +315,7 @@ function ServicesPage () {
                 onClick={() => {
                   const newPage = Math.max(currentPage - 1, 1);
                   setCurrentPage(newPage);
-                  setSearchParams({ page: newPage }); 
+                  setSearchParams({ page: newPage });
                 }}
                 disabled={currentPage === 1}
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -313,7 +328,7 @@ function ServicesPage () {
                   key={index + 1}
                   onClick={() => {
                     setCurrentPage(index + 1);
-                    setSearchParams({ page: index + 1 }); 
+                    setSearchParams({ page: index + 1 });
                   }}
                   className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
                     currentPage === index + 1
@@ -329,7 +344,7 @@ function ServicesPage () {
                 onClick={() => {
                   const newPage = Math.min(currentPage + 1, data.last_page);
                   setCurrentPage(newPage);
-                  setSearchParams({ page: newPage }); 
+                  setSearchParams({ page: newPage });
                 }}
                 disabled={currentPage === data.last_page}
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -342,6 +357,6 @@ function ServicesPage () {
       )}
     </div>
   );
-};
+}
 
 export default ServicesPage;

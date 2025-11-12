@@ -28,7 +28,7 @@ class ServiceSeeder extends Seeder
             return;
         }
 
-        foreach (range(1, 20) as $i) {
+        foreach (range(1, 50) as $i) {
             $provider = $providers->random();
             $category = $categories->random();
 
@@ -39,7 +39,7 @@ class ServiceSeeder extends Seeder
                 'image' => 'https://placehold.co/600x400?text=Service+' . $i,
                 'provider_id' => $provider->id,
                 'category_id' => $category->id,
-                'status' => 'approved',
+                'status' => fake()->randomElement(['pending', 'approved', 'rejected']),
             ]);
         }
 

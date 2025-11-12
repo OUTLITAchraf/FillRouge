@@ -102,7 +102,7 @@ const ProviderRegisterPage = () => {
         setGeneralError("Register failed due to an unknown error.");
       }
     } else {
-      navigate("/provider/dashboard");
+      navigate("/login");
     }
   };
 

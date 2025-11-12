@@ -81,7 +81,7 @@ class ReservationController extends Controller
         $this->authorize('updateStatus', $reservation);
 
         $user = $request->user();
-        Log::info('Sender of request :', [$user]);
+        // Log::info('Sender of request :', [$user]);
 
         $validated = $request->validate([
             'status' => 'required|in:accepted,refused,completed,cancelled'

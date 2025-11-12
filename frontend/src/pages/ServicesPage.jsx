@@ -42,9 +42,6 @@ function ServicesPage() {
 
   const { categories } = useSelector((state) => state.services);
   const { data, status } = useSelector((state) => state.services.services);
-  const { data: reservations } = useSelector(
-    (state) => state.services.reservations
-  );
 
   const dispatch = useDispatch();
 
@@ -238,9 +235,6 @@ function ServicesPage() {
             {data?.data?.map((service) => {
               const CategoryIcon =
                 categoryIcons[service.category.name] || Wrench;
-              const isReserved = reservations.some(
-                (res) => res.service_id === service.id
-              );
 
               return (
                 <Link
@@ -290,7 +284,7 @@ function ServicesPage() {
                         </span>
                         <span className="text-sm text-gray-600">DH</span>
                       </div>
-                      {isReserved ? (
+                      {service.is_reserved ? (
                         <button 
                         disabled
                         className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed">

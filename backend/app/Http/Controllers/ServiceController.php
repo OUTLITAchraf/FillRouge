@@ -19,7 +19,7 @@ class ServiceController extends Controller
     {
         $user = Auth::guard('sanctum')->user();
 
-        // Log::info('User from guard:', ['user' => $user]);
+        // Log::info('User from guard:', [$user]);
 
         $this->authorize('viewAny', Service::class);
 
@@ -52,6 +52,17 @@ class ServiceController extends Controller
         }
 
         $services = $query->paginate(12);
+        $services->getCollection()->transform(function ($service) use ($user) {
+            $service->is_reserved = false;
+
+            if ($user) {
+                $service->is_reserved = $user->reservations()
+                    ->where('service_id', $service->id)
+                    ->exists();
+            }
+
+            return $service;
+        });
 
         return response()->json([
             'message' => 'Services Fetched Successfully',
@@ -63,7 +74,7 @@ class ServiceController extends Controller
     public function show(Service $service)
     {
         $this->authorize('view', $service);
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         $hasReserved = false;
         $hasReviewed = false;

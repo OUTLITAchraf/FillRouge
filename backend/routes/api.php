@@ -80,9 +80,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+
     Route::get('/admin/users', [UserController::class, 'index']);
     Route::put('/admin/update-status/{user}', [UserController::class, 'updateStatus']);
     Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
+
     Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);
     Route::post('/admin/service/{id}/restore', [ServiceController::class, 'restore']);
     Route::post('/admin/review/{id}/restore', [ReviewController::class, 'restore']);

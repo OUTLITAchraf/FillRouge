@@ -69,8 +69,10 @@ export const userLogout = createAsyncThunk(
     try {
       let response = await api.post("/logout");
       console.log("Response :", response);
+      return response.data
     } catch (error) {
       console.log("Error :", error);
+      return rejectWithValue(error)
     }
   }
 );

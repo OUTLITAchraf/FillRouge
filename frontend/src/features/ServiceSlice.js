@@ -51,12 +51,12 @@ export const addReview = createAsyncThunk(
   async ({ rating, comment, service_id }) => {
     // console.log(rating, comment, service_id);
 
-      let response = await api.post(`/service/${service_id}/add-review`, {
-        rating,
-        comment,
-      });
-      console.log("Response :", response);
-      return response.data;
+    let response = await api.post(`/service/${service_id}/add-review`, {
+      rating,
+      comment,
+    });
+    console.log("Response :", response);
+    return response.data;
   }
 );
 
@@ -98,6 +98,19 @@ export const reserverService = createAsyncThunk(
   }
 );
 
+export const fetchReservations = createAsyncThunk(
+  "services/fetchReservations",
+  async (_, { rejectWithValue }) => {
+    try {
+    let response = await api.get("/reservations");
+    console.log("Response Reservation :", response);
+    return response.data;
+    } catch (error){
+      return rejectWithValue(error)
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
@@ -115,6 +128,10 @@ const ServiceSlice = createSlice({
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
     reservationStatus: "idle",
+    reservations:{
+      data:[],
+      status: "idle"
+    }
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -235,6 +252,24 @@ const ServiceSlice = createSlice({
         console.log("Delete Review Rejected :", action);
       });
 
+    builder
+      .addCase(fetchReservations.pending, (state, action)=>{
+        state.reservations.status = "loading";
+
+        console.log("Fetch Reservation Pending :", action);
+      })
+      .addCase(fetchReservations.fulfilled, (state,action) => {
+        state.reservations.status = "success";
+        state.reservations.data = action.payload.reservations;
+
+        console.log("Fetch Reservation Fulfilled :", action);
+      })
+      .addCase(fetchReservations.rejected,(state, action)=>{
+        state.reservations.status = "failed";
+        
+        console.log("Fetch Reservation Rejected :", action);
+        
+      })
   },
 });
 

@@ -13,20 +13,26 @@ use App\Mail\ReservationRefusedMail;
 use App\Models\Reservation;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $provider = $request->user();
+        $user = auth()->user();
+        Log::info('Auth user', [$user]);
 
-        $reservations = Reservation::where('service_id', $provider->service_id)->get();
+        if ($user->hasRole('user')) {
+            $reservations = Reservation::where('client_id', $user->id)->get();
+        } else {
+            $reservations = Reservation::where('service_id', $user->service_id)->get();
+        }
 
         return response()->json([
             'message' => 'Reservation Fetched Successfully',
-            'reservation' => $reservations->load('client'),
-            'provider' => $provider
+            'reservations' => $reservations->load('client'),
+            'user' => $user
         ], 201);
     }
 

@@ -84,15 +84,15 @@ class ReservationController extends Controller
         // Log::info('Sender of request :', [$user]);
 
         $validated = $request->validate([
-            'status' => 'required|in:accepted,refused,completed,cancelled'
+            'status' => 'required|in:accepte,refuse,completed,cancelled'
         ]);
 
         $reservation->update($validated);
         $reservation->load('service', 'client');
 
-        if ($reservation->status == 'accepted') {
+        if ($reservation->status == 'accepte') {
             event(new ReservationAccepted($reservation));
-        } elseif ($reservation->status == 'refused') {
+        } elseif ($reservation->status == 'refuse') {
             event(new ReservationRefused($reservation));
         } elseif ($reservation->status == 'completed') {
             event(new ReservationCompleted($reservation));

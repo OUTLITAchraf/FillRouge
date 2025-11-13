@@ -269,7 +269,7 @@ export default function AdminServicesPage() {
                             }}
                           >
                             <Tag size={12} />
-                            {service.category.name}
+                            {service.category.display_name}
                           </span>
                         </td>
                         <td
@@ -454,7 +454,7 @@ export default function AdminServicesPage() {
                           }}
                         >
                           <Tag size={14} />
-                          {selectedService.category.name}
+                          {selectedService.category.display_name}
                         </span>
                       </div>
                       <div>

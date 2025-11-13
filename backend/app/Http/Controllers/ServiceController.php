@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ServiceApproved;
+use App\Events\ServiceCreated;
 use App\Events\ServiceRejected;
 use App\Models\Category;
 use App\Models\Service;
@@ -132,8 +133,12 @@ class ServiceController extends Controller
                     'service_id' => $service->id
                 ]);
 
+                $service->with(['provider','category']);
+
                 return $service;
             });
+
+            event(new ServiceCreated($service));
 
             return response()->json([
                 'message' => 'Service Created Successfully',

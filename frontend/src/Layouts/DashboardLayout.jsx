@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Home, Calendar, Star, LogOut, Menu, X, Users, Layers, Briefcase } from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
+import { fetchCategories } from "../features/ServiceSlice";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -10,6 +11,10 @@ export default function DashboardLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const role = user?.roles?.[0]?.name;
+
+  useEffect(() => {
+    dispatch(fetchCategories())
+  }, [dispatch])
 
   // 🔹 Define menu items based on role
   const menuItems =

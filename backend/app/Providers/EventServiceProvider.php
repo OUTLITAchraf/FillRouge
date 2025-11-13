@@ -10,6 +10,7 @@ use App\Events\ReservationCancelled;
 use App\Events\ReservationCompleted;
 use App\Events\ReservationRefused;
 use App\Events\ServiceApproved;
+use App\Events\ServiceCreated;
 use App\Events\ServiceRejected;
 use App\Listeners\SendProviderApprovedMail;
 use App\Listeners\SendProviderRegisteredMail;
@@ -19,6 +20,7 @@ use App\Listeners\SendReservationCancelledMail;
 use App\Listeners\SendReservationCompletedMail;
 use App\Listeners\SendReservationRefusedMail;
 use App\Listeners\SendServiceApprovedMail;
+use App\Listeners\SendServiceCreatedMail;
 use App\Listeners\SendServiceRejectedMail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -47,6 +49,10 @@ class EventServiceProvider extends ServiceProvider
 
         ProviderRejected::class => [
             SendProviderRejectedMail::class,
+        ],
+
+        ServiceCreated::class => [
+            SendServiceCreatedMail::class,
         ],
 
         ServiceApproved::class => [

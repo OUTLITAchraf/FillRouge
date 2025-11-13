@@ -58,6 +58,8 @@ Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/service/{service}/reserve', [ReservationController::class, 'store']);
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::put('/reservation/update-status/{reservation}', [ReservationController::class, 'updateStatus']);
 
     Route::delete('/delete-review/{review}', [ReviewController::class, 'destroy']);
 });
@@ -69,13 +71,10 @@ Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
 });
 
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:provider'])->group(function () {
     Route::post('/create-service', [ServiceController::class, 'store']);
     Route::put('/update-service/{service}', [ServiceController::class, 'update']);
     Route::delete('/delete-service/{service}', [ServiceController::class, 'destroy']);
-
-    Route::get('/reservations', [ReservationController::class, 'index']);
-    Route::put('/reservation/update-status/{reservation}', [ReservationController::class, 'updateStatus']);
 });
 
 

@@ -46,6 +46,21 @@ export const fetchService = createAsyncThunk(
   }
 );
 
+export const createService = createAsyncThunk(
+  "services/createService",
+  async (data, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/create-service`, data);
+
+      console.log("Response :", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const addReview = createAsyncThunk(
   "service/addReview",
   async ({ rating, comment, service_id }) => {
@@ -160,6 +175,7 @@ const ServiceSlice = createSlice({
       data: {},
       status: "idle",
     },
+    createServiceStatus: "idle",
     addReviewStatus: "idle",
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
@@ -207,6 +223,21 @@ const ServiceSlice = createSlice({
       .addCase(fetchServices.rejected, (state, action) => {
         state.services.status = "failed";
         console.log("Fetch Services Rejected :", action);
+      });
+
+    builder
+      .addCase(createService.pending, (state, action) => {
+        state.createServiceStatus = "loading";
+        console.log("Create Service Pending :", action);
+      })
+      .addCase(createService.fulfilled, (state, action) => {
+        state.createServiceStatus = "success";
+
+        console.log("Create Service Fulfilled :", action.payload);
+      })
+      .addCase(createService.rejected, (state, action) => {
+        state.createServiceStatus = "failed";
+        console.log("Create Service Rejected :", action);
       });
 
     builder

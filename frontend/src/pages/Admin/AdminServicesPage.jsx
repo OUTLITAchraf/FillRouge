@@ -13,23 +13,35 @@ import {
   Phone,
   ChevronRight,
   ChevronLeft,
+  X,
+  Loader2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchServices } from "../../features/ServiceSlice";
+import {
+  fetchServices,
+  updateStatusService,
+} from "../../features/ServiceSlice";
+import { toast } from "sonner";
 
 export default function AdminServicesPage() {
   const [selectedService, setSelectedService] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showStatusConfirme, setShowStatusConfirme] = useState({
+    open: false,
+    service: {},
+    status: "",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.services.services);
+  const { updateStatusServiceStatus } = useSelector((state) => state.services)
 
   console.log(data);
   console.log(status);
 
   useEffect(() => {
-    const filters = {}
-    filters.page = currentPage
+    const filters = {};
+    filters.page = currentPage;
     dispatch(fetchServices(filters));
   }, [dispatch, currentPage]);
 
@@ -39,12 +51,37 @@ export default function AdminServicesPage() {
     }
   };
 
-  const handleStatusChange = (serviceId, newStatus) => {
-    // setServices(
-    //   services.map((service) =>
-    //     service.id === serviceId ? { ...service, status: newStatus } : service
-    //   )
-    // );
+  const handleChangeStatus = (nameService, newStatus) => {
+    setShowStatusConfirme({
+      open: true,
+      service: nameService,
+      status: newStatus,
+    });
+  };
+
+  const handleStatusConfirm = async () => {
+    try {
+      const service_id = showStatusConfirme.service.id;
+      const status = showStatusConfirme.status;
+
+      await dispatch(updateStatusService({ status, service_id })).unwrap();
+      setShowStatusConfirme({ open: false, service: {}, status: "" });
+      setShowModal(false)
+
+      await dispatch(fetchServices());
+      toast.success("Status Changed Successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error :", error);
+    }
+  };
+
+  const cancelleChangeStatus = () => {
+    setShowStatusConfirme({
+      open: false,
+      service: "",
+      status: "",
+    });
   };
 
   const viewDetails = (service) => {
@@ -264,7 +301,7 @@ export default function AdminServicesPage() {
                               <div className="flex flex-col gap-1">
                                 <button
                                   onClick={() =>
-                                    handleStatusChange(service.id, "approved")
+                                    handleChangeStatus(service, "approved")
                                   }
                                   className="px-2 py-1 text-xs text-white rounded transition-colors"
                                   style={{ backgroundColor: "#2ECC71" }}
@@ -273,7 +310,7 @@ export default function AdminServicesPage() {
                                 </button>
                                 <button
                                   onClick={() =>
-                                    handleStatusChange(service.id, "rejected")
+                                    handleChangeStatus(service, "rejected")
                                   }
                                   className="px-2 py-1 text-xs text-white rounded transition-colors"
                                   style={{ backgroundColor: "#E74C3C" }}
@@ -488,8 +525,7 @@ export default function AdminServicesPage() {
                 <div className="mt-6 pt-6 border-t flex gap-3">
                   <button
                     onClick={() => {
-                      handleStatusChange(selectedService.id, "approved");
-                      setShowModal(false);
+                      handleChangeStatus(selectedService, "approved")
                     }}
                     className="flex-1 py-3 px-6 rounded-lg text-white font-semibold transition-colors"
                     style={{ backgroundColor: "#2ECC71" }}
@@ -498,8 +534,7 @@ export default function AdminServicesPage() {
                   </button>
                   <button
                     onClick={() => {
-                      handleStatusChange(selectedService.id, "rejected");
-                      setShowModal(false);
+                      handleChangeStatus(selectedService, "rejected");
                     }}
                     className="flex-1 py-3 px-6 rounded-lg text-white font-semibold transition-colors"
                     style={{ backgroundColor: "#E74C3C" }}
@@ -508,6 +543,47 @@ export default function AdminServicesPage() {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showStatusConfirme.open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-sm z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-[#2C3E50]">
+                Confirm Change Status
+              </h2>
+              <button
+                onClick={() => cancelleChangeStatus()}
+                type="button"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <p className="mb-6">
+              Are you sure you want to{" "}
+              <strong>{showStatusConfirme.status}</strong> this service{" "}
+              <strong>{showStatusConfirme.service.title}</strong>?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleStatusConfirm}
+                disabled={updateStatusServiceStatus === "loading"}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {updateStatusServiceStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Status Service Changing ...
+                  </span>
+                ) : (
+                  "Confirm"
+                )}
+              </button>
             </div>
           </div>
         </div>

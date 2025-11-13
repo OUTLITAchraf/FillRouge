@@ -111,14 +111,34 @@ export const fetchReservations = createAsyncThunk(
   }
 );
 
+export const updateStatusService = createAsyncThunk(
+  "services/updateStatusService",
+  async ({ status, service_id }, { rejectWithValue }) => {
+    try {
+      let response = await api.put(
+        `/admin/service/update-status/${service_id}`,
+        {
+          status,
+        }
+      );
+      console.log("Response Reservation :", response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const updateStatusReservations = createAsyncThunk(
   "services/updateStatusReservations",
-  async ({status, reservation_id}, { rejectWithValue }) => {
+  async ({ status, reservation_id }, { rejectWithValue }) => {
     try {
-      
-      let response = await api.put(`/reservation/update-status/${reservation_id}`, {
-        status
-      });
+      let response = await api.put(
+        `/reservation/update-status/${reservation_id}`,
+        {
+          status,
+        }
+      );
       console.log("Response Reservation :", response);
       return response.data;
     } catch (error) {
@@ -148,6 +168,7 @@ const ServiceSlice = createSlice({
       data: [],
       status: "idle",
     },
+    updateStatusServiceStatus: "idle",
     updateStatusReservationsStatus: "idle",
   },
   reducers: {},
@@ -285,6 +306,23 @@ const ServiceSlice = createSlice({
         state.reservations.status = "failed";
 
         console.log("Fetch Reservation Rejected :", action);
+      });
+
+    builder
+      .addCase(updateStatusService.pending, (state, action) => {
+        state.updateStatusServiceStatus = "loading";
+
+        console.log("Update Status Service Pending :", action);
+      })
+      .addCase(updateStatusService.fulfilled, (state, action) => {
+        state.updateStatusServiceStatus = "success";
+
+        console.log("Update Status Service Fulfilled :", action);
+      })
+      .addCase(updateStatusService.rejected, (state, action) => {
+        state.updateStatusServiceStatus = "failed";
+
+        console.log("Update Status Service Rejected :", action);
       });
 
     builder

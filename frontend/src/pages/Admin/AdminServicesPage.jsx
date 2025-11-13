@@ -34,7 +34,7 @@ export default function AdminServicesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.services.services);
-  const { updateStatusServiceStatus } = useSelector((state) => state.services)
+  const { updateStatusServiceStatus } = useSelector((state) => state.services);
 
   console.log(data);
   console.log(status);
@@ -66,7 +66,7 @@ export default function AdminServicesPage() {
 
       await dispatch(updateStatusService({ status, service_id })).unwrap();
       setShowStatusConfirme({ open: false, service: {}, status: "" });
-      setShowModal(false)
+      setShowModal(false);
 
       await dispatch(fetchServices());
       toast.success("Status Changed Successfully");
@@ -319,6 +319,28 @@ export default function AdminServicesPage() {
                                 </button>
                               </div>
                             )}
+                            {service.status === "approved" && (
+                              <button
+                                onClick={() =>
+                                  handleChangeStatus(service, "rejected")
+                                }
+                                className="px-2 py-1 text-xs text-white rounded transition-colors"
+                                style={{ backgroundColor: "#E74C3C" }}
+                              >
+                                Reject
+                              </button>
+                            )}
+                            {service.status === "rejected" && (
+                              <button
+                                onClick={() =>
+                                  handleChangeStatus(service, "approved")
+                                }
+                                className="px-2 py-1 text-xs text-white rounded transition-colors"
+                                style={{ backgroundColor: "#2ECC71" }}
+                              >
+                                Approve
+                              </button>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -525,7 +547,7 @@ export default function AdminServicesPage() {
                 <div className="mt-6 pt-6 border-t flex gap-3">
                   <button
                     onClick={() => {
-                      handleChangeStatus(selectedService, "approved")
+                      handleChangeStatus(selectedService, "approved");
                     }}
                     className="flex-1 py-3 px-6 rounded-lg text-white font-semibold transition-colors"
                     style={{ backgroundColor: "#2ECC71" }}

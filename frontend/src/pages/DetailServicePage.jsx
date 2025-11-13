@@ -316,7 +316,7 @@ export default function ServiceDetailPage() {
                 <button
                   onClick={handleSubmitReview}
                   disabled={
-                    data?.hasReviewed ||
+                    data?.hasReviewed && !editingReview ||
                     rating === 0 ||
                     !reviewText.trim() ||
                     addReviewStatus === "loading" ||
@@ -324,7 +324,7 @@ export default function ServiceDetailPage() {
                   }
                   className="flex-1 py-2 px-4 rounded-lg text-white font-semibold flex items-center justify-center gap-2 bg-[#2ECC71] hover:bg-[#27AE60] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {data?.hasReviewed ? (
+                  {data?.hasReviewed && !editingReview ? (
                     "You already Reviewed"
                   ) : addReviewStatus === "loading" ||
                     updateReviewStatus === "loading" ? (

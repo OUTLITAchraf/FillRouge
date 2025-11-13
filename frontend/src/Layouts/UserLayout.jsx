@@ -1,13 +1,24 @@
 import { useState } from "react";
-import { ChevronDown, Calendar, LogOut } from "lucide-react";
-import { Link, Outlet } from "react-router-dom";
+import { ChevronDown, Calendar, LogOut, Loader2 } from "lucide-react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { user, userLogout_Status } = useSelector((state) => state.auth);
+  console.log(userLogout_Status);
+  
+
+  const handleLogoute = async () => {
+    await dispatch(userLogout());
+
+    setShowUserMenu(false);
+
+    navigate('/')
+  };
 
   const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
 
@@ -98,14 +109,24 @@ function UserLayout() {
                       </Link>
                       <hr className="my-2 border-gray-100" />
                       <button
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          dispatch(userLogout());
-                        }}
+                        onClick={handleLogoute}
                         className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors w-full text-left"
                       >
-                        <LogOut className="w-5 h-5 text-red-600" />
-                        <span className="text-red-600 font-medium">Logout</span>
+                        {userLogout_Status == "loading" ? (
+                          <>
+                            <Loader2 className="animate-spin w-5 h-5 text-red-600"/>
+                            <span className="text-red-600 font-medium">
+                              Logout
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <LogOut className="w-5 h-5 text-red-600" />
+                            <span className="text-red-600 font-medium">
+                              Logout
+                            </span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </>

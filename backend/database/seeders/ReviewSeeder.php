@@ -19,7 +19,7 @@ class ReviewSeeder extends Seeder
             $q->where('name', 'client');
         })->get();
 
-        $services = Service::all();
+        $services = Service::where('status','approved')->pluck('id');
 
         // If you have no users or services yet, exit early
         if ($clients->isEmpty() || $services->isEmpty()) {
@@ -33,7 +33,7 @@ class ReviewSeeder extends Seeder
                 'rating' => rand(1, 5),
                 'comment' => fake()->sentence(),
                 'client_id' => $clients->random()->id,
-                'service_id' => $services->random()->id,
+                'service_id' => $services->random(),
             ]);
         }
 

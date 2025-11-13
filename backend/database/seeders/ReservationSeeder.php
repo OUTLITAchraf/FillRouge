@@ -14,7 +14,7 @@ class ReservationSeeder extends Seeder
         $clients = User::whereHas('roles', function ($q) {
             $q->where('name', 'client');
         })->pluck('id');
-        $services = Service::pluck('id'); // all services
+        $services = Service::where('status','approved')->pluck('id'); // all services
 
         if ($clients->isEmpty() || $services->isEmpty()) {
             $this->command->info('No clients or services found, skipping reservations seeding.');

@@ -360,6 +360,7 @@ export default function AdminServicesPage() {
               </table>
             </div>
           </div>
+          
           <div className="flex justify-between items-center px-6 py-4 border-t bg-gray-50">
             <button
               onClick={() => handlePageChange(currentPage - 1)}

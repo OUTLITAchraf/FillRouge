@@ -12,7 +12,7 @@ class ReservationSeeder extends Seeder
     public function run()
     {
         $clients = User::whereHas('roles', function ($q) {
-            $q->where('name', 'user');
+            $q->where('name', 'client');
         })->pluck('id');
         $services = Service::pluck('id'); // all services
 

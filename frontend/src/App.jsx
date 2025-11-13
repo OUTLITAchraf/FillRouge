@@ -20,6 +20,7 @@ import ProviderServicePage from "./pages/Provider/ProviderServicePage";
 import FAQPage from "./pages/FAQPage";
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "sonner";
+import AdminProvidersPage from "./pages/Admin/AdminProvidersPage";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           </Route>
           <Route path="/admin" element={<DashboardLayout />}>
             <Route path="dashboard" element={<AdminDasboardPage />} />
+            <Route path="providers" element={<AdminProvidersPage />} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="services" element={<AdminServicesPage />} />

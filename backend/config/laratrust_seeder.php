@@ -21,7 +21,7 @@ return [
             'services' => 'c,r,u,d',
             'profile' => 'r,u',
         ],
-        'user' => [
+        'client' => [
             'service' => 'r',
             'profile' => 'r,u',
         ],

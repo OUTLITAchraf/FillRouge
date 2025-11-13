@@ -52,7 +52,7 @@ const LoginPage = () => {
 
       if (role === "provider") {
         navigate("/provider/dashboard");
-      } else if (role === "user") {
+      } else if (role === "client") {
         navigate("/");
       } else {
         navigate("/admin/dashboard");

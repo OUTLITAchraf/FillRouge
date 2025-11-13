@@ -8,15 +8,15 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class UserSeeder extends Seeder
+class ClientSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-                // Ensure the "user" role exists
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        // Ensure the "user" role exists
+        $userRole = Role::firstOrCreate(['name' => 'client']);
 
         // Create 10 fake users
         foreach (range(1, 30) as $i) {

@@ -37,7 +37,7 @@ class ReservationPolicy
      */
     public function updateStatus(User $user, Reservation $reservation): bool
     {
-        if ($user->hasRole('user')) {
+        if ($user->hasRole('client')) {
             return $user->id === $reservation->client_id;
         }
         return $user->id === $reservation->service->provider_id;

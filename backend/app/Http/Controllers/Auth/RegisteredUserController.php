@@ -28,7 +28,7 @@ class RegisteredUserController extends Controller
             'address' => ['required', 'string', 'min:10', 'max:200'], 
             'phone' => ['required', 'string', 'max:20', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'nullable|in:user,provider',
+            'role' => 'nullable|in:client,provider',
         ]);
 
         $user = User::create([

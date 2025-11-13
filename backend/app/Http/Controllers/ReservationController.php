@@ -23,7 +23,7 @@ class ReservationController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasRole('user')) {
+        if ($user->hasRole('client')) {
             $reservations = Reservation::where('client_id', $user->id)->get();
         } else {
             $reservations = Reservation::where('service_id', $user->service_id)->get();

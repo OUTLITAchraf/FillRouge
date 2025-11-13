@@ -63,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
-Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
     Route::post('/service/{service}/add-review', [ReviewController::class, 'store']);
     Route::put('/update-review/{review}', [ReviewController::class, 'update']);
 });
@@ -81,8 +81,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
-    Route::get('/admin/users', [UserController::class, 'index']);
-    Route::put('/admin/update-status/{user}', [UserController::class, 'updateStatus']);
+    Route::get('/admin/providers', [UserController::class, 'getProviders']);
+    Route::get('/admin/users', [UserController::class, 'getUsers']);
+    Route::put('/admin/provider/update-status/{provider}', [UserController::class, 'updateStatus']);
     Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
 
     Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);

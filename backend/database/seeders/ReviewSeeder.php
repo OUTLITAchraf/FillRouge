@@ -16,7 +16,7 @@ class ReviewSeeder extends Seeder
     {
         // Get all clients and services
         $clients = User::whereHas('roles', function ($q) {
-            $q->where('name', 'user');
+            $q->where('name', 'client');
         })->get();
 
         $services = Service::all();

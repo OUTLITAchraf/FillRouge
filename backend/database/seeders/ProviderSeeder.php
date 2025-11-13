@@ -18,14 +18,14 @@ class ProviderSeeder extends Seeder
         $providerRole = Role::firstOrCreate(['name' => 'provider']);
 
         // Create 10 fake providers
-        foreach (range(1, 10) as $i) {
+        foreach (range(1, 20) as $i) {
             $provider = User::create([
                 'name' => fake()->name(),
                 'email' => fake()->unique()->safeEmail(),
                 'phone' => fake()->unique()->phoneNumber(),
                 'password' => Hash::make('password'),
                 'address' => fake()->address(),
-                'status' => 'approved'
+                'status' => fake()->randomElement(['pending', 'approved', 'rejected'])
             ]);
 
             // Assign role "provider"

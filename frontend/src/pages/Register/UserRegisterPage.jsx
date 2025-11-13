@@ -82,7 +82,7 @@ const UserRegisterPage = () => {
   const onSubmit = async (data) => {
     const formData = {
       ...data,
-      role: "user",
+      role: "client",
     };
 
     const response = await dispatch(userRegister(formData));

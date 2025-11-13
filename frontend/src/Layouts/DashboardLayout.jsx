@@ -16,6 +16,7 @@ export default function DashboardLayout() {
     role === "admin"
       ? [
           { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
+          { label: "Providers", icon: Users, path: "/admin/providers" },
           { label: "Users", icon: Users, path: "/admin/users" },
           { label: "Categories", icon: Layers, path: "/admin/categories" },
           { label: "Services", icon: Briefcase, path: "/admin/services" },

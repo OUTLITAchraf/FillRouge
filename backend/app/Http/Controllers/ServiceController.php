@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
@@ -98,7 +99,6 @@ class ServiceController extends Controller
 
         $services = $query->paginate(12);
         $services->getCollection()->transform(function ($service) use ($user) {
-            Log::info("Images :",[$service->image, $service->image_url]);
             $service->is_reserved = false;
 
             if ($user) {
@@ -299,20 +299,31 @@ class ServiceController extends Controller
      */
     public function update(Request $request, Service $service)
     {
-
-        $this->authorize('update', $service);
-        $validated = $request->validate([
-            'title' => 'nullable|string',
-            'description' => 'nullable|string',
-            'price' => 'nullable|numeric',
+        Log::info('Price :',[$request->only('price')]);
+        $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Make image nullable
         ]);
 
-        $service->update($validated);
+        $data = $request->only(['title', 'description', 'price']);
+
+        // Only update image if provided
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($service->image) {
+                Storage::disk('public')->delete($service->image);
+            }
+            $data['image'] = $request->file('image')->store('services', 'public');
+        }
+
+        $service->update($data);
 
         return response()->json([
             'message' => 'Service Updated Successfully',
             'service' => $service
-        ], 201);
+        ], 200);
     }
 
     /**

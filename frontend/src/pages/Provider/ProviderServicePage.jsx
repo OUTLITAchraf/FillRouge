@@ -14,13 +14,18 @@ import {
   ImagePlus,
   CheckCircle,
   XCircle,
+  Loader2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createService, fetchServices } from "../../features/ServiceSlice";
+import {
+  createService,
+  fetchServices,
+  updateService,
+} from "../../features/ServiceSlice";
 import { toast } from "sonner";
 
-// Validation schema
-const serviceSchema = yup.object().shape({
+// Validation schema - make it dynamic
+const createServiceSchema = yup.object().shape({
   title: yup
     .string()
     .required("Service title is required")
@@ -35,9 +40,25 @@ const serviceSchema = yup.object().shape({
     .positive("Price must be positive")
     .typeError("Price must be a number"),
   category_id: yup.string().required("Category is required"),
-  image: yup.mixed().test("fileRequired", "Image is required", (value) => {
-    return value && value.length > 0;
-  }),
+  image: yup.mixed().required("Image is required"),
+});
+
+const updateServiceSchema = yup.object().shape({
+  title: yup
+    .string()
+    .required("Service title is required")
+    .min(5, "Title must be at least 5 characters"),
+  description: yup
+    .string()
+    .required("Description is required")
+    .min(20, "Description must be at least 20 characters"),
+  price: yup
+    .number()
+    .required("Price is required")
+    .positive("Price must be positive")
+    .typeError("Price must be a number"),
+  category_id: yup.string(),
+  image: yup.mixed().nullable(), // Make image optional for updates
 });
 
 export default function ProviderServiceDashboard() {
@@ -46,6 +67,7 @@ export default function ProviderServiceDashboard() {
     categories,
     services: { data, status },
     createServiceStatus,
+    updateServiceStatus,
   } = useSelector((state) => state.services);
   const dispatch = useDispatch();
 
@@ -58,9 +80,14 @@ export default function ProviderServiceDashboard() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm({
-    resolver: yupResolver(serviceSchema),
+    // Use different schema based on whether editing or creating
+    resolver: yupResolver(
+      data?.data?.[0] ? updateServiceSchema : createServiceSchema
+    ),
     defaultValues: {
+      id: null,
       title: "",
       description: "",
       price: "",
@@ -68,33 +95,41 @@ export default function ProviderServiceDashboard() {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formDataValues) => {
     const formData = new FormData();
 
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("price", data.price);
-    formData.append("category_id", data.category_id);
+    formData.append("title", formDataValues.title);
+    formData.append("description", formDataValues.description);
+    formData.append("price", formDataValues.price);
 
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
+    // Only append image if a new one is selected
+    if (formDataValues.image && formDataValues.image[0]) {
+      formData.append("image", formDataValues.image[0]);
     }
 
     try {
-      const result = await dispatch(createService(formData)).unwrap(); // <-- catches errors from thunk
-      console.log("Result of dispatch create service :", result);
+      let result;
+      if (formDataValues?.id) {
+        
+        result = await dispatch(
+          updateService({ id: formDataValues.id, formData })
+        ).unwrap();
+        console.log("Result of dispatch update service :", result);
+        toast.success("Service Updated Successfully");
+      } else {
+        formData.append("category_id", formDataValues.category_id);
+
+        result = await dispatch(createService(formData)).unwrap();
+        console.log("Result of dispatch create service :", result);
+        toast.success("Service Created Successfully");
+      }
 
       await dispatch(fetchServices());
 
-      toast.success("Service Created Successfully");
-
-      // Close modal only if success
       setShowModal(false);
       reset();
     } catch (error) {
       console.log("Error creating service:", error);
-
-      // Display error toast
       toast.error(
         error?.message ||
           error?.error ||
@@ -107,6 +142,7 @@ export default function ProviderServiceDashboard() {
     if (data?.data?.[0]) {
       // Editing existing service
       reset({
+        id: data?.data?.[0].id,
         title: data?.data?.[0].title,
         description: data?.data?.[0].description,
         price: data?.data?.[0].price,
@@ -115,6 +151,7 @@ export default function ProviderServiceDashboard() {
     } else {
       // Adding new service
       reset({
+        id: null,
         title: "",
         description: "",
         price: "",
@@ -324,7 +361,11 @@ export default function ProviderServiceDashboard() {
                 </div>
 
                 {/* Price and Category Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  className={`grid grid-cols-1 ${
+                    !data?.data?.[0] ? "md:grid-cols-2 gap-4" : ""
+                  }`}
+                >
                   {/* Price */}
                   <div>
                     <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
@@ -347,28 +388,30 @@ export default function ProviderServiceDashboard() {
                   </div>
 
                   {/* Category */}
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
-                      <Tag size={18} className="text-[#2ECC71]" />
-                      Category
-                    </label>
-                    <select
-                      {...register("category_id")}
-                      className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
-                    >
-                      <option value="">Select a category</option>
-                      {categories?.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.display_name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.category_id && (
-                      <p className="text-[#E74C3C] text-sm mt-1">
-                        {errors.category_id.message}
-                      </p>
-                    )}
-                  </div>
+                  {!data?.data?.[0] ? (
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                        <Tag size={18} className="text-[#2ECC71]" />
+                        Category
+                      </label>
+                      <select
+                        {...register("category_id")}
+                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                      >
+                        <option value="">Select a category</option>
+                        {categories?.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.display_name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.category_id && (
+                        <p className="text-[#E74C3C] text-sm mt-1">
+                          {errors.category_id.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
 
                 {/* Image */}
@@ -403,18 +446,27 @@ export default function ProviderServiceDashboard() {
                   </button>
                   <button
                     type="submit"
-                    disabled={createServiceStatus == "loading"}
-                    className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50 ${
+                    disabled={
+                      createServiceStatus == "loading" ||
+                      updateServiceStatus == "loading"
+                    }
+                    className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50 ${
                       data?.data?.[0]
                         ? "bg-[#2ECC71] hover:bg-[#27AE60]"
                         : "bg-[#E67E22] hover:bg-[#D35400]"
                     }`}
                   >
-                    {createServiceStatus == "loading"
-                      ? "Uploading..."
-                      : data?.data?.[0]
-                      ? "Update Service"
-                      : "Add Service"}
+                    {createServiceStatus == "loading" ||
+                    updateServiceStatus == "loading" ? (
+                      <>
+                        <Loader2 className="animate-spin w-5 h-5 text-red-600" />
+                        <span className="font-medium">Uploading...</span>
+                      </>
+                    ) : data?.data?.[0] ? (
+                      "Update Service"
+                    ) : (
+                      "Add Service"
+                    )}
                   </button>
                 </div>
               </div>

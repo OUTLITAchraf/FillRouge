@@ -73,7 +73,7 @@ Route::middleware(['auth:sanctum', 'role:client'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:provider'])->group(function () {
     Route::post('/create-service', [ServiceController::class, 'store']);
-    Route::put('/update-service/{service}', [ServiceController::class, 'update']);
+    Route::post('/update-service/{service}', [ServiceController::class, 'update']);
     Route::delete('/delete-service/{service}', [ServiceController::class, 'destroy']);
 });
 

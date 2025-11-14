@@ -49,9 +49,31 @@ export const fetchService = createAsyncThunk(
 export const createService = createAsyncThunk(
   "services/createService",
   async (formData, { rejectWithValue }) => {
-    try {      
+    try {
       let response = await api.post(`/create-service`, formData, {
-        headers:{"Content-Type": "multipart/form-data"}
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Response :", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const updateService = createAsyncThunk(
+  "services/updateService",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      console.log("service id :", id);
+      for (let item of formData.entries()) {
+        console.log(item[0], item[1]);
+      }
+
+      let response = await api.post(`/update-service/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       console.log("Response :", response.data);
@@ -178,6 +200,7 @@ const ServiceSlice = createSlice({
       status: "idle",
     },
     createServiceStatus: "idle",
+    updateServiceStatus: "idle",
     addReviewStatus: "idle",
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
@@ -256,6 +279,21 @@ const ServiceSlice = createSlice({
       .addCase(createService.rejected, (state, action) => {
         state.createServiceStatus = "failed";
         console.log("Create Service Rejected :", action);
+      });
+
+    builder
+      .addCase(updateService.pending, (state, action) => {
+        state.updateServiceStatus = "loading";
+        console.log("Update Service Pending :", action);
+      })
+      .addCase(updateService.fulfilled, (state, action) => {
+        state.updateServiceStatus = "success";
+
+        console.log("Update Service Fulfilled :", action.payload);
+      })
+      .addCase(updateService.rejected, (state, action) => {
+        state.updateServiceStatus = "failed";
+        console.log("Update Service Rejected :", action);
       });
 
     builder

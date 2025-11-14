@@ -27,6 +27,6 @@ class SendReservationCompletedMail implements ShouldQueue
     public function handle(ReservationCompleted $event): void
     {
         $client = $event->reservation->client;
-        Mail::to($client->email)->send(new ReservationCompletedMail($event->reservation));
+        Mail::to($client)->queue(new ReservationCompletedMail($event->reservation));
     }
 }

@@ -26,6 +26,6 @@ class SendProviderRejectedMail implements ShouldQueue
      */
     public function handle(ProviderRejected $event): void
     {
-        Mail::to($event->provider)->send(new ProviderRejectedMail($event->provider));
+        Mail::to($event->provider)->queue(new ProviderRejectedMail($event->provider));
     }
 }

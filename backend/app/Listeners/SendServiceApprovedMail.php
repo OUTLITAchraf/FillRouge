@@ -26,6 +26,6 @@ class SendServiceApprovedMail  implements ShouldQueue
     public function handle(ServiceApproved $event): void
     {
         $provider = $event->service->provider;
-        Mail::to($provider->email)->send(new ServiceApprovedMail($event->service));
+        Mail::to($provider)->queue(new ServiceApprovedMail($event->service));
     }
 }

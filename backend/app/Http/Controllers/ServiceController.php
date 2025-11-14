@@ -15,7 +15,51 @@ use Illuminate\Support\Facades\Log;
 
 class ServiceController extends Controller
 {
-
+    /**
+     * @OA\Get(
+     *     path="/services",
+     *     summary="Get all services",
+     *     description="Retrieve paginated list of services with filters",
+     *     operationId="getServices",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="category_name",
+     *         in="query",
+     *         description="Filter by category name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="provider_name",
+     *         in="query",
+     *         description="Filter by provider name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="min_price",
+     *         in="query",
+     *         description="Minimum price filter",
+     *         required=false,
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Parameter(
+     *         name="max_price",
+     *         in="query",
+     *         description="Maximum price filter",
+     *         required=false,
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Services fetched successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Services Fetched Successfully"),
+     *             @OA\Property(property="services", type="object")
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -72,6 +116,31 @@ class ServiceController extends Controller
     }
 
 
+    /**
+     * @OA\Get(
+     *     path="/service/{service}",
+     *     summary="Get service details",
+     *     description="Retrieve details of a specific service",
+     *     operationId="getService",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service details fetched successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service Detail Fetched Successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
     public function show(Service $service)
     {
         $this->authorize('view', $service);
@@ -100,9 +169,39 @@ class ServiceController extends Controller
     }
 
 
+    /**
+     * @OA\Post(
+     *     path="/create-service",
+     *     summary="Create a new service",
+     *     description="Create a new service (Provider only)",
+     *     operationId="storeService",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title", "description", "price", "category_id"},
+     *             @OA\Property(property="title", type="string", example="Professional Plumbing"),
+     *             @OA\Property(property="description", type="string", example="Expert plumbing services"),
+     *             @OA\Property(property="price", type="number", format="float", example=50.00),
+     *             @OA\Property(property="category_id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service Created Successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Provider already has a service"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function store(Request $request)
     {
-        $this->authorize('create');
         $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
@@ -154,6 +253,41 @@ class ServiceController extends Controller
     }
 
 
+    /**
+     * @OA\Put(
+     *     path="/update-service/{service}",
+     *     summary="Update a service",
+     *     description="Update service details (Provider only)",
+     *     operationId="updateService",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string", example="Professional Plumbing"),
+     *             @OA\Property(property="description", type="string", example="Expert plumbing services"),
+     *             @OA\Property(property="price", type="number", format="float", example=50.00)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service Updated Successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
     public function update(Request $request, Service $service)
     {
 
@@ -172,6 +306,33 @@ class ServiceController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/delete-service/{service}",
+     *     summary="Delete a service",
+     *     description="Soft delete a service",
+     *     operationId="deleteService",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service Deleted Successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
     public function destroy(Service $service)
     {
         $this->authorize('delete', $service);
@@ -210,6 +371,40 @@ class ServiceController extends Controller
     }
 
 
+    /**
+     * @OA\Patch(
+     *     path="/admin/service/update-status/{service}",
+     *     summary="Update service status",
+     *     description="Approve or reject a service (Admin only)",
+     *     operationId="updateServiceStatus",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(property="status", type="string", enum={"approved", "rejected"}, example="approved")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service status updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Status Of Service Updated successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
     public function updateStatus(Request $request, Service $service)
     {
         $validated = $request->validate([

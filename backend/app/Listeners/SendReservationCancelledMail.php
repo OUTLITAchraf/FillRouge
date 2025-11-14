@@ -32,12 +32,12 @@ class SendReservationCancelledMail implements ShouldQueue
 
         if ($event->cancelledBy === 'provider') {
             $client = $reservation->client;
-            Mail::to($client->email)->send(new ReservationCancelledMail($reservation));
+            Mail::to($client)->queue(new ReservationCancelledMail($reservation));
         }
         
         if ($event->cancelledBy == 'client') {
             $provider = $reservation->service->provider;
-            Mail::to($provider->email)->send(new ReservationCancelledByClientMail($reservation));
+            Mail::to($provider)->queue(new ReservationCancelledByClientMail($reservation));
         }
     }
 }

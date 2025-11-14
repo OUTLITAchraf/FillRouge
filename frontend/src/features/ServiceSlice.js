@@ -226,21 +226,6 @@ const ServiceSlice = createSlice({
       });
 
     builder
-      .addCase(createService.pending, (state, action) => {
-        state.createServiceStatus = "loading";
-        console.log("Create Service Pending :", action);
-      })
-      .addCase(createService.fulfilled, (state, action) => {
-        state.createServiceStatus = "success";
-
-        console.log("Create Service Fulfilled :", action.payload);
-      })
-      .addCase(createService.rejected, (state, action) => {
-        state.createServiceStatus = "failed";
-        console.log("Create Service Rejected :", action);
-      });
-
-    builder
       .addCase(fetchService.pending, (state, action) => {
         state.service.status = "loading";
         console.log("Fetch Service Pending :", action);
@@ -254,6 +239,21 @@ const ServiceSlice = createSlice({
       .addCase(fetchService.rejected, (state, action) => {
         state.service.status = "failed";
         console.log("Fetch Service Rejected :", action);
+      });
+
+    builder
+      .addCase(createService.pending, (state, action) => {
+        state.createServiceStatus = "loading";
+        console.log("Create Service Pending :", action);
+      })
+      .addCase(createService.fulfilled, (state, action) => {
+        state.createServiceStatus = "success";
+
+        console.log("Create Service Fulfilled :", action.payload);
+      })
+      .addCase(createService.rejected, (state, action) => {
+        state.createServiceStatus = "failed";
+        console.log("Create Service Rejected :", action);
       });
 
     builder

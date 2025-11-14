@@ -33,10 +33,6 @@ const serviceSchema = yup.object().shape({
     .positive("Price must be positive")
     .typeError("Price must be a number"),
   category_id: yup.string().required("Category is required"),
-  // image: yup.mixed().test("fileSize", "File is required", function (value) {
-  //   if (this.parent.existingImage) return true;
-  //   return value && value.length > 0;
-  // }),
 });
 
 export default function ProviderServiceDashboard() {
@@ -337,52 +333,6 @@ export default function ProviderServiceDashboard() {
                     )}
                   </div>
                 </div>
-
-                {/* Image Upload */}
-                {/* <div>
-                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
-                    <ImagePlus size={18} className="text-[#2ECC71]" />
-                    Service Image
-                  </label>
-
-                  {imagePreview ? (
-                    <div className="relative">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={removeImage}
-                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                      >
-                        <X size={20} />
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400 transition-colors">
-                      <Upload size={48} className="text-gray-400 mb-3" />
-                      <p className="text-sm font-semibold mb-1 text-[#2C3E50]">
-                        Click to upload image
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        PNG, JPG up to 10MB
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
-                  {errors.image && (
-                    <p className="text-[#E74C3C] text-sm mt-1">
-                      {errors.image.message}
-                    </p>
-                  )}
-                </div> */}
 
                 {/* Submit Buttons */}
                 <div className="flex gap-3 pt-4">

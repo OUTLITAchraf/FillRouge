@@ -19,6 +19,26 @@ use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/reservations",
+     *     summary="Get user reservations",
+     *     description="Retrieve reservations for the authenticated user (client or provider)",
+     *     operationId="getReservations",
+     *     tags={"Reservations"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=201,
+     *         description="Reservations fetched successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Reservation Fetched Successfully"),
+     *             @OA\Property(property="reservations", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function index()
     {
         $user = auth()->user();
@@ -37,6 +57,42 @@ class ReservationController extends Controller
     }
 
 
+    /**
+     * @OA\Post(
+     *     path="/service/{service}/reserve",
+     *     summary="Create a reservation",
+     *     description="Create a new reservation for a service (Client only)",
+     *     operationId="storeReservation",
+     *     tags={"Reservations"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"reservation_date", "description"},
+     *             @OA\Property(property="reservation_date", type="string", format="date", example="2024-12-25"),
+     *             @OA\Property(property="description", type="string", example="Need plumbing service for bathroom")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Reservation created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="You Reserved In This Service Successfully"),
+     *             @OA\Property(property="reservatuon", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=403, description="Service not available for reservation"),
+     *     @OA\Response(response=409, description="Already reserved this service"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function store(Request $request, Service $service)
     {
         if ($service->status === 'pending' || $service->status === 'rejected') {
@@ -76,6 +132,40 @@ class ReservationController extends Controller
     }
 
 
+    /**
+     * @OA\Patch(
+     *     path="/reservation/update-status/{reservation}",
+     *     summary="Update reservation status",
+     *     description="Update the status of a reservation (Provider or Client)",
+     *     operationId="updateReservationStatus",
+     *     tags={"Reservations"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="reservation",
+     *         in="path",
+     *         description="Reservation ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(property="status", type="string", enum={"accepte", "refuse", "completed", "cancelled"}, example="accepte")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Reservation status updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Status Of Reservation Updated Successfully"),
+     *             @OA\Property(property="reservation", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Reservation not found")
+     * )
+     */
     public function updateStatus(Request $request, Reservation $reservation)
     {
         $this->authorize('updateStatus', $reservation);

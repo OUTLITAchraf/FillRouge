@@ -27,6 +27,6 @@ class SendReservationRefusedMail implements ShouldQueue
     public function handle(ReservationRefused $event): void
     {
         $client = $event->reservation->client;
-        Mail::to($client->email)->send(new ReservationRefusedMail($event->reservation));
+        Mail::to($client)->queue(new ReservationRefusedMail($event->reservation));
     }
 }

@@ -7,7 +7,27 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-
+    /**
+     * @OA\Get(
+     *     path="/categories",
+     *     summary="Get all categories",
+     *     description="Retrieve a list of all categories",
+     *     operationId="getCategories",
+     *     tags={"Categories"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="Categories fetched successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Categories Fetched Successfully"),
+     *             @OA\Property(property="categories", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="plumbing"),
+     *                 @OA\Property(property="display_name", type="string", example="Plumbing Services")
+     *             ))
+     *         )
+     *     )
+     * )
+     */
     public function index()
     {
         $categories = Category::all();
@@ -16,6 +36,34 @@ class CategoryController extends Controller
             "categories" => $categories
         ], 201);
     }
+    /**
+     * @OA\Post(
+     *     path="/admin/create-category",
+     *     summary="Create a new category",
+     *     description="Create a new category (Admin only)",
+     *     operationId="storeCategory",
+     *     tags={"Categories"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "display_name"},
+     *             @OA\Property(property="name", type="string", example="plumbing"),
+     *             @OA\Property(property="display_name", type="string", example="Plumbing Services")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Category created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category Created Successfully"),
+     *             @OA\Property(property="category", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -30,6 +78,41 @@ class CategoryController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/admin/update-category/{category}",
+     *     summary="Update a category",
+     *     description="Update an existing category (Admin only)",
+     *     operationId="updateCategory",
+     *     tags={"Categories"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         description="Category ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "display_name"},
+     *             @OA\Property(property="name", type="string", example="plumbing"),
+     *             @OA\Property(property="display_name", type="string", example="Plumbing Services")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Category updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category Updated Successfully"),
+     *             @OA\Property(property="category", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Category not found")
+     * )
+     */
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
@@ -44,6 +127,33 @@ class CategoryController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/admin/delete-category/{category}",
+     *     summary="Delete a category",
+     *     description="Soft delete a category (Admin only)",
+     *     operationId="deleteCategory",
+     *     tags={"Categories"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         description="Category ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Category deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category Deleted Successfully"),
+     *             @OA\Property(property="category", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Category not found")
+     * )
+     */
     public function destroy(Category $category)
     {
         $category->delete();

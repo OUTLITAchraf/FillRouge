@@ -28,6 +28,6 @@ class SendProviderRegisteredMail implements ShouldQueue
     public function handle(ProviderRegistered $event): void
     {
         $admin = User::whereHas('roles', fn($q) => $q->where('name', 'admin'))->get();
-        Mail::to($admin)->send(new ProviderRegisterMail($event->provider));
+        Mail::to($admin)->queue(new ProviderRegisterMail($event->provider));
     }
 }

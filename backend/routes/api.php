@@ -59,7 +59,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/service/{service}/reserve', [ReservationController::class, 'store']);
     Route::get('/reservations', [ReservationController::class, 'index']);
-    Route::put('/reservation/update-status/{reservation}', [ReservationController::class, 'updateStatus']);
+    Route::patch('/reservation/update-status/{reservation}', [ReservationController::class, 'updateStatus']);
 
     Route::delete('/delete-review/{review}', [ReviewController::class, 'destroy']);
 });
@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     Route::get('/admin/providers', [UserController::class, 'getProviders']);
     Route::get('/admin/users', [UserController::class, 'getUsers']);
-    Route::put('/admin/provider/update-status/{provider}', [UserController::class, 'updateStatus']);
+    Route::patch('/admin/provider/update-status/{provider}', [UserController::class, 'updateStatus']);
     Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
 
     Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);
@@ -94,7 +94,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::put('/admin/update-category/{category}', [CategoryController::class, 'update']);
     Route::delete('/admin/delete-category/{category}', [CategoryController::class, 'destroy']);
 
-    Route::put('/admin/service/update-status/{service}', [ServiceController::class, 'updateStatus']);
+    Route::patch('/admin/service/update-status/{service}', [ServiceController::class, 'updateStatus']);
 
     Route::get('/admin/reviews', [ReviewController::class, 'index']);
 });

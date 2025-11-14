@@ -28,6 +28,6 @@ class SendServiceRejectedMail implements ShouldQueue
     {
         $provider = $event->service->provider;
 
-        Mail::to($provider->email)->send(new ServiceRejectedMail($event->service));
+        Mail::to($provider)->queue(new ServiceRejectedMail($event->service));
     }
 }

@@ -12,6 +12,8 @@ import {
   Edit,
   Plus,
   ImagePlus,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { createService, fetchServices } from "../../features/ServiceSlice";
@@ -33,6 +35,9 @@ const serviceSchema = yup.object().shape({
     .positive("Price must be positive")
     .typeError("Price must be a number"),
   category_id: yup.string().required("Category is required"),
+  image: yup.mixed().test("fileRequired", "Image is required", (value) => {
+    return value && value.length > 0;
+  }),
 });
 
 export default function ProviderServiceDashboard() {
@@ -64,19 +69,38 @@ export default function ProviderServiceDashboard() {
   });
 
   const onSubmit = async (data) => {
-    // console.log("Form submitted:", data);
+    const formData = new FormData();
 
-    try {
-      await dispatch(createService(data));
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("price", data.price);
+    formData.append("category_id", data.category_id);
 
-      await dispatch(fetchServices());
-      toast.success("Service Created Successfully");
-    } catch (error) {
-      console.log(error);
+    if (data.image && data.image[0]) {
+      formData.append("image", data.image[0]);
     }
 
-    setShowModal(false);
-    reset();
+    try {
+      const result = await dispatch(createService(formData)).unwrap(); // <-- catches errors from thunk
+      console.log("Result of dispatch create service :", result);
+
+      await dispatch(fetchServices());
+
+      toast.success("Service Created Successfully");
+
+      // Close modal only if success
+      setShowModal(false);
+      reset();
+    } catch (error) {
+      console.log("Error creating service:", error);
+
+      // Display error toast
+      toast.error(
+        error?.message ||
+          error?.error ||
+          "Failed to create service. Please try again."
+      );
+    }
   };
 
   const openModal = () => {
@@ -114,6 +138,17 @@ export default function ProviderServiceDashboard() {
     return colors[status] || "bg-[#95A5A6]";
   };
 
+  const getStatusIcon = (status) => {
+    const icons = {
+      approved: CheckCircle,
+      rejected: XCircle,
+      pending: Edit,
+    };
+    return icons[status] || Edit;
+  };
+
+  const StatusIcon = getStatusIcon(data?.data?.[0].status);
+
   if (status == "loading") {
     return (
       <div className="flex justify-center items-center py-20">
@@ -138,19 +173,22 @@ export default function ProviderServiceDashboard() {
             // Service Exists - Display Service Card
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               {/* Service Image */}
-              <div className="relative h-64 lg:h-80">
+              <div className="relative h-64 lg:h-96">
                 <img
-                  src={data?.data?.[0].image}
+                  src={data?.data?.[0].image_url}
                   alt={data?.data?.[0].title}
                   className="w-full h-full object-cover"
                 />
                 <div
-                  className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold text-white ${getStatusColor(
+                  className={`flex items-center gap-2 absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold text-white ${getStatusColor(
                     data?.data?.[0].status
                   )}`}
                 >
-                  {data?.data?.[0].status.charAt(0).toUpperCase() +
-                    data?.data?.[0].status.slice(1)}
+                  <StatusIcon size={15} />
+                  <p>
+                    {data?.data?.[0].status.charAt(0).toUpperCase() +
+                      data?.data?.[0].status.slice(1)}
+                  </p>
                 </div>
               </div>
 
@@ -200,7 +238,6 @@ export default function ProviderServiceDashboard() {
                     <p className="text-4xl font-bold text-[#2ECC71]">
                       {data?.data?.[0].price} DH
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">per session</p>
                   </div>
                 </div>
               </div>
@@ -332,6 +369,27 @@ export default function ProviderServiceDashboard() {
                       </p>
                     )}
                   </div>
+                </div>
+
+                {/* Image */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                    <ImagePlus size={18} className="text-[#2ECC71]" />
+                    Service Image
+                  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    {...register("image")}
+                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-3"
+                  />
+
+                  {errors.image && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.image.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Submit Buttons */}

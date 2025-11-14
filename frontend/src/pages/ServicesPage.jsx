@@ -245,7 +245,7 @@ function ServicesPage() {
                   {/* Service Image */}
                   <div className="relative h-48 bg-gray-200">
                     <img
-                      src={service.image}
+                      src={service.image_url}
                       alt={service.title}
                       className="w-full h-full object-cover"
                     />

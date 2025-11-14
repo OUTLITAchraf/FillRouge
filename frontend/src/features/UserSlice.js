@@ -22,7 +22,7 @@ export const updateStatusProvider = createAsyncThunk(
   "providers/updateStatusProvider",
   async ({ status, provider_id }, { rejectWithValue }) => {
     try {
-      let response = await api.put(
+      let response = await api.patch(
         `/admin/provider/update-status/${provider_id}`,
         {
           status,

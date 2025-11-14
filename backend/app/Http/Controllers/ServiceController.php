@@ -98,6 +98,7 @@ class ServiceController extends Controller
 
         $services = $query->paginate(12);
         $services->getCollection()->transform(function ($service) use ($user) {
+            Log::info("Images :",[$service->image, $service->image_url]);
             $service->is_reserved = false;
 
             if ($user) {
@@ -114,7 +115,6 @@ class ServiceController extends Controller
             'services' => $services,
         ], 201);
     }
-
 
     /**
      * @OA\Get(
@@ -206,7 +206,8 @@ class ServiceController extends Controller
             'title' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png'
         ]);
 
         $providerId = $request->user()->id;
@@ -217,13 +218,21 @@ class ServiceController extends Controller
                 'message' => 'You already have a service'
             ], 400);
         }
+
         try {
             $service = DB::transaction(function () use ($request, $providerId) {
+
+                $imagePath = null;
+                if ($request->hasFile('image')) {
+                    $imagePath = $request->file('image')->store('services', 'public');
+                }
+
                 $service = Service::create([
                     'title' => $request->title,
                     'description' => $request->description,
                     'price' => $request->price,
                     'status' => 'pending',
+                    'image' => $imagePath,
                     'category_id' => $request->category_id,
                     'provider_id' => $providerId
                 ]);
@@ -232,7 +241,7 @@ class ServiceController extends Controller
                     'service_id' => $service->id
                 ]);
 
-                $service->with(['provider','category']);
+                $service->with(['provider', 'category']);
 
                 return $service;
             });

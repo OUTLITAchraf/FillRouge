@@ -48,9 +48,11 @@ export const fetchService = createAsyncThunk(
 
 export const createService = createAsyncThunk(
   "services/createService",
-  async (data, { rejectWithValue }) => {
-    try {
-      let response = await api.post(`/create-service`, data);
+  async (formData, { rejectWithValue }) => {
+    try {      
+      let response = await api.post(`/create-service`, formData, {
+        headers:{"Content-Type": "multipart/form-data"}
+      });
 
       console.log("Response :", response.data);
       return response.data;
@@ -130,7 +132,7 @@ export const updateStatusService = createAsyncThunk(
   "services/updateStatusService",
   async ({ status, service_id }, { rejectWithValue }) => {
     try {
-      let response = await api.put(
+      let response = await api.patch(
         `/admin/service/update-status/${service_id}`,
         {
           status,
@@ -148,7 +150,7 @@ export const updateStatusReservations = createAsyncThunk(
   "services/updateStatusReservations",
   async ({ status, reservation_id }, { rejectWithValue }) => {
     try {
-      let response = await api.put(
+      let response = await api.patch(
         `/reservation/update-status/${reservation_id}`,
         {
           status,

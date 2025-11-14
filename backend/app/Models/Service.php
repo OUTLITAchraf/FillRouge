@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Service extends Model
 {
@@ -15,11 +16,19 @@ class Service extends Model
         'description',
         'price',
         'status',
+        'image',
         'category_id',
         'provider_id'
     ];
 
     protected $dates = ['deleted_at'];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset(Storage::url($this->image)) : null;
+    }
 
     protected static function booted()
     {

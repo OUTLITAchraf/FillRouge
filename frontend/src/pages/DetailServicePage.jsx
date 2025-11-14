@@ -174,7 +174,7 @@ export default function ServiceDetailPage() {
             {/* Service Image */}
             <div className="h-64 lg:h-full">
               <img
-                src={data.image}
+                src={data.image_url}
                 alt={data.title}
                 className="w-full h-full object-cover"
               />

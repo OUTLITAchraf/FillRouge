@@ -21,27 +21,32 @@ import FAQPage from "./pages/FAQPage";
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "sonner";
 import AdminProvidersPage from "./pages/Admin/AdminProvidersPage";
+import ClientRoute from "./components/ProtectedRoutes/ClientRoute";
+import UnauthorizedPage from "./pages/Unauthorized";
 
 function App() {
   return (
     <>
       {/* <ToastContainer position="top-right" autoClose={3000}/> */}
-      <Toaster richColors position="top-right"/>
+      <Toaster richColors position="top-right" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/user/register" element={<UserRegisterPage />} />
           <Route path="/provider/register" element={<ProviderRegisterPage />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route element={<UserLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/faq" element={<FAQPage />} />
 
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<DetailServicePage />} />
-            <Route
-              path="/user/reservation"
-              element={<UserReservationsPage />}
-            />
+            <Route element={<ClientRoute />}>
+              <Route
+                path="/user/reservation"
+                element={<UserReservationsPage />}
+              />
+            </Route>
           </Route>
           <Route path="/provider" element={<DashboardLayout />}>
             <Route path="dashboard" element={<ProviderDasboardPage />} />

@@ -69,10 +69,10 @@ export const userLogout = createAsyncThunk(
     try {
       let response = await api.post("/logout");
       console.log("Response :", response);
-      return response.data
+      return response.data;
     } catch (error) {
       console.log("Error :", error);
-      return rejectWithValue(error)
+      return rejectWithValue(error);
     }
   }
 );
@@ -90,7 +90,12 @@ const AuthSlice = createSlice({
     },
     userLogout_Status: "idle",
   },
-  reducers: {},
+  reducers: {
+    clearAuth: () => {
+      Cookies.remove("authToken");
+      Cookies.remove("authUser");
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(userRegister.pending, (state, action) => {
@@ -102,7 +107,6 @@ const AuthSlice = createSlice({
         state.userRegister.status = "success";
         state.token = action.payload.token;
         state.user = action.payload.user;
-
 
         console.log("Register Fulfilled:", action);
       })
@@ -140,8 +144,6 @@ const AuthSlice = createSlice({
       .addCase(userLogout.fulfilled, (state, action) => {
         state.userLogout_Status = "success";
         state.user = null;
-        Cookies.remove("authToken");
-        Cookies.remove("authUser");
 
         console.log("User Logout Fulfilled:", action);
       })
@@ -153,4 +155,5 @@ const AuthSlice = createSlice({
   },
 });
 
+export const {clearAuth} = AuthSlice.actions;
 export default AuthSlice.reducer;

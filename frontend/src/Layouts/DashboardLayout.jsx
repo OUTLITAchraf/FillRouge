@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Home, Calendar, Star, LogOut, Menu, X, Users, Layers, Briefcase, Loader2 } from "lucide-react";
+import {
+  Home,
+  Calendar,
+  Star,
+  LogOut,
+  Menu,
+  X,
+  Users,
+  Layers,
+  Briefcase,
+  Loader2,
+} from "lucide-react";
 import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userLogout } from "../features/AuthSlice";
+import { clearAuth, userLogout } from "../features/AuthSlice";
 import { fetchCategories } from "../features/ServiceSlice";
 
 export default function DashboardLayout() {
@@ -13,14 +24,24 @@ export default function DashboardLayout() {
   const role = user?.roles?.[0];
 
   useEffect(() => {
-    dispatch(fetchCategories())
-  }, [dispatch])
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  console.log(userLogout_Status);
-
-  if (userLogout_Status == 'success') {
-    return <Navigate to={'/'} replace />
-  }
+  const handleLogout = async () => {
+    try {
+      await dispatch(userLogout()).unwrap();
+      console.log("Logout Success");
+      dispatch(clearAuth());
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // useEffect(() => {
+  //   if (userLogout_Status == 'success') {
+  //     navigate('/login')
+  //   }
+  // })
 
   // 🔹 Define menu items based on role
   const menuItems =
@@ -36,14 +57,16 @@ export default function DashboardLayout() {
       : [
         { label: "Dashboard", icon: Home, path: "/provider/dashboard" },
         { label: "Service", icon: Briefcase, path: "/provider/service" },
-        { label: "Reservations", icon: Calendar, path: "/provider/reservations" },
+        {
+          label: "Reservations",
+          icon: Calendar,
+          path: "/provider/reservations",
+        },
         { label: "Reviews", icon: Star, path: "/provider/reviews" },
       ];
 
   const linkClasses = ({ isActive }) =>
-    `w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium ${isActive
-      ? "bg-[#2ECC71] text-white"
-      : "text-gray-300 hover:bg-gray-700"
+    `w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium ${isActive ? "bg-[#2ECC71] text-white" : "text-gray-300 hover:bg-gray-700"
     }`;
 
   const getInitials = (name) =>
@@ -97,24 +120,19 @@ export default function DashboardLayout() {
             {/* Logout */}
             <button
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-[#E67E22] hover:bg-[#E67E22]/10 transition-colors"
-              onClick={() => {
-                dispatch(userLogout());
-              }}
+              onClick={handleLogout}
             >
-              {
-                userLogout_Status == "loading" ? (
-                  <>
-                    <Loader2 className="animate-spin" size={20} />
-                    <span className="font-medium">Logout...</span>
-                  </>
-                ) : (
-                  <>
-                    <LogOut size={20} />
-                    <span className="font-medium">Logout</span>
-                  </>
-                )
-              }
-
+              {userLogout_Status == "loading" ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span className="font-medium">Logout...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut size={20} />
+                  <span className="font-medium">Logout</span>
+                </>
+              )}
             </button>
           </nav>
         </div>

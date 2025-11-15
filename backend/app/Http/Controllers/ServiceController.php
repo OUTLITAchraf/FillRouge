@@ -207,7 +207,7 @@ class ServiceController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png'
+            'image' => 'required|image|mimes:jpg,jpeg,png'
         ]);
 
         $providerId = $request->user()->id;
@@ -301,10 +301,10 @@ class ServiceController extends Controller
     {
         Log::info('Price :',[$request->only('price')]);
         $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'price' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // Make image nullable
+            'title' => 'nullable|string',
+            'description' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg'
         ]);
 
         $data = $request->only(['title', 'description', 'price']);

@@ -10,7 +10,7 @@ export default function DashboardLayout() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const role = user?.roles?.[0]?.name;
+  const role = user?.roles?.[0];
 
   useEffect(() => {
     dispatch(fetchCategories())
@@ -18,7 +18,7 @@ export default function DashboardLayout() {
 
   // 🔹 Define menu items based on role
   const menuItems =
-    role === "admin"
+    role.name === "admin"
       ? [
           { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
           { label: "Providers", icon: Users, path: "/admin/providers" },
@@ -62,7 +62,7 @@ export default function DashboardLayout() {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-600">
             <h1 className="text-xl font-bold text-white capitalize">
-              {role} Panel
+              {role.display_name} Panel
             </h1>
             <button
               onClick={() => setIsSidebarOpen(false)}
@@ -125,7 +125,7 @@ export default function DashboardLayout() {
               <Menu size={24} />
             </button>
             <h2 className="text-2xl font-bold" style={{ color: "#2C3E50" }}>
-              {role} Dashboard
+              {role.display_name} Dashboard
             </h2>
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"

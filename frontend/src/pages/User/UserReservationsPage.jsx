@@ -8,6 +8,9 @@ import {
   XCircle,
   X,
   Loader2,
+  Search,
+  Filter,
+  Briefcase,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,11 +29,26 @@ const UserReservationsPage = () => {
     open: false,
     reservation_id: null,
   });
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchServicetitle, setSearchServicetitle] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch reservations
   useEffect(() => {
-    dispatch(fetchReservations());
-  }, [dispatch]);
+    const filter = {};
+    filter.page = currentPage;
+    dispatch(fetchReservations(filter));
+  }, [dispatch, currentPage]);
+
+  const handleFilter = () => {
+    const filters = {};
+
+    if (selectedStatus) filters.status = selectedStatus;
+    if (searchServicetitle) filters.service_title = searchServicetitle;
+
+
+    dispatch(fetchReservations(filters));
+  };
 
   const confirmDelete = (reservation_id) => {
     setDeleteModal({ open: true, reservation_id });
@@ -67,12 +85,19 @@ const UserReservationsPage = () => {
         borderColor: "border-yellow-300",
         icon: Clock,
       },
-      confirmed: {
-        label: "Confirmed",
+      accepte: {
+        label: "Accepted",
         bgColor: "bg-green-100",
         textColor: "text-green-800",
         borderColor: "border-green-300",
         icon: CheckCircle,
+      },
+      refuse: {
+        label: "Refused",
+        bgColor: "bg-red-100",
+        textColor: "text-red-800",
+        borderColor: "border-red-300",
+        icon: XCircle,
       },
       completed: {
         label: "Completed",
@@ -83,9 +108,9 @@ const UserReservationsPage = () => {
       },
       cancelled: {
         label: "Cancelled",
-        bgColor: "bg-red-100",
-        textColor: "text-red-800",
-        borderColor: "border-red-300",
+        bgColor: "bg-gray-100",
+        textColor: "text-gray-600",
+        borderColor: "border-gray-300",
         icon: XCircle,
       },
     };
@@ -106,19 +131,42 @@ const UserReservationsPage = () => {
 
   // Statistics
   const stats = {
-    total: data.length,
-    pending: data.filter((r) => r.status === "pending").length,
-    confirmed: data.filter((r) => r.status === "confirmed").length,
-    completed: data.filter((r) => r.status === "completed").length,
-    cancelled: data.filter((r) => r.status === "cancelled").length,
+    total: data?.data?.length,
+    pending: data?.data?.filter((r) => r.status === "pending").length,
+    accepte: data?.data?.filter((r) => r.status === "accepte").length,
+    refuse: data?.data?.filter((r) => r.status === "refuse").length,
+    completed: data?.data?.filter((r) => r.status === "completed").length,
+    cancelled: data?.data?.filter((r) => r.status === "cancelled").length,
   };
+
+  const handleClearFilters = () => {
+    setSelectedStatus("");
+    setSearchServicetitle("");
+    setCurrentPage(1);
+
+    dispatch(fetchReservations());
+  };
+
+  if (status == "loading") {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2 text-[#2C3E50]">My Reservations</h1>
+        <p className="text-gray-600">Manage and track all your service reservations</p>
+      </div>
+
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-gray-400">
-          <div className="text-2xl font-bold text-gray-700">{stats.total}</div>
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
+        <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-purple-400">
+          <div className="text-2xl font-bold text-purple-700">{stats.total}</div>
           <div className="text-sm text-gray-600">Total</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-yellow-400">
@@ -129,9 +177,15 @@ const UserReservationsPage = () => {
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-green-400">
           <div className="text-2xl font-bold text-green-700">
-            {stats.confirmed}
+            {stats.accepte}
           </div>
-          <div className="text-sm text-gray-600">Confirmed</div>
+          <div className="text-sm text-gray-600">Accepted</div>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-red-400">
+          <div className="text-2xl font-bold text-red-700">
+            {stats.refuse}
+          </div>
+          <div className="text-sm text-gray-600">Refused</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-blue-400">
           <div className="text-2xl font-bold text-blue-700">
@@ -139,39 +193,115 @@ const UserReservationsPage = () => {
           </div>
           <div className="text-sm text-gray-600">Completed</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-red-400">
-          <div className="text-2xl font-bold text-red-700">
+        <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-gray-400">
+          <div className="text-2xl font-bold text-gray-700">
             {stats.cancelled}
           </div>
           <div className="text-sm text-gray-600">Cancelled</div>
         </div>
       </div>
 
-      {/* Reservations List */}
-      {status == "loading" ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
+      {/* Filters Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter size={20} className="text-[#2ECC71]" />
+          <h2 className="text-lg font-semibold text-[#2C3E50]">Filter Reservations</h2>
         </div>
-      ) : data.length === 0 ? (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Search by Service Title */}
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+              Search by Service
+            </label>
+            <div className="relative">
+              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search service by title..."
+                value={searchServicetitle}
+                onChange={(e) => {
+                  setSearchServicetitle(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+              />
+            </div>
+          </div>
+
+          {/* Filter by Status */}
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+              Filter by Status
+            </label>
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+            >
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="accepte">Accepted</option>
+              <option value="refuse">Refused</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+
+        <div className="mt-4 flex justify-end space-x-2">
+          <button
+            onClick={handleFilter}
+            className="px-4 py-2 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors flex items-center gap-2"
+          >
+            Apply Filter
+          </button>
+          <button
+            onClick={handleClearFilters}
+            className="px-4 py-2 bg-[#ECF0F1] text-[#2C3E50] rounded-lg font-semibold hover:bg-[#BDC3C7] transition-colors flex items-center gap-2"
+          >
+            <X size={16} />
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      {/* Reservations List */}
+      {data?.data?.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl shadow-md">
           <Calendar className="w-20 h-20 mx-auto text-gray-300 mb-4" />
           <h3 className="text-2xl font-bold text-gray-700 mb-2">
             No reservations found
           </h3>
           <p className="text-gray-500 mb-6">
-            You haven't made any reservations yet or no matches found
+            {selectedStatus || searchServicetitle
+              ? "No reservations match your filters. Try adjusting your search criteria."
+              : "You haven't made any reservations yet."}
           </p>
-          <Link
-            to="/services"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-[#E67E22] to-[#D35400] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
-          >
-            Browse Services
-          </Link>
+          {(selectedStatus || searchServicetitle) ? (
+            <button
+              onClick={handleClearFilters}
+              className="inline-block px-6 py-3 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors"
+            >
+              Clear Filters
+            </button>
+          ) : (
+            <Link
+              to="/services"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-[#E67E22] to-[#D35400] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+            >
+              Browse Services
+            </Link>
+          )}
         </div>
       ) : (
         <>
           <div className="space-y-4 mb-8">
-            {data.map((reservation) => {
+            {data?.data?.map((reservation) => {
               const statusConfig = getStatusConfig(reservation.status);
               const StatusIcon = statusConfig.icon;
 
@@ -191,7 +321,6 @@ const UserReservationsPage = () => {
                           <Calendar className="w-4 h-4" />
                           <span className="text-sm font-medium">
                             {formatDate(reservation.reservation_date)}
-                            {/* {reservation.reservation_date} */}
                           </span>
                         </div>
                       </div>
@@ -209,10 +338,18 @@ const UserReservationsPage = () => {
 
                     {/* Description */}
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-start gap-2 mb-2">
+                        <Briefcase className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-gray-700 text-md">
+                            Service title: <span className="text-gray-600 text-sm leading-relaxed">{reservation.service.title}</span>
+                          </h4>
+                        </div>
+                      </div>
                       <div className="flex items-start gap-2">
                         <FileText className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
                         <div>
-                          <h4 className="font-semibold text-gray-700 mb-1 text-sm">
+                          <h4 className="font-semibold text-gray-700 mb-1 text-md">
                             Description:
                           </h4>
                           <p className="text-gray-600 text-sm leading-relaxed">
@@ -245,12 +382,56 @@ const UserReservationsPage = () => {
           </div>
         </>
       )}
+
+      {/* Pagination */}
+      {data.data && data.last_page > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <button
+            onClick={() => {
+              const newPage = Math.max(currentPage - 1, 1);
+              setCurrentPage(newPage);
+            }}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+
+          {Array.from({ length: data.last_page }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => {
+                setCurrentPage(index + 1);
+              }}
+              className={`w-10 h-10 rounded-lg font-semibold transition-colors ${currentPage === index + 1
+                ? "bg-[#2ECC71] text-white"
+                : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
+                }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => {
+              const newPage = Math.min(currentPage + 1, data.last_page);
+              setCurrentPage(newPage);
+            }}
+            disabled={currentPage === data.last_page}
+            className="px-4 py-2 border-2 border-gray-200 rounded-lg font-semibold hover:border-[#2ECC71] hover:text-[#2ECC71] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
       {deleteModal.open && (
         <div className="fixed inset-0 flex items-center justify-center bg-white/30 backdrop-blur-sm z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold text-[#2C3E50]">
-                Confirm Cancelle
+                Confirm Cancellation
               </h2>
               <button
                 type="button"
@@ -262,7 +443,7 @@ const UserReservationsPage = () => {
             </div>
 
             <p className="mb-6">
-              Are you sure you want to cancelle this reservation?
+              Are you sure you want to cancel this reservation?
             </p>
             <div className="flex justify-end gap-2">
               <button
@@ -273,10 +454,10 @@ const UserReservationsPage = () => {
                 {updateStatusReservationsStatus == "loading" ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin" size={20} />
-                    Cancelling Reservation ...
+                    Cancelling...
                   </span>
                 ) : (
-                  "Cancelle"
+                  "Cancel Reservation"
                 )}
               </button>
             </div>

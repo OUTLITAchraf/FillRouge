@@ -1,8 +1,8 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 
-export default function ClientRoute({ children }) {
+export default function ClientRoute() {
   const token = Cookies.get("authToken");
   const user = Cookies.get("authUser")? JSON.parse(Cookies.get("authUser")):null;
   const role = user?.roles?.[0].name;
@@ -16,5 +16,5 @@ export default function ClientRoute({ children }) {
   }
 
 
-  return children;
+  return <Outlet/>;
 }

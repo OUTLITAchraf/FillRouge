@@ -39,19 +39,39 @@ class ReservationController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
+        $query = Reservation::query()->with(['client', 'service']);
+
         if ($user->hasRole('client')) {
-            $reservations = Reservation::where('client_id', $user->id)->get();
+            $query->where('client_id', $user->id);
         } else {
-            $reservations = Reservation::where('service_id', $user->service_id)->get();
+            $query->where('service_id', $user->service_id);
         }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('client_name')) {
+            $query->whereHas('client', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->client_name}%");
+            });
+        }
+
+        if ($request->filled('service_title')) {
+            $query->whereHas('service', function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->service_title}%");
+            });
+        }
+
+        $reservations = $query->paginate(10);
 
         return response()->json([
             'message' => 'Reservation Fetched Successfully',
-            'reservations' => $reservations->load('client'),
+            'reservations' => $reservations,
             'user' => $user
         ], 201);
     }

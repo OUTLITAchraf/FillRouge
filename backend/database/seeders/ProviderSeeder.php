@@ -18,7 +18,7 @@ class ProviderSeeder extends Seeder
         $providerRole = Role::firstOrCreate(['name' => 'provider']);
 
         // Create 10 fake providers
-        foreach (range(1, 20) as $i) {
+        foreach (range(1, 100) as $i) {
             $provider = User::create([
                 'name' => fake()->name(),
                 'email' => fake()->unique()->safeEmail(),
@@ -32,6 +32,6 @@ class ProviderSeeder extends Seeder
             $provider->addRole($providerRole);
         }
 
-        $this->command->info('✅ 10 providers seeded successfully!');
+        // $this->command->info('✅ 10 providers seeded successfully!');
     }
 }

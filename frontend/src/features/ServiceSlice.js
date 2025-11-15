@@ -139,9 +139,11 @@ export const reserverService = createAsyncThunk(
 
 export const fetchReservations = createAsyncThunk(
   "services/fetchReservations",
-  async (_, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      let response = await api.get("/reservations");
+      let response = await api.get("/reservations",{
+        params: filters
+      });
       console.log("Response Reservation :", response);
       return response.data;
     } catch (error) {

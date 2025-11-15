@@ -19,7 +19,7 @@ class ClientSeeder extends Seeder
         $userRole = Role::firstOrCreate(['name' => 'client']);
 
         // Create 10 fake users
-        foreach (range(1, 30) as $i) {
+        foreach (range(1, 200) as $i) {
             $user = User::create([
                 'name' => fake()->name(),
                 'email' => fake()->unique()->safeEmail(),
@@ -33,6 +33,6 @@ class ClientSeeder extends Seeder
             $user->addRole($userRole);
         }
 
-        $this->command->info('✅ 10 users seeded successfully!');
+        // $this->command->info('✅ 10 users seeded successfully!');
     }
 }

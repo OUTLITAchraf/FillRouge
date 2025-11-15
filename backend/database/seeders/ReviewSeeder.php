@@ -2,41 +2,32 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Review;
-use App\Models\User;
 use App\Models\Service;
+use App\Models\User;
+use App\Models\Review;
+use Illuminate\Database\Seeder;
 
 class ReviewSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Get all clients and services
-        $clients = User::whereHas('roles', function ($q) {
-            $q->where('name', 'client');
-        })->get();
-
+        $clients = User::whereHas('roles', fn($q) => $q->where('name', 'client'))->pluck('id');
         $services = Service::where('status','approved')->pluck('id');
 
-        // If you have no users or services yet, exit early
-        if ($clients->isEmpty() || $services->isEmpty()) {
-            $this->command->warn('⚠️ No clients or services found. Please seed them first.');
-            return;
+        foreach ($clients as $client) {
+            // Review 2–4 random services
+            $servicesToReview = $services->random(rand(2, 10));
+
+            foreach ($servicesToReview as $service) {
+                Review::create([
+                    'rating' => rand(1, 5),
+                    'comment' => fake()->sentence(),
+                    'client_id' => $client,
+                    'service_id' => $service,
+                ]);
+            }
         }
 
-        // Create 20 random reviews
-        foreach (range(1, 50) as $i) {
-            Review::create([
-                'rating' => rand(1, 5),
-                'comment' => fake()->sentence(),
-                'client_id' => $clients->random()->id,
-                'service_id' => $services->random(),
-            ]);
-        }
-
-        $this->command->info('✅ 20 reviews seeded successfully!');
+        // $this->command->info("✅ Reviews seeded successfully! (No duplicate reviews per service)");
     }
 }

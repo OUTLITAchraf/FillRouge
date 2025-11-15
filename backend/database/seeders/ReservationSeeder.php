@@ -2,33 +2,33 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Reservation;
-use App\Models\User;
 use App\Models\Service;
+use App\Models\User;
+use App\Models\Reservation;
+use Illuminate\Database\Seeder;
 
 class ReservationSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $clients = User::whereHas('roles', function ($q) {
-            $q->where('name', 'client');
-        })->pluck('id');
-        $services = Service::where('status','approved')->pluck('id'); // all services
+        $clients = User::whereHas('roles', fn($q) => $q->where('name', 'client'))->pluck('id');
+        $services = Service::where('status','approved')->pluck('id');
 
-        if ($clients->isEmpty() || $services->isEmpty()) {
-            $this->command->info('No clients or services found, skipping reservations seeding.');
-            return;
+        foreach ($clients as $client) {
+            // Reserve 3–5 random services
+            $servicesToReserve = $services->random(rand(3, 11));
+
+            foreach ($servicesToReserve as $service) {
+                Reservation::create([
+                    'status' => fake()->randomElement(['pending', 'accepte', 'refuse', 'completed', 'cancelled']),
+                    'reservation_date' => fake()->dateTimeBetween('-1 month', '+1 month'),
+                    'description' => fake()->sentence(),
+                    'client_id' => $client,
+                    'service_id' => $service,
+                ]);
+            }
         }
 
-        foreach (range(1, 50) as $i) {
-            Reservation::create([
-                'status' => fake()->randomElement(['pending', 'accepte', 'refuse', 'completed', 'cancelled']),
-                'reservation_date' => fake()->dateTimeBetween('-1 month', '+2 months')->format('Y-m-d H:i:s'),
-                'description' => fake()->sentence(6),
-                'client_id' => $clients->random(),
-                'service_id' => $services->random(),
-            ]);
-        }
+        // $this->command->info("✅ Reservations seeded successfully! (No duplicate reservations per service)");
     }
 }

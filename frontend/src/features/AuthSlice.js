@@ -144,8 +144,6 @@ const AuthSlice = createSlice({
         Cookies.remove("authUser");
 
         console.log("User Logout Fulfilled:", action);
-        state.userLogout_Status = "idle";
-
       })
       .addCase(userLogout.rejected, (state, action) => {
         state.userLogout_Status = "failde";

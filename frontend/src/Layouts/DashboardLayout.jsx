@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Home, Calendar, Star, LogOut, Menu, X, Users, Layers, Briefcase } from "lucide-react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Home, Calendar, Star, LogOut, Menu, X, Users, Layers, Briefcase, Loader2 } from "lucide-react";
+import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
 import { fetchCategories } from "../features/ServiceSlice";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { user, userLogout_Status } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const role = user?.roles?.[0];
@@ -16,29 +16,34 @@ export default function DashboardLayout() {
     dispatch(fetchCategories())
   }, [dispatch])
 
+  console.log(userLogout_Status);
+
+  if (userLogout_Status == 'success') {
+    return <Navigate to={'/'} replace />
+  }
+
   // 🔹 Define menu items based on role
   const menuItems =
     role.name === "admin"
       ? [
-          { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
-          { label: "Providers", icon: Users, path: "/admin/providers" },
-          { label: "Users", icon: Users, path: "/admin/users" },
-          { label: "Categories", icon: Layers, path: "/admin/categories" },
-          { label: "Services", icon: Briefcase, path: "/admin/services" },
-          { label: "Reviews", icon: Star, path: "/admin/reviews" },
-        ]
+        { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
+        { label: "Providers", icon: Users, path: "/admin/providers" },
+        { label: "Users", icon: Users, path: "/admin/users" },
+        { label: "Categories", icon: Layers, path: "/admin/categories" },
+        { label: "Services", icon: Briefcase, path: "/admin/services" },
+        { label: "Reviews", icon: Star, path: "/admin/reviews" },
+      ]
       : [
-          { label: "Dashboard", icon: Home, path: "/provider/dashboard" },
-          { label: "Service", icon: Briefcase, path: "/provider/service" },
-          { label: "Reservations", icon: Calendar, path: "/provider/reservations" },
-          { label: "Reviews", icon: Star, path: "/provider/reviews" },
-        ];
+        { label: "Dashboard", icon: Home, path: "/provider/dashboard" },
+        { label: "Service", icon: Briefcase, path: "/provider/service" },
+        { label: "Reservations", icon: Calendar, path: "/provider/reservations" },
+        { label: "Reviews", icon: Star, path: "/provider/reviews" },
+      ];
 
   const linkClasses = ({ isActive }) =>
-    `w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium ${
-      isActive
-        ? "bg-[#2ECC71] text-white"
-        : "text-gray-300 hover:bg-gray-700"
+    `w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors font-medium ${isActive
+      ? "bg-[#2ECC71] text-white"
+      : "text-gray-300 hover:bg-gray-700"
     }`;
 
   const getInitials = (name) =>
@@ -53,9 +58,8 @@ export default function DashboardLayout() {
     <div className="flex h-screen" style={{ backgroundColor: "#ECF0F1" }}>
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }`}
         style={{ backgroundColor: "#2C3E50" }}
       >
         <div className="flex flex-col h-full">
@@ -95,11 +99,22 @@ export default function DashboardLayout() {
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-[#E67E22] hover:bg-[#E67E22]/10 transition-colors"
               onClick={() => {
                 dispatch(userLogout());
-                navigate("/login");
               }}
             >
-              <LogOut size={20} />
-              <span className="font-medium">Logout</span>
+              {
+                userLogout_Status == "loading" ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    <span className="font-medium">Logout...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut size={20} />
+                    <span className="font-medium">Logout</span>
+                  </>
+                )
+              }
+
             </button>
           </nav>
         </div>

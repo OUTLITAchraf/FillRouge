@@ -23,6 +23,9 @@ import { Toaster } from "sonner";
 import AdminProvidersPage from "./pages/Admin/AdminProvidersPage";
 import ClientRoute from "./components/ProtectedRoutes/ClientRoute";
 import UnauthorizedPage from "./pages/Unauthorized";
+import GuestRoute from "./components/ProtectedRoutes/GuestRoute";
+import AdminRoute from "./components/ProtectedRoutes/AdminRoute";
+import ProviderRoute from "./components/ProtectedRoutes/ProviderRoute";
 
 function App() {
   return (
@@ -31,9 +34,11 @@ function App() {
       <Toaster richColors position="top-right" />
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/user/register" element={<UserRegisterPage />} />
-          <Route path="/provider/register" element={<ProviderRegisterPage />} />
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/user/register" element={<UserRegisterPage />} />
+            <Route path="/provider/register" element={<ProviderRegisterPage />} />
+          </Route>
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route element={<UserLayout />}>
             <Route path="/" element={<HomePage />} />
@@ -48,19 +53,23 @@ function App() {
               />
             </Route>
           </Route>
-          <Route path="/provider" element={<DashboardLayout />}>
-            <Route path="dashboard" element={<ProviderDasboardPage />} />
-            <Route path="service" element={<ProviderServicePage />} />
-            <Route path="reservations" element={<ProviderReservationsPage />} />
-            <Route path="reviews" element={<ProviderReviewsPage />} />
+          <Route element={<ProviderRoute />}>
+            <Route path="/provider" element={<DashboardLayout />}>
+              <Route path="dashboard" element={<ProviderDasboardPage />} />
+              <Route path="service" element={<ProviderServicePage />} />
+              <Route path="reservations" element={<ProviderReservationsPage />} />
+              <Route path="reviews" element={<ProviderReviewsPage />} />
+            </Route>
           </Route>
-          <Route path="/admin" element={<DashboardLayout />}>
-            <Route path="dashboard" element={<AdminDasboardPage />} />
-            <Route path="providers" element={<AdminProvidersPage />} />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="categories" element={<AdminCategoriesPage />} />
-            <Route path="services" element={<AdminServicesPage />} />
-            <Route path="reviews" element={<AdminReviewsPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<DashboardLayout />}>
+              <Route path="dashboard" element={<AdminDasboardPage />} />
+              <Route path="providers" element={<AdminProvidersPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="categories" element={<AdminCategoriesPage />} />
+              <Route path="services" element={<AdminServicesPage />} />
+              <Route path="reviews" element={<AdminReviewsPage />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

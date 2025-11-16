@@ -202,12 +202,27 @@ export const createCategory = createAsyncThunk(
   }
 );
 
+export const updateCategory = createAsyncThunk(
+  "services/updateCategory",
+  async (data, { rejectWithValue }) => {
+    try {
+      let response = await api.put(`/admin/update-category/${data.id}`, data);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
     fetchCategoriesStatus: "idle",
     categories: null,
     createCategoryStatus: "idle",
+    updateCategoryStatus: "idle",
     services: {
       data: [],
       status: "idle",
@@ -443,6 +458,21 @@ const ServiceSlice = createSlice({
       .addCase(createCategory.rejected, (state, action) => {
         state.createCategoryStatus = "failed";
         console.log("Create Category Rejected :", action);
+      });
+
+    builder
+      .addCase(updateCategory.pending, (state, action) => {
+        state.updateCategoryStatus = "loading";
+        console.log("Update Category Pending :", action);
+      })
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        state.updateCategoryStatus = "success";
+
+        console.log("Update Category Fulfilled :", action.payload);
+      })
+      .addCase(updateCategory.rejected, (state, action) => {
+        state.updateCategoryStatus = "failed";
+        console.log("Update Category Rejected :", action);
       });
   },
 });

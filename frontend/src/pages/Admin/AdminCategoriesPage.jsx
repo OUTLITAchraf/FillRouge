@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Tag, Plus, Edit, Trash2, X, Loader2, FolderOpen } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createCategory, fetchCategories } from "../../features/ServiceSlice";
+import { createCategory, fetchCategories, updateCategory } from "../../features/ServiceSlice";
 import { toast } from "sonner";
 
 // Validation schema
@@ -20,7 +20,8 @@ const categorySchema = yup.object().shape({
 });
 
 export default function AdminCategoriesPage() {
-  const { categories, createCategoryStatus, fetchCategoriesStatus } = useSelector((state) => state.services);
+  const { categories, createCategoryStatus, updateCategoryStatus, fetchCategoriesStatus } =
+    useSelector((state) => state.services);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState({
@@ -51,6 +52,7 @@ export default function AdminCategoriesPage() {
   const openEditModal = (category) => {
     setEditingCategory(category);
     reset({
+      id: category.id,
       name: category.name,
       display_name: category.display_name,
     });
@@ -64,25 +66,38 @@ export default function AdminCategoriesPage() {
   };
 
   const onSubmit = async (data) => {
-    try {
-      await dispatch(createCategory(data)).unwrap();
-      setShowModal(false)
-      toast.success("Category Created Successfully")
+    if (editingCategory) {      
+      try {
 
-      dispatch(fetchCategories())
+        await dispatch(updateCategory(data)).unwrap();
+        setShowModal(false)
+        toast.success("Category Updated Successfully")
 
-    } catch (error) {
-      console.log(error.response?.data?.message);
-      setShowModal(true)
-      if (error.status == 409) {
-        toast.error("This category already exists")
-      } else {
-        toast.error("Request Failed")
+        dispatch(fetchCategories())
+      } catch (error) {
+        console.log("Error :", error);
+        setShowModal(true)
+
+        toast.error("Request Failed!!!")
 
       }
+    } else {
+      try {
+        await dispatch(createCategory(data)).unwrap();
+        setShowModal(false);
+        toast.success("Category Created Successfully");
+
+        dispatch(fetchCategories());
+      } catch (error) {
+        console.log(error.response?.data?.message);
+        setShowModal(true);
+        if (error.status == 409) {
+          toast.error("This category already exists");
+        } else {
+          toast.error("Request Failed");
+        }
+      }
     }
-
-
   };
 
   const openDeleteModal = (category) => {
@@ -93,16 +108,14 @@ export default function AdminCategoriesPage() {
     setDeleteModal({ open: false, category: null });
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async () => { };
 
-  };
-
-  if (fetchCategoriesStatus == 'loading') {
+  if (fetchCategoriesStatus == "loading") {
     return (
       <div className="flex justify-center items-center py-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]" />
       </div>
-    )
+    );
   }
 
   return (
@@ -264,13 +277,13 @@ export default function AdminCategoriesPage() {
                   </button>
                   <button
                     type="submit"
-                    disabled={createCategoryStatus == "loading"}
+                    disabled={createCategoryStatus == "loading" || updateCategoryStatus == "loading"}
                     className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50 ${editingCategory
-                      ? "bg-[#2ECC71] hover:bg-[#27AE60]"
-                      : "bg-[#E67E22] hover:bg-[#D35400]"
+                        ? "bg-[#2ECC71] hover:bg-[#27AE60]"
+                        : "bg-[#E67E22] hover:bg-[#D35400]"
                       }`}
                   >
-                    {createCategoryStatus == "loading" ? (
+                    {createCategoryStatus == "loading" || updateCategoryStatus == "loading" ? (
                       <span className="flex items-center justify-center gap-2">
                         <Loader2 className="animate-spin" size={20} />
                         {editingCategory ? "Updating..." : "Adding..."}

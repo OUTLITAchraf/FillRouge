@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Tag, Plus, Edit, Trash2, X, Loader2, FolderOpen } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createCategory, fetchCategories, updateCategory } from "../../features/ServiceSlice";
+import { createCategory, deleteCategory, fetchCategories, updateCategory } from "../../features/ServiceSlice";
 import { toast } from "sonner";
 
 // Validation schema
@@ -20,7 +20,7 @@ const categorySchema = yup.object().shape({
 });
 
 export default function AdminCategoriesPage() {
-  const { categories, createCategoryStatus, updateCategoryStatus, fetchCategoriesStatus } =
+  const { categories, createCategoryStatus, updateCategoryStatus, deleteCategoryStatus, fetchCategoriesStatus } =
     useSelector((state) => state.services);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
@@ -66,7 +66,7 @@ export default function AdminCategoriesPage() {
   };
 
   const onSubmit = async (data) => {
-    if (editingCategory) {      
+    if (editingCategory) {
       try {
 
         await dispatch(updateCategory(data)).unwrap();
@@ -108,7 +108,21 @@ export default function AdminCategoriesPage() {
     setDeleteModal({ open: false, category: null });
   };
 
-  const handleDelete = async () => { };
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteCategory(deleteModal.category.id)).unwrap();
+      setDeleteModal({ open: false, category: null });
+      toast.success("Category Deleted Successfully");
+
+      dispatch(fetchCategories())
+
+    } catch (error) {
+      console.log("Error :", error);
+      setDeleteModal({ open: true })
+
+      toast.error("Request Failed")
+    }
+  };
 
   if (fetchCategoriesStatus == "loading") {
     return (
@@ -279,8 +293,8 @@ export default function AdminCategoriesPage() {
                     type="submit"
                     disabled={createCategoryStatus == "loading" || updateCategoryStatus == "loading"}
                     className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50 ${editingCategory
-                        ? "bg-[#2ECC71] hover:bg-[#27AE60]"
-                        : "bg-[#E67E22] hover:bg-[#D35400]"
+                      ? "bg-[#2ECC71] hover:bg-[#27AE60]"
+                      : "bg-[#E67E22] hover:bg-[#D35400]"
                       }`}
                   >
                     {createCategoryStatus == "loading" || updateCategoryStatus == "loading" ? (
@@ -315,33 +329,25 @@ export default function AdminCategoriesPage() {
                 </h3>
                 <p className="text-gray-600">
                   Are you sure you want to delete{" "}
-                  <strong>"{deleteModal.category?.display_name}"</strong>? This
-                  action cannot be undone.
+                  <strong>"{deleteModal.category?.display_name}"</strong>? but you can restore him later
                 </p>
-                {deleteModal.category?.services_count > 0 && (
-                  <p className="mt-2 text-sm text-[#E67E22] font-semibold">
-                    ⚠️ Warning: This category has{" "}
-                    {deleteModal.category.services_count} services associated
-                    with it.
-                  </p>
-                )}
               </div>
             </div>
 
             <div className="flex gap-3">
               <button
                 onClick={closeDeleteModal}
-                disabled={createCategoryStatus == "loading"}
+                disabled={deleteCategoryStatus == "loading"}
                 className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                disabled={createCategoryStatus == "loading"}
+                disabled={deleteCategoryStatus == "loading"}
                 className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
               >
-                {createCategoryStatus == "loading" ? (
+                {deleteCategoryStatus == "loading" ? (
                   <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin" size={20} />
                     Deleting...

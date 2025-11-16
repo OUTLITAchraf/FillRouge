@@ -216,6 +216,20 @@ export const updateCategory = createAsyncThunk(
   }
 );
 
+export const deleteCategory = createAsyncThunk(
+  "services/deleteCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.delete(`/admin/delete-category/${id}`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
@@ -223,6 +237,7 @@ const ServiceSlice = createSlice({
     categories: null,
     createCategoryStatus: "idle",
     updateCategoryStatus: "idle",
+    deleteCategoryStatus: "idle",
     services: {
       data: [],
       status: "idle",
@@ -473,6 +488,20 @@ const ServiceSlice = createSlice({
       .addCase(updateCategory.rejected, (state, action) => {
         state.updateCategoryStatus = "failed";
         console.log("Update Category Rejected :", action);
+      });
+
+    builder
+      .addCase(deleteCategory.pending, (state, action) => {
+        state.deleteCategoryStatus = "loading";
+        console.log("Delete Category Pending :", action);
+      })
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        state.deleteCategoryStatus = "success";
+        console.log("Delete Category Fulfilled :", action.payload);
+      })
+      .addCase(deleteCategory.rejected, (state, action) => {
+        state.deleteCategoryStatus = "failed";
+        console.log("Delete Category Rejected :", action);
       });
   },
 });

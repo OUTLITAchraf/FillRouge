@@ -128,7 +128,7 @@ const ProviderRegisterPage = () => {
   const passwordStrength = getPasswordStrength(password);
 
   return (
-    <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
+    <div className="h-screen flex flex-col lg:flex-row bg-linear-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
         className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block" // Hidden on small screens, fixed on large
@@ -151,7 +151,7 @@ const ProviderRegisterPage = () => {
       </Link>
 
       {/* 1. Info Section */}
-      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0">
+      <div className="bg-linear-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:shrink-0">
         <div className="max-w-xl mx-auto">
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
@@ -205,7 +205,7 @@ const ProviderRegisterPage = () => {
       </div>
 
       {/* 2. Registration Form Container (Right Side) */}
-      <div className="py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:flex-grow">
+      <div className="py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:grow">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
@@ -220,7 +220,7 @@ const ProviderRegisterPage = () => {
             {generalError && (
               <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
                   <p className="text-sm text-red-800 font-semibold">
                     {generalError}
                   </p>
@@ -231,7 +231,7 @@ const ProviderRegisterPage = () => {
             {/* Important Notice */}
             <div className="mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg">
               <div className="flex items-start gap-3">
-                <Clock className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-amber-900 mb-1">
                     Account Approval Required
@@ -510,7 +510,7 @@ const ProviderRegisterPage = () => {
               <button
                 type="submit"
                 disabled={status == "loading"}
-                className="w-full bg-gradient-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-6"
+                className="w-full bg-linear-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mt-6"
               >
                 {status == "loading" ? (
                   <span className="flex items-center justify-center gap-2">

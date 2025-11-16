@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Calendar, LogOut, Loader2 } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
+import { fetchCategories } from "../features/ServiceSlice";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -10,7 +11,11 @@ function UserLayout() {
   const navigate = useNavigate();
   const { user, userLogout_Status } = useSelector((state) => state.auth);
   console.log(userLogout_Status);
-  
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
 
   const handleLogoute = async () => {
     await dispatch(userLogout());
@@ -75,7 +80,7 @@ function UserLayout() {
                   onClick={toggleUserMenu}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white font-bold">
                     {getInitials(user.name)}
                   </div>
                   <div className="hidden md:block text-left">
@@ -85,9 +90,8 @@ function UserLayout() {
                     <div className="text-xs text-gray-500">Customer</div>
                   </div>
                   <ChevronDown
-                    className={`w-4 h-4 text-gray-600 transition-transform ${
-                      showUserMenu ? "rotate-180" : ""
-                    }`}
+                    className={`w-4 h-4 text-gray-600 transition-transform ${showUserMenu ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -114,7 +118,7 @@ function UserLayout() {
                       >
                         {userLogout_Status == "loading" ? (
                           <>
-                            <Loader2 className="animate-spin w-5 h-5 text-red-600"/>
+                            <Loader2 className="animate-spin w-5 h-5 text-red-600" />
                             <span className="text-red-600 font-medium">
                               Logout
                             </span>

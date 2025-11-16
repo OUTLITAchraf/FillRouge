@@ -47,51 +47,55 @@ function ServicesPage() {
 
   const providerName = searchParams.get("provider_name");
   const categoryName = searchParams.get("category_name");
+  const minP = searchParams.get("min_price") || "";
+  const maxP = searchParams.get("max_price") || "";
 
+  // this code runs one time and aakes values from URL params and fill inputs values with these values
+  useEffect(() => {
+    setSearchQuery(providerName);
+    setSelectedCategory(categoryName);
+    setMinPrice(minP);
+    setMaxPrice(maxP);
+  }, []);
+
+  // this code runs when dependens change
   useEffect(() => {
     const filters = {};
 
     if (providerName) filters.provider_name = providerName;
     if (categoryName) filters.category_name = categoryName;
+    if (minP) filters.min_price = minP;
+    if (maxP) filters.max_price = maxP;
 
     filters.page = currentPage;
 
-    if (searchParams.size == 0) {
-      setSearchParams({ page: currentPage });
-    }
-
     dispatch(fetchServices(filters));
-  }, [
-    dispatch,
-    providerName,
-    categoryName,
-    currentPage,
-    searchParams,
-    setSearchParams,
-  ]);
+  }, [dispatch, providerName, categoryName, minP, maxP, currentPage]);
 
   const handleSearch = (e) => {
-    const filters = {};
-
     e.preventDefault();
 
-    if (searchQuery) filters.provider_name = searchQuery;
+    const params = {};
 
-    setSearchParams({
-      provider_name: searchQuery || "",
-    });
+    if (searchQuery) params.provider_name = searchQuery;
+
+    // reset page to 1
+    params.page = 1;
+
+    setSearchParams(params);
   };
 
   const handleFilter = () => {
-    const filters = {};
+    const params = {};
 
-    if (selectedCategory) filters.category_name = selectedCategory;
-    if (minPrice) filters.min_price = minPrice;
-    if (maxPrice) filters.max_price = maxPrice;
+    if (selectedCategory) params.category_name = selectedCategory;
+    if (minPrice) params.min_price = minPrice;
+    if (maxPrice) params.max_price = maxPrice;
+    if (providerName) params.provider_name = providerName;
 
-    setSearchParams(filters);
+    params.page = 1;
 
-    dispatch(fetchServices(filters));
+    setSearchParams(params);
   };
 
   const resetFilters = () => {
@@ -99,6 +103,8 @@ function ServicesPage() {
     setSelectedCategory("");
     setMinPrice("");
     setMaxPrice("");
+
+    setSearchParams({ page: 1 });
   };
 
   const getInitials = (name) => {
@@ -122,7 +128,7 @@ function ServicesPage() {
               <input
                 type="text"
                 placeholder="Search by provider name..."
-                value={searchQuery}
+                value={searchQuery ?? ""}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#2ECC71] focus:outline-none transition-all"
               />
@@ -199,7 +205,7 @@ function ServicesPage() {
             <div className="flex justify-end gap-4 mt-4">
               <button
                 onClick={resetFilters}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-semibold border-1 border-gray-600 rounded-lg"
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-semibold border border-gray-600 rounded-lg"
               >
                 Reset Filters
               </button>
@@ -265,7 +271,7 @@ function ServicesPage() {
 
                     {/* Provider Info */}
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-8 h-8 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {getInitials(service.provider.name)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -285,9 +291,9 @@ function ServicesPage() {
                         <span className="text-sm text-gray-600">DH</span>
                       </div>
                       {service.is_reserved ? (
-                        <button 
-                        disabled
-                        className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed">
+                        <button
+                          disabled
+                          className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed">
                           Booked
                         </button>
                       ) : (
@@ -324,11 +330,10 @@ function ServicesPage() {
                     setCurrentPage(index + 1);
                     setSearchParams({ page: index + 1 });
                   }}
-                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
-                    currentPage === index + 1
-                      ? "bg-[#2ECC71] text-white"
-                      : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
-                  }`}
+                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${currentPage === index + 1
+                    ? "bg-[#2ECC71] text-white"
+                    : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
+                    }`}
                 >
                   {index + 1}
                 </button>

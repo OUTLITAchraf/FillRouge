@@ -8,7 +8,7 @@ export default function UnauthorizedPage() {
         {/* Main Card */}
         <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
           {/* Header Section with Icon */}
-          <div className="bg-gradient-to-r from-[#E74C3C] to-[#C0392B] p-8 text-center">
+          <div className="bg-linear-to-r from-[#E74C3C] to-[#C0392B] p-8 text-center">
             <div className="inline-flex items-center justify-center w-24 h-24 bg-white/20 rounded-full mb-4 backdrop-blur-sm">
               <ShieldX size={64} className="text-white" />
             </div>

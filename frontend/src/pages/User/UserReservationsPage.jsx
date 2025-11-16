@@ -292,7 +292,7 @@ const UserReservationsPage = () => {
           ) : (
             <Link
               to="/services"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-[#E67E22] to-[#D35400] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+              className="inline-block px-6 py-3 bg-linear-to-r from-[#E67E22] to-[#D35400] text-white rounded-lg font-semibold hover:shadow-lg transition-all"
             >
               Browse Services
             </Link>
@@ -339,7 +339,7 @@ const UserReservationsPage = () => {
                     {/* Description */}
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                       <div className="flex items-start gap-2 mb-2">
-                        <Briefcase className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <Briefcase className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
                         <div>
                           <h4 className="font-semibold text-gray-700 text-md">
                             Service title: <span className="text-gray-600 text-sm leading-relaxed">{reservation.service.title}</span>
@@ -347,7 +347,7 @@ const UserReservationsPage = () => {
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
-                        <FileText className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
+                        <FileText className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
                         <div>
                           <h4 className="font-semibold text-gray-700 mb-1 text-md">
                             Description:

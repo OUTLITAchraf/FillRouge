@@ -102,9 +102,7 @@ class ServiceController extends Controller
             $service->is_reserved = false;
 
             if ($user) {
-                $service->is_reserved = $user->reservations()
-                    ->where('service_id', $service->id)
-                    ->exists();
+                $service->is_reserved = $user->reservations()->where('service_id', $service->id)->exists();
             }
 
             return $service;
@@ -299,7 +297,7 @@ class ServiceController extends Controller
      */
     public function update(Request $request, Service $service)
     {
-        Log::info('Price :',[$request->only('price')]);
+        Log::info('Price :', [$request->only('price')]);
         $request->validate([
             'title' => 'nullable|string',
             'description' => 'nullable|string',

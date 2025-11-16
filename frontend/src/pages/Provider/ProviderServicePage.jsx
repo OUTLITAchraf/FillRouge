@@ -80,7 +80,6 @@ export default function ProviderServiceDashboard() {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm({
     // Use different schema based on whether editing or creating
     resolver: yupResolver(
@@ -324,7 +323,7 @@ export default function ProviderServiceDashboard() {
               <div className="space-y-5">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
                     <Briefcase size={18} className="text-[#2ECC71]" />
                     Service Title
                   </label>
@@ -343,7 +342,7 @@ export default function ProviderServiceDashboard() {
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
                     <FileText size={18} className="text-[#2ECC71]" />
                     Description
                   </label>
@@ -368,7 +367,7 @@ export default function ProviderServiceDashboard() {
                 >
                   {/* Price */}
                   <div>
-                    <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                    <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
                       <DollarSign size={18} className="text-[#2ECC71]" />
                       Price
                     </label>
@@ -390,7 +389,7 @@ export default function ProviderServiceDashboard() {
                   {/* Category */}
                   {!data?.data?.[0] ? (
                     <div>
-                      <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                      <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
                         <Tag size={18} className="text-[#2ECC71]" />
                         Category
                       </label>
@@ -416,7 +415,7 @@ export default function ProviderServiceDashboard() {
 
                 {/* Image */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
                     <ImagePlus size={18} className="text-[#2ECC71]" />
                     Service Image
                   </label>

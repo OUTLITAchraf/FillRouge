@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Sparkles,
@@ -20,8 +20,7 @@ import {
   TrendingUp,
   Shapes,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "../features/ServiceSlice";
+import { useSelector } from "react-redux";
 
 const categoryIcons = {
   cleaning: Sparkles,
@@ -39,15 +38,10 @@ const categoryIcons = {
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categories, fetchCategoriesStatus } = useSelector(
     (state) => state.services
   );
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-  }, [dispatch]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -63,10 +57,10 @@ function HomePage() {
   return (
     <>
       {/* Hero Section with Search */}
-      <section className="relative bg-gradient-to-br from-green-50 via-white to-green-50 pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative bg-linear-to-br from-green-50 via-white to-green-50 pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-gradient-radial from-green-100/50 to-transparent rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/4 w-[400px] h-[400px] bg-gradient-radial from-orange-100/40 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[600px] h-[600px] bg-linear-radial from-green-100/50 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/4 w-[400px] h-[400px] bg-linear-radial from-orange-100/40 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -74,7 +68,7 @@ function HomePage() {
             <div className="text-center lg:text-left">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#2C3E50] leading-tight mb-6 tracking-tight">
                 Find{" "}
-                <span className="bg-gradient-to-r from-[#2ECC71] to-[#27AE60] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-[#2ECC71] to-[#27AE60] bg-clip-text text-transparent">
                   Trusted
                 </span>{" "}
                 Local Services in Morocco
@@ -110,7 +104,7 @@ function HomePage() {
                 {/* Search Button */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+                  className="w-full bg-linear-to-r from-[#2ECC71] to-[#27AE60] text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
                 >
                   Search
                 </button>
@@ -148,7 +142,7 @@ function HomePage() {
                     onClick={() => handleCategoryClick(category.name)}
                     className="bg-white p-6 rounded-2xl text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71] group cursor-pointer"
                   >
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Icon className="w-8 h-8 text-[#2ECC71]" />
                     </div>
                     <h3 className="font-bold text-[#2C3E50] mb-1">
@@ -176,7 +170,7 @@ function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">1</span>
               </div>
               <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
@@ -189,7 +183,7 @@ function HomePage() {
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">2</span>
               </div>
               <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
@@ -202,7 +196,7 @@ function HomePage() {
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
               <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
@@ -215,7 +209,7 @@ function HomePage() {
             </div>
 
             <div className="text-center p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all hover:-translate-y-1">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 mx-auto mb-4 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-2xl flex items-center justify-center shadow-lg">
                 <span className="text-2xl font-bold text-white">4</span>
               </div>
               <h3 className="text-xl font-bold text-[#2C3E50] mb-2">
@@ -244,8 +238,8 @@ function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <CheckCircle2 className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>
@@ -261,8 +255,8 @@ function HomePage() {
             </div>
 
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <Star className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>
@@ -278,8 +272,8 @@ function HomePage() {
             </div>
 
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>
@@ -294,8 +288,8 @@ function HomePage() {
             </div>
 
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>
@@ -310,8 +304,8 @@ function HomePage() {
             </div>
 
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <MessageSquare className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>
@@ -326,8 +320,8 @@ function HomePage() {
             </div>
 
             <div className="flex gap-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
+              <div className="shrink-0">
+                <div className="w-12 h-12 bg-linear-to-br from-[#2ECC71]/10 to-[#27AE60]/10 rounded-xl flex items-center justify-center">
                   <MapPin className="w-6 h-6 text-[#2ECC71]" />
                 </div>
               </div>

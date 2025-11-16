@@ -83,7 +83,7 @@ const ReservationForm = ({ onClose, onSuccess }) => {
           {/* Date Field */}
           <div>
             <label
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
+              className="text-sm font-semibold mb-2 flex items-center gap-2"
               style={{ color: "#2C3E50" }}
             >
               <Calendar size={18} style={{ color: "#2ECC71" }} />
@@ -107,7 +107,7 @@ const ReservationForm = ({ onClose, onSuccess }) => {
           {/* Description Field */}
           <div>
             <label
-              className="block text-sm font-semibold mb-2 flex items-center gap-2"
+              className="text-sm font-semibold mb-2 flex items-center gap-2"
               style={{ color: "#2C3E50" }}
             >
               <FileText size={18} style={{ color: "#2ECC71" }} />

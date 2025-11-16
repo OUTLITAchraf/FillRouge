@@ -71,6 +71,15 @@ class CategoryController extends Controller
             "display_name" => "required|string"
         ]);
 
+        $nameExists = Category::where('name', $request->name)->exists();
+        $displayNameExists = Category::where('display_name', $request->display_name)->exists();
+
+        if ($nameExists || $displayNameExists) {
+            return response()->json([
+                'message' => 'This category already exists'
+            ], 409);
+        }
+
         $category = Category::create($validated);
         return response()->json([
             "message" => "Category Created Successfully",

@@ -1,14 +1,14 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
 
 export default function ClientRoute() {
-  const token = Cookies.get("authToken");
-  const user = Cookies.get("authUser")? JSON.parse(Cookies.get("authUser")):null;
+  const { token, user } = useSelector((state) => state.auth);
   const role = user?.roles?.[0].name;
 
   // If no token → user not logged in
-  if (!token ) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
   if (role != "client") {
@@ -16,5 +16,5 @@ export default function ClientRoute() {
   }
 
 
-  return <Outlet/>;
+  return <Outlet />;
 }

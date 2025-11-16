@@ -141,8 +141,8 @@ export const fetchReservations = createAsyncThunk(
   "services/fetchReservations",
   async (filters = {}, { rejectWithValue }) => {
     try {
-      let response = await api.get("/reservations",{
-        params: filters
+      let response = await api.get("/reservations", {
+        params: filters,
       });
       console.log("Response Reservation :", response);
       return response.data;
@@ -188,11 +188,26 @@ export const updateStatusReservations = createAsyncThunk(
   }
 );
 
+export const createCategory = createAsyncThunk(
+  "services/createCategory",
+  async (data, { rejectWithValue }) => {
+    try {
+      let response = await api.post("/admin/create-category", data);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
     fetchCategoriesStatus: "idle",
     categories: null,
+    createCategoryStatus: "idle",
     services: {
       data: [],
       status: "idle",
@@ -413,6 +428,21 @@ const ServiceSlice = createSlice({
         state.updateStatusReservationsStatus = "failed";
 
         console.log("Update Status Reservation Rejected :", action);
+      });
+
+    builder
+      .addCase(createCategory.pending, (state, action) => {
+        state.createCategoryStatus = "loading";
+        console.log("Create Category Pending :", action);
+      })
+      .addCase(createCategory.fulfilled, (state, action) => {
+        state.createCategoryStatus = "success";
+
+        console.log("Create Category Fulfilled :", action.payload);
+      })
+      .addCase(createCategory.rejected, (state, action) => {
+        state.createCategoryStatus = "failed";
+        console.log("Create Category Rejected :", action);
       });
   },
 });

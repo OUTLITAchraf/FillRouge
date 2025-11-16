@@ -26,6 +26,7 @@ import UnauthorizedPage from "./pages/Unauthorized";
 import GuestRoute from "./components/ProtectedRoutes/GuestRoute";
 import AdminRoute from "./components/ProtectedRoutes/AdminRoute";
 import ProviderRoute from "./components/ProtectedRoutes/ProviderRoute";
+import UserRoute from "./components/ProtectedRoutes/UserRoute";
 
 function App() {
   return (
@@ -41,17 +42,18 @@ function App() {
           </Route>
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route element={<UserLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/faq" element={<FAQPage />} />
-
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/service/:id" element={<DetailServicePage />} />
+            <Route element={<UserRoute/>}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/service/:id" element={<DetailServicePage />} />
+            </Route>
             <Route element={<ClientRoute />}>
               <Route
                 path="/user/reservation"
                 element={<UserReservationsPage />}
               />
             </Route>
+            <Route path="/faq" element={<FAQPage />} />
           </Route>
           <Route element={<ProviderRoute />}>
             <Route path="/provider" element={<DashboardLayout />}>

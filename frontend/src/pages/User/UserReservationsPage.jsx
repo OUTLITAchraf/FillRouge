@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -29,25 +29,50 @@ const UserReservationsPage = () => {
     open: false,
     reservation_id: null,
   });
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [searchServicetitle, setSearchServicetitle] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch reservations
+  const statusParams = searchParams.get("status") || "";
+  const serviceTitleParams = searchParams.get("service_title") || "";
+
+  useEffect(() => {
+    setSelectedStatus(statusParams);
+    setSearchServicetitle(serviceTitleParams);
+  }, []);
+
   useEffect(() => {
     const filter = {};
+
+    if (statusParams) filter.status = statusParams;
+    if (serviceTitleParams) filter.service_title = serviceTitleParams;
+    console.log(currentPage);
+    
+
     filter.page = currentPage;
+
+    setSearchParams(filter)
     dispatch(fetchReservations(filter));
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage, statusParams, serviceTitleParams, setSearchParams]);
 
   const handleFilter = () => {
-    const filters = {};
+    const params = {};
 
-    if (selectedStatus) filters.status = selectedStatus;
-    if (searchServicetitle) filters.service_title = searchServicetitle;
+    if (selectedStatus) params.status = selectedStatus;
+    if (searchServicetitle) params.service_title = searchServicetitle;
 
+    params.page = 1;
 
-    dispatch(fetchReservations(filters));
+    setSearchParams(params);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedStatus("");
+    setSearchServicetitle("");
+    setCurrentPage(1);
+
+    setSearchParams({ page: 1 });
   };
 
   const confirmDelete = (reservation_id) => {
@@ -139,14 +164,6 @@ const UserReservationsPage = () => {
     cancelled: data?.data?.filter((r) => r.status === "cancelled").length,
   };
 
-  const handleClearFilters = () => {
-    setSelectedStatus("");
-    setSearchServicetitle("");
-    setCurrentPage(1);
-
-    dispatch(fetchReservations());
-  };
-
   if (status == "loading") {
     return (
       <div className="flex justify-center items-center py-20">
@@ -159,14 +176,20 @@ const UserReservationsPage = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-[#2C3E50]">My Reservations</h1>
-        <p className="text-gray-600">Manage and track all your service reservations</p>
+        <h1 className="text-3xl font-bold mb-2 text-[#2C3E50]">
+          My Reservations
+        </h1>
+        <p className="text-gray-600">
+          Manage and track all your service reservations
+        </p>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-purple-400">
-          <div className="text-2xl font-bold text-purple-700">{stats.total}</div>
+          <div className="text-2xl font-bold text-purple-700">
+            {stats.total}
+          </div>
           <div className="text-sm text-gray-600">Total</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-yellow-400">
@@ -182,9 +205,7 @@ const UserReservationsPage = () => {
           <div className="text-sm text-gray-600">Accepted</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-red-400">
-          <div className="text-2xl font-bold text-red-700">
-            {stats.refuse}
-          </div>
+          <div className="text-2xl font-bold text-red-700">{stats.refuse}</div>
           <div className="text-sm text-gray-600">Refused</div>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-md border-l-4 border-blue-400">
@@ -205,7 +226,9 @@ const UserReservationsPage = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Filter size={20} className="text-[#2ECC71]" />
-          <h2 className="text-lg font-semibold text-[#2C3E50]">Filter Reservations</h2>
+          <h2 className="text-lg font-semibold text-[#2C3E50]">
+            Filter Reservations
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -215,7 +238,10 @@ const UserReservationsPage = () => {
               Search by Service
             </label>
             <div className="relative">
-              <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search
+                size={20}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              />
               <input
                 type="text"
                 placeholder="Search service by title..."
@@ -252,7 +278,6 @@ const UserReservationsPage = () => {
           </div>
         </div>
 
-
         <div className="mt-4 flex justify-end space-x-2">
           <button
             onClick={handleFilter}
@@ -282,7 +307,7 @@ const UserReservationsPage = () => {
               ? "No reservations match your filters. Try adjusting your search criteria."
               : "You haven't made any reservations yet."}
           </p>
-          {(selectedStatus || searchServicetitle) ? (
+          {selectedStatus || searchServicetitle ? (
             <button
               onClick={handleClearFilters}
               className="inline-block px-6 py-3 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors"
@@ -342,7 +367,10 @@ const UserReservationsPage = () => {
                         <Briefcase className="w-5 h-5 text-gray-500 shrink-0 mt-0.5" />
                         <div>
                           <h4 className="font-semibold text-gray-700 text-md">
-                            Service title: <span className="text-gray-600 text-sm leading-relaxed">{reservation.service.title}</span>
+                            Service title:{" "}
+                            <span className="text-gray-600 text-sm leading-relaxed">
+                              {reservation.service.title}
+                            </span>
                           </h4>
                         </div>
                       </div>
@@ -403,10 +431,11 @@ const UserReservationsPage = () => {
               onClick={() => {
                 setCurrentPage(index + 1);
               }}
-              className={`w-10 h-10 rounded-lg font-semibold transition-colors ${currentPage === index + 1
-                ? "bg-[#2ECC71] text-white"
-                : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
-                }`}
+              className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
+                currentPage === index + 1
+                  ? "bg-[#2ECC71] text-white"
+                  : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
+              }`}
             >
               {index + 1}
             </button>

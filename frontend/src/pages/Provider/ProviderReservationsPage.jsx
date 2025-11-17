@@ -26,6 +26,7 @@ import {
   updateStatusReservations,
 } from "../../features/ServiceSlice";
 import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 export default function ProviderReservationsPage() {
   const dispatch = useDispatch();
@@ -33,6 +34,7 @@ export default function ProviderReservationsPage() {
   const { updateStatusReservationsStatus } = useSelector(
     (state) => state.services
   );
+
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showConfirmeStatus, setShowConfirmeStatus] = useState({
@@ -40,20 +42,46 @@ export default function ProviderReservationsPage() {
     reservation_id: null,
     status: "",
   });
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchedClientName, setSearchedClientName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter states
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [searchedClientName, setSearchedClientName] = useState('');
+  const statusParams = searchParams.get("status") || "";
+  const clientNameParams = searchParams.get("client_name") || "";
 
-  console.log(showConfirmeStatus.reservation_id);
-  console.log(status);
+  useEffect(() => {
+    setSelectedStatus(statusParams);
+    setSearchedClientName(clientNameParams);
+  }, []);
 
   useEffect(() => {
     const filters = {};
+    if (statusParams) filters.status = statusParams;
+    if (clientNameParams) filters.client_name = clientNameParams;
     filters.page = currentPage;
     dispatch(fetchReservations(filters));
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage, statusParams, clientNameParams]);
+
+
+  const handleFilters = () => {
+    const params = {};
+    if (selectedStatus) params.status = selectedStatus;
+    if (searchedClientName) params.client_name = searchedClientName;
+
+    params.page = 1;
+
+    setSearchParams(params);
+  };
+
+  const handleClearFilters = () => {
+    setSelectedStatus("");
+    setSearchedClientName("");
+    setCurrentPage(1);
+
+    setSearchParams({ page: 1 });
+  };
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= data?.last_page) {
@@ -127,23 +155,6 @@ export default function ProviderReservationsPage() {
     return icons[status] || Edit;
   };
 
-  // Apply filters
-  const handleApplyFilters = () => {
-    const filters = {}
-    if (selectedStatus) filters.status = selectedStatus;
-    if (searchedClientName) filters.client_name = searchedClientName;
-
-    dispatch(fetchReservations(filters))
-  };
-
-  // Clear filters
-  const handleClearFilters = () => {
-
-    setSelectedStatus('');
-    setSearchedClientName('');
-    setCurrentPage(1);
-  };
-
   if (status == "loading") {
     return (
       <div className="flex justify-center items-center py-20">
@@ -157,8 +168,12 @@ export default function ProviderReservationsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 text-[#2C3E50]">Reservations Management</h1>
-          <p className="text-gray-600">Manage and track all client reservations</p>
+          <h1 className="text-3xl font-bold mb-2 text-[#2C3E50]">
+            Reservations Management
+          </h1>
+          <p className="text-gray-600">
+            Manage and track all client reservations
+          </p>
         </div>
 
         {/* Status Stats Section */}
@@ -230,7 +245,9 @@ export default function ProviderReservationsPage() {
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Filter size={20} className="text-[#2ECC71]" />
-            <h2 className="text-lg font-semibold text-[#2C3E50]">Filter Reservations</h2>
+            <h2 className="text-lg font-semibold text-[#2C3E50]">
+              Filter Reservations
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,7 +257,10 @@ export default function ProviderReservationsPage() {
                 Search by Client Name
               </label>
               <div className="relative">
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search
+                  size={20}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                />
                 <input
                   type="text"
                   placeholder="Enter client name..."
@@ -274,7 +294,7 @@ export default function ProviderReservationsPage() {
           {/* Filter Action Buttons */}
           <div className="mt-4 flex gap-3 justify-end">
             <button
-              onClick={handleApplyFilters}
+              onClick={handleFilters}
               className="px-6 py-2 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors"
             >
               Apply Filters
@@ -456,10 +476,11 @@ export default function ProviderReservationsPage() {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!data?.prev_page_url}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${!data?.prev_page_url
-                    ? "opacity-50 cursor-not-allowed bg-gray-200 text-gray-500"
-                    : "bg-[#2C3E50] text-white hover:bg-[#1A252F]"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    !data?.prev_page_url
+                      ? "opacity-50 cursor-not-allowed bg-gray-200 text-gray-500"
+                      : "bg-[#2C3E50] text-white hover:bg-[#1A252F]"
+                  }`}
                 >
                   <ChevronLeft size={18} /> Previous
                 </button>
@@ -471,10 +492,11 @@ export default function ProviderReservationsPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!data?.next_page_url}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${!data?.next_page_url
-                    ? "opacity-50 cursor-not-allowed bg-gray-200 text-gray-500"
-                    : "bg-[#2C3E50] text-white hover:bg-[#1A252F]"
-                    }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    !data?.next_page_url
+                      ? "opacity-50 cursor-not-allowed bg-gray-200 text-gray-500"
+                      : "bg-[#2C3E50] text-white hover:bg-[#1A252F]"
+                  }`}
                 >
                   Next <ChevronRight size={18} />
                 </button>

@@ -177,6 +177,25 @@ export default function ServiceDetailPage() {
   return (
     <div className="min-h-screen py-8 bg-[#ECF0F1]">
       <div className="max-w-7xl mx-auto px-4">
+        {data?.isWorking && (
+          <div className="mb-6 bg-gradient-to-r from-[#E67E22] to-[#D35400] rounded-lg shadow-md p-4 border-l-4 border-[#D35400]">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <CircleAlert className="text-white" size={24} />
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-semibold text-lg">
+                  Provider is currently working on a reservation
+                </p>
+                <p className="text-white/90 text-sm">
+                  The provider is busy and may not be available for new bookings at this moment
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Service Details Card */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">

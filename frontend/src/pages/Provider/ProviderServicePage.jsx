@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -70,10 +70,6 @@ export default function ProviderServiceDashboard() {
     updateServiceStatus,
   } = useSelector((state) => state.services);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchServices());
-  }, [dispatch]);
 
   const {
     register,

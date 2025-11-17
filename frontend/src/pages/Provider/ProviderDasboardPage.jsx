@@ -10,17 +10,12 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchServices } from "../../features/ServiceSlice";
+import { useSelector } from "react-redux";
 
 export default function ProviderDasboardPage() {
   const { user } = useSelector((state) => state.auth);
   const { data, status } = useSelector((state) => state.services.services);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchServices());
-  }, [dispatch]);
 
   const calculateAverageRating = () => {
     const reviews = data?.data?.[0]?.reviews;

@@ -138,6 +138,14 @@ class ReservationController extends Controller
             ], 409);
         }
 
+        $reserved = Reservation::where('reservation_date', $request->reservation_date)->exists();
+
+        if ($reserved) {
+            return response()->json([
+                'message' => 'Provider already reserved in this time'
+            ], 409);
+        }
+
         $reservation = Reservation::create([
             'reservation_date' => $request->reservation_date,
             'description' => $request->description,

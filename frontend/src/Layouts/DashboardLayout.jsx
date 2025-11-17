@@ -14,7 +14,7 @@ import {
 import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAuth, userLogout } from "../features/AuthSlice";
-import { fetchCategories } from "../features/ServiceSlice";
+import { fetchCategories, fetchServices } from "../features/ServiceSlice";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,6 +25,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchServices());
   }, [dispatch]);
 
   const handleLogout = async () => {

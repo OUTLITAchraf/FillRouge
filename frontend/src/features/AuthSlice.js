@@ -145,6 +145,9 @@ const AuthSlice = createSlice({
         state.userLogout_Status = "success";
         state.user = null;
 
+        Cookies.remove("authToken")
+        Cookies.remove("authUser");
+
         console.log("User Logout Fulfilled:", action);
       })
       .addCase(userLogout.rejected, (state, action) => {

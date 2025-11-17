@@ -14,7 +14,7 @@ import {
   CircleAlert,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   addReview,
   deleteReview,
@@ -23,11 +23,11 @@ import {
 } from "../features/ServiceSlice";
 import { toast } from "sonner";
 import ReservationForm from "../components/ReservationForm";
-
+import Cookies from "js-cookie";
 export default function ServiceDetailPage() {
   const { id } = useParams();
   const { data, status } = useSelector((state) => state.services.service);
-  const { token, user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const { addReviewStatus, updateReviewStatus, deleteReviewStatus } =
     useSelector((state) => state.services);
   const dispatch = useDispatch();
@@ -41,7 +41,9 @@ export default function ServiceDetailPage() {
   const [reservitionModel, setReservationModel] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
   const [guestModel, setGuestModel] = useState(false);
-  const navigate = useNavigate() 
+  const token = Cookies.get("authToken");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(fetchService(id));
@@ -466,13 +468,18 @@ export default function ServiceDetailPage() {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={()=>setGuestModel(false)}
+                    onClick={() => setGuestModel(false)}
                     className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
-                    onClick={()=>navigate("/login")}
+                    onClick={() =>
+                      navigate("/login", {
+                        state: { from: location.pathname },
+                        replace: true,
+                      })
+                    }
                     className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#2ECC71] hover:bg-[#27AE60] disabled:opacity-50"
                   >
                     Login

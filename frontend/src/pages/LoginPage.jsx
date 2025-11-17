@@ -13,7 +13,7 @@ import {
   Shield,
   Activity,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogin } from "../features/AuthSlice";
 
@@ -31,8 +31,11 @@ const LoginPage = () => {
   const { status } = useSelector((state) => state.auth.userLogin);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [generalError, setGeneralError] = useState('');
+  const [generalError, setGeneralError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+
+  const fromPage = location.state?.from || "/";
 
   const {
     register,
@@ -53,12 +56,12 @@ const LoginPage = () => {
       if (role === "provider") {
         navigate("/provider/dashboard");
       } else if (role === "client") {
-        navigate("/");
+        navigate(fromPage, { replace: true });
       } else {
         navigate("/admin/dashboard");
       }
     } else {
-        setGeneralError(response.payload.message);
+      setGeneralError(response.payload.message);
     }
   };
 
@@ -156,7 +159,9 @@ const LoginPage = () => {
               <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-3 rounded-lg">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800 font-semibold">{generalError}</p>
+                  <p className="text-sm text-red-800 font-semibold">
+                    {generalError}
+                  </p>
                 </div>
               </div>
             )}

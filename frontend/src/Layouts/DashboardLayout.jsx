@@ -37,11 +37,6 @@ export default function DashboardLayout() {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   if (userLogout_Status == 'success') {
-  //     navigate('/login')
-  //   }
-  // })
 
   // 🔹 Define menu items based on role
   const menuItems =

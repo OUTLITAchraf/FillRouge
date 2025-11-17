@@ -91,7 +91,7 @@ export default function ServiceDetailPage() {
 
           setRating(0);
           setReviewText("");
-        } catch (error) {
+        } catch (error) {          
           if (error === "You have already reviewed this service.") {
             toast.warn("You have already reviewed this service.");
           } else {

@@ -54,8 +54,12 @@ const ReservationForm = ({ onClose, onSuccess }) => {
       reset();
       onSuccess?.(); // close modal
     } catch (error) {
-      console.log("Error from model reservation :", error);
-      // toast.error()
+      console.log("Error from model reservation :", error?.response?.data?.message);
+      if (error.status == 409) {
+        toast.warning(error?.response?.data?.message)
+      } else {
+        toast.error("Request Failed")
+      }
     }
   };
 

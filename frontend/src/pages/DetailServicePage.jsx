@@ -44,6 +44,9 @@ export default function ServiceDetailPage() {
   const token = Cookies.get("authToken");
   const navigate = useNavigate();
   const location = useLocation();
+  const myReview = data?.reviews?.filter(
+    (review) => review.client_id === user.id
+  );
 
   useEffect(() => {
     dispatch(fetchService(id));
@@ -91,7 +94,7 @@ export default function ServiceDetailPage() {
 
           setRating(0);
           setReviewText("");
-        } catch (error) {          
+        } catch (error) {
           if (error === "You have already reviewed this service.") {
             toast.warn("You have already reviewed this service.");
           } else {
@@ -190,7 +193,8 @@ export default function ServiceDetailPage() {
                   Provider is currently working on a reservation
                 </p>
                 <p className="text-white/90 text-sm">
-                  The provider is busy and may not be available for new bookings at this moment
+                  The provider is busy and may not be available for new bookings
+                  at this moment
                 </p>
               </div>
             </div>
@@ -394,47 +398,85 @@ export default function ServiceDetailPage() {
             </h2>
 
             <div className="space-y-4">
-              {data?.reviews?.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-white rounded-lg shadow-md p-6"
-                >
+              {myReview?.[0] && (
+                <div className=" bg-white rounded-lg shadow-md p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="font-semibold text-lg text-[#2C3E50]">
-                        {review.client_id == user?.id
-                          ? "You"
-                          : review?.user?.name}
+                        You
                       </h3>
                       <p className="text-sm text-gray-500">
-                        {review.created_at.split("T")[0]}
+                        {myReview?.[0]?.created_at.split("T")[0]}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <StarRating rating={review.rating} />
-                      {review.client_id == user?.id && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditReview(review)}
-                            className="p-2 rounded-lg bg-[#ECF0F1] text-[#2ECC71] hover:bg-[#BDC3C7] transition-colors"
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            onClick={() => confirmDelete(review.id)}
-                            className="p-2 rounded-lg bg-[#ECF0F1] text-[#E74C3C] hover:bg-[#BDC3C7] transition-colors"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      )}
+                      <StarRating rating={myReview?.[0]?.rating} />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEditReview(myReview[0])}
+                          className="p-2 rounded-lg bg-[#ECF0F1] text-[#2ECC71] hover:bg-[#BDC3C7] transition-colors"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => confirmDelete(myReview[0].id)}
+                          className="p-2 rounded-lg bg-[#ECF0F1] text-[#E74C3C] hover:bg-[#BDC3C7] transition-colors"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <p className="text-gray-700 leading-relaxed">
-                    {review.comment}
+                    {myReview?.[0]?.comment}
                   </p>
                 </div>
-              ))}
+              )}
+
+
+              {data?.reviews
+                ?.filter((review) => review.client_id !== user.id)
+                .map((review) => (
+                  <div
+                    key={review.id}
+                    className="bg-white rounded-lg shadow-md p-6"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg text-[#2C3E50]">
+                          {review.client_id == user?.id
+                            ? "You"
+                            : review?.user?.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {review.created_at.split("T")[0]}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <StarRating rating={review.rating} />
+                        {review.client_id == user?.id && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditReview(review)}
+                              className="p-2 rounded-lg bg-[#ECF0F1] text-[#2ECC71] hover:bg-[#BDC3C7] transition-colors"
+                            >
+                              <Edit size={16} />
+                            </button>
+                            <button
+                              onClick={() => confirmDelete(review.id)}
+                              className="p-2 rounded-lg bg-[#ECF0F1] text-[#E74C3C] hover:bg-[#BDC3C7] transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {review.comment}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
           {deleteModal.open && (

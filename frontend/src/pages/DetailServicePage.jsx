@@ -11,9 +11,10 @@ import {
   Trash2,
   Send,
   Loader2,
+  CircleAlert,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   addReview,
   deleteReview,
@@ -26,7 +27,7 @@ import ReservationForm from "../components/ReservationForm";
 export default function ServiceDetailPage() {
   const { id } = useParams();
   const { data, status } = useSelector((state) => state.services.service);
-  const { user } = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth);
   const { addReviewStatus, updateReviewStatus, deleteReviewStatus } =
     useSelector((state) => state.services);
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ export default function ServiceDetailPage() {
   });
   const [reservitionModel, setReservationModel] = useState(false);
   const [isReserved, setIsReserved] = useState(false);
+  const [guestModel, setGuestModel] = useState(false);
+  const navigate = useNavigate() 
 
   useEffect(() => {
     dispatch(fetchService(id));
@@ -54,42 +57,46 @@ export default function ServiceDetailPage() {
 
   const handleSubmitReview = async () => {
     if (rating > 0 && reviewText.trim()) {
-      try {
-        if (editingReview) {
-          const updatedReview = {
-            id: editingReview.id,
-            rating,
-            comment: reviewText,
-          };
+      if (!token && !user) {
+        setGuestModel(true);
+      } else {
+        try {
+          if (editingReview) {
+            const updatedReview = {
+              id: editingReview.id,
+              rating,
+              comment: reviewText,
+            };
 
-          await dispatch(updateReview(updatedReview)).unwrap();
-          await dispatch(fetchService(data.id));
+            await dispatch(updateReview(updatedReview)).unwrap();
+            await dispatch(fetchService(data.id));
 
-          toast.success("Your review has been updated!");
+            toast.success("Your review has been updated!");
 
-          setEditingReview(null);
-        } else {
-          const newReview = {
-            rating,
-            comment: reviewText,
-            service_id: data.id,
-          };
+            setEditingReview(null);
+          } else {
+            const newReview = {
+              rating,
+              comment: reviewText,
+              service_id: data.id,
+            };
 
-          await dispatch(addReview(newReview)).unwrap();
-          await dispatch(fetchService(data.id));
+            await dispatch(addReview(newReview)).unwrap();
+            await dispatch(fetchService(data.id));
 
-          toast.success("Review added successfully!");
+            toast.success("Review added successfully!");
+          }
+
+          setRating(0);
+          setReviewText("");
+        } catch (error) {
+          if (error === "You have already reviewed this service.") {
+            toast.warn("You have already reviewed this service.");
+          } else {
+            toast.error("Something went wrong. Please try again.");
+          }
+          console.error("Error submitting review:", error);
         }
-
-        setRating(0);
-        setReviewText("");
-      } catch (error) {
-        if (error === "You have already reviewed this service.") {
-          toast.warn("You have already reviewed this service.");
-        } else {
-          toast.error("Something went wrong. Please try again.");
-        }
-        console.error("Error submitting review:", error);
       }
     }
   };
@@ -257,7 +264,13 @@ export default function ServiceDetailPage() {
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[#E67E22] hover:bg-[#D35400]"
                 }`}
-                onClick={() => setReservationModel(true)}
+                onClick={() => {
+                  if (!token && !user) {
+                    setGuestModel(true);
+                  } else {
+                    setReservationModel(true);
+                  }
+                }}
               >
                 <Calendar size={20} />
                 {isReserved ? "Reserved" : "Reserve Service"}
@@ -316,7 +329,7 @@ export default function ServiceDetailPage() {
                 <button
                   onClick={handleSubmitReview}
                   disabled={
-                    data?.hasReviewed && !editingReview ||
+                    (data?.hasReviewed && !editingReview) ||
                     rating === 0 ||
                     !reviewText.trim() ||
                     addReviewStatus === "loading" ||
@@ -432,6 +445,37 @@ export default function ServiceDetailPage() {
                     ) : (
                       "Delete"
                     )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {guestModel && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg max-w-md w-full p-6">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                    <CircleAlert size={24} className="text-[#E74C3C]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                      You have to login for this action
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={()=>setGuestModel(false)}
+                    className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={()=>navigate("/login")}
+                    className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#2ECC71] hover:bg-[#27AE60] disabled:opacity-50"
+                  >
+                    Login
                   </button>
                 </div>
               </div>

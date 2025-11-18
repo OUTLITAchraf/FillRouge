@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../utils/api";
+import api from "../api/api";
 
 export const fetchCategories = createAsyncThunk(
   "services/fetchCategories",
@@ -230,6 +230,21 @@ export const deleteCategory = createAsyncThunk(
   }
 );
 
+export const fetchReviews = createAsyncThunk(
+  "services/fetchReviews",
+  async (rating, { rejectWithValue }) => {
+    try {
+      let response = await api.get("/reviews", {
+        params: rating,
+      });
+      console.log("Response Review :", response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const ServiceSlice = createSlice({
   name: "services",
   initialState: {
@@ -248,6 +263,11 @@ const ServiceSlice = createSlice({
     },
     createServiceStatus: "idle",
     updateServiceStatus: "idle",
+    updateStatusServiceStatus: "idle",
+    reviews: {
+      data: [],
+      status: "idle",
+    },
     addReviewStatus: "idle",
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
@@ -256,7 +276,6 @@ const ServiceSlice = createSlice({
       data: [],
       status: "idle",
     },
-    updateStatusServiceStatus: "idle",
     updateStatusReservationsStatus: "idle",
   },
   reducers: {},
@@ -344,6 +363,23 @@ const ServiceSlice = createSlice({
       });
 
     builder
+      .addCase(updateStatusService.pending, (state, action) => {
+        state.updateStatusServiceStatus = "loading";
+
+        console.log("Update Status Service Pending :", action);
+      })
+      .addCase(updateStatusService.fulfilled, (state, action) => {
+        state.updateStatusServiceStatus = "success";
+
+        console.log("Update Status Service Fulfilled :", action);
+      })
+      .addCase(updateStatusService.rejected, (state, action) => {
+        state.updateStatusServiceStatus = "failed";
+
+        console.log("Update Status Service Rejected :", action);
+      });
+
+    builder
       .addCase(reserverService.pending, (state) => {
         state.reservationStatus = "loading";
         console.log("Reservation Pending.");
@@ -355,6 +391,24 @@ const ServiceSlice = createSlice({
       .addCase(reserverService.rejected, (state) => {
         state.reservationStatus = "failed";
         console.log("Reservation Rejected.");
+      });
+
+    builder
+      .addCase(fetchReviews.pending, (state, action) => {
+        state.reviews.status = "loading";
+
+        console.log("Fetch Reviews Pending :", action);
+      })
+      .addCase(fetchReviews.fulfilled, (state, action) => {
+        state.reviews.status = "success";
+        state.reviews.data = action.payload;
+
+        console.log("Fetch Reviews Fulfilled :", action);
+      })
+      .addCase(fetchReviews.rejected, (state, action) => {
+        state.reviews.status = "failed";
+
+        console.log("Fetch Reviews Rejected :", action);
       });
 
     builder
@@ -424,23 +478,6 @@ const ServiceSlice = createSlice({
         state.reservations.status = "failed";
 
         console.log("Fetch Reservation Rejected :", action);
-      });
-
-    builder
-      .addCase(updateStatusService.pending, (state, action) => {
-        state.updateStatusServiceStatus = "loading";
-
-        console.log("Update Status Service Pending :", action);
-      })
-      .addCase(updateStatusService.fulfilled, (state, action) => {
-        state.updateStatusServiceStatus = "success";
-
-        console.log("Update Status Service Fulfilled :", action);
-      })
-      .addCase(updateStatusService.rejected, (state, action) => {
-        state.updateStatusServiceStatus = "failed";
-
-        console.log("Update Status Service Rejected :", action);
       });
 
     builder

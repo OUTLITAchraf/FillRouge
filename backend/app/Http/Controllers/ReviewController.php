@@ -25,13 +25,46 @@ class ReviewController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reviews = Review::orderByDesc('created_at')->get();
+        $user = auth()->user();
+
+        $query = Review::query()->with('client');
+
+        if ($user->hasRole('provider')) {
+            $query->where('service_id',$user->service_id);
+        }
+
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        $reviews = $query->orderByDesc('created_at')->paginate(10);
+
+        $allReviews = Review::query();
+        if ($user->hasRole('provider')) {
+            $allReviews->where('service_id', $user->service_id);
+        }
+        
+        $totalReviews = $allReviews->count();
+        $averageRating = $totalReviews > 0 ? round($allReviews->avg('rating'), 1) : 0;
+        
+        $ratingDistribution = [
+            5 => $allReviews->clone()->where('rating', 5)->count(),
+            4 => $allReviews->clone()->where('rating', 4)->count(),
+            3 => $allReviews->clone()->where('rating', 3)->count(),
+            2 => $allReviews->clone()->where('rating', 2)->count(),
+            1 => $allReviews->clone()->where('rating', 1)->count(),
+        ];
 
         return response()->json([
             'message' => 'Review Fetched Successfully',
-            'reviews' => $reviews->load('user')
+            'reviews' => $reviews,
+            'statistics' => [
+                'total_reviews' => $totalReviews,
+                'average_rating' => $averageRating,
+                'rating_distribution' => $ratingDistribution
+            ]
         ], 201);
     }
     /**

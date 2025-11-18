@@ -54,7 +54,7 @@ const LoginPage = () => {
       const role = user.roles?.[0]?.name;
 
       if (role === "provider") {
-        navigate("/login");
+        navigate("/provider/dashboard");
       } else if (role === "client") {
         navigate(fromPage, { replace: true });
       } else {

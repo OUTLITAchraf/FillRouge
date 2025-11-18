@@ -69,7 +69,7 @@ class ServiceController extends Controller
 
         $this->authorize('viewAny', Service::class);
 
-        $query = Service::query()->with(['provider', 'category', 'reservations', 'reviews.user']);
+        $query = Service::query()->with(['provider', 'category', 'reservations', 'reviews.client']);
 
         if ($user?->hasRole('provider')) {
             $query->where('provider_id', $user->id);

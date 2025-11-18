@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../utils/api";
+import api from "../api/api";
 import Cookies from "js-cookie";
 
 export const userRegister = createAsyncThunk(

@@ -60,11 +60,11 @@ class Service extends Model
 
     public function reservations()
     {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(Reservation::class)->orderBy('created_at','desc');
     }
 
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class)->orderBy('created_at','desc');
     }
 }

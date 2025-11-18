@@ -5,14 +5,19 @@ import { useSelector } from "react-redux";
 export default function ProviderRoute() {
   const {token, user} = useSelector((state) => state.auth);
   const role = user?.roles?.[0]?.name;
+  const providerStatus = user?.status;
 
-  // If user is authenticated, redirect based on role
-  if (!token ) {
+  if (!token || providerStatus === "pending") {
     return <Navigate to="/login" replace />;
   }
-  if (role != "provider") {
+  
+  if (role != "provider" || providerStatus === "rejected") {
     return <Navigate to="/unauthorized" replace />;
   }
+
+  // if ( ) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
 
   return <Outlet />;
 }

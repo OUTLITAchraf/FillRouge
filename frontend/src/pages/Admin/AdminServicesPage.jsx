@@ -241,7 +241,7 @@ export default function AdminServicesPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={service.image}
+                              src={service.image_url ? service.image_url : "https://placehold.co/600x400?text=Service"+service.id}
                               alt={service.title}
                               className="w-16 h-16 object-cover rounded-lg"
                             />
@@ -250,7 +250,7 @@ export default function AdminServicesPage() {
                                 className="font-semibold"
                                 style={{ color: "#2C3E50" }}
                               >
-                                {service.title.substring(0, 20)}
+                                {service.title.substring(0, 20)}...
                               </p>
                             </div>
                           </div>
@@ -360,16 +360,15 @@ export default function AdminServicesPage() {
               </table>
             </div>
           </div>
-          
+
           <div className="flex justify-between items-center px-6 py-4 border-t bg-gray-50">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={!data?.prev_page_url}
-              className={`flex items-center gap-2 px-3 py-2 rounded ${
-                !data?.prev_page_url
+              className={`flex items-center gap-2 px-3 py-2 rounded ${!data?.prev_page_url
                   ? "opacity-50 cursor-not-allowed"
                   : "bg-[#2C3E50] text-white"
-              }`}
+                }`}
             >
               <ChevronLeft size={18} /> Previous
             </button>
@@ -381,11 +380,10 @@ export default function AdminServicesPage() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={!data?.next_page_url}
-              className={`flex items-center gap-2 px-3 py-2 rounded ${
-                !data?.next_page_url
+              className={`flex items-center gap-2 px-3 py-2 rounded ${!data?.next_page_url
                   ? "opacity-50 cursor-not-allowed"
                   : "bg-[#2C3E50] text-white"
-              }`}
+                }`}
             >
               Next <ChevronRight size={18} />
             </button>
@@ -411,7 +409,7 @@ export default function AdminServicesPage() {
 
             <div className="p-6">
               <img
-                src={selectedService.image}
+                src={selectedService.image_url?selectedService.image_url:"https://placehold.co/600x400?text=Service"+selectedService.id}
                 alt={selectedService.title}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />

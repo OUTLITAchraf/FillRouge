@@ -45,7 +45,7 @@ export default function ServiceDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const myReview = data?.reviews?.filter(
-    (review) => review.client_id === user.id
+    (review) => review.client_id === user?.id
   );
 
   useEffect(() => {
@@ -435,7 +435,7 @@ export default function ServiceDetailPage() {
 
 
               {data?.reviews
-                ?.filter((review) => review.client_id !== user.id)
+                ?.filter((review) => review.client_id !== user?.id)
                 .map((review) => (
                   <div
                     key={review.id}

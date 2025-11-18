@@ -67,7 +67,7 @@ class ReservationController extends Controller
             });
         }
 
-        $reservations = $query->paginate(10);
+        $reservations = $query->orderByDesc('created_at')->paginate(10);
 
         return response()->json([
             'message' => 'Reservation Fetched Successfully',

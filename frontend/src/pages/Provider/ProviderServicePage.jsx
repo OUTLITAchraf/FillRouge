@@ -179,7 +179,7 @@ export default function ProviderServiceDashboard() {
     return icons[status] || Edit;
   };
 
-  const StatusIcon = getStatusIcon(data?.data?.[0].status);
+  const StatusIcon = getStatusIcon(data?.data?.[0]?.status);
 
   if (status == "loading") {
     return (

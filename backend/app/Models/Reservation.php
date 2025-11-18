@@ -20,6 +20,8 @@ class Reservation extends Model
 
     protected $dates = ['delete_at'];
 
+    protected $sortable = ['created_at'];
+
     public function service(){
         return $this->belongsTo(Service::class);
     }

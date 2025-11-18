@@ -30,7 +30,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::orderByDesc('created_at')->get();
         return response()->json([
             "message" => "Categories Fetched Successfully",
             "categories" => $categories

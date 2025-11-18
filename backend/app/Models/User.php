@@ -97,11 +97,11 @@ class User extends Authenticatable implements LaratrustUser
 
     public function reservations()
     {
-        return $this->hasMany(Reservation::class, 'client_id');
+        return $this->hasMany(Reservation::class, 'client_id')->orderBy('created_at', 'desc');
     }
 
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'client_id');
+        return $this->hasMany(Review::class, 'client_id')->orderByDesc('created_at');
     }
 }

@@ -36,7 +36,7 @@ class UserController extends Controller
      */
     public function getProviders()
     {
-        $providers = User::whereHasRole('provider')->with('service')->paginate(10);
+        $providers = User::whereHasRole('provider')->orderByDesc('created_at')->with('service')->paginate(10);
         return response()->json([
             "message" => "Providers Retrieved Successfully",
             "providers" => $providers,
@@ -64,7 +64,7 @@ class UserController extends Controller
      */
         public function getUsers()
     {
-        $users = User::whereHasRole('client')->paginate(10);
+        $users = User::whereHasRole('client')->orderByDesc('created_at')->paginate(10);
         return response()->json([
             "message" => "Users Retrieved Successfully",
             "users" => $users,

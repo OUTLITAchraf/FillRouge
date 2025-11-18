@@ -27,7 +27,7 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $reviews = Review::all();
+        $reviews = Review::orderByDesc('created_at')->get();
 
         return response()->json([
             'message' => 'Review Fetched Successfully',

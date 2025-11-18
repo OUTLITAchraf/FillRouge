@@ -97,7 +97,7 @@ class ServiceController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $services = $query->paginate(12);
+        $services = $query->orderByDesc('created_at')->paginate(12);
         $services->getCollection()->transform(function ($service) use ($user) {
             $service->is_reserved = false;
 

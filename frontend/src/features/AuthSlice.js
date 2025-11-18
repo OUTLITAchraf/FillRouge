@@ -10,15 +10,19 @@ export const userRegister = createAsyncThunk(
 
       let response = await api.post("/register", data);
       console.log("Reseponse :", response);
+      let role = response.data.user.roles[0].name;
+      console.log(role);
 
-      Cookies.set("authToken", response.data.token, {
-        expires: 7,
-        sameSite: "strict",
-      });
-      Cookies.set("authUser", JSON.stringify(response.data.user), {
-        expires: 7,
-        sameSite: "strict",
-      });
+      if (role == "client") {
+        Cookies.set("authToken", response.data.token, {
+          expires: 7,
+          sameSite: "strict",
+        });
+        Cookies.set("authUser", JSON.stringify(response.data.user), {
+          expires: 7,
+          sameSite: "strict",
+        });
+      }
 
       return response.data;
     } catch (error) {
@@ -105,8 +109,10 @@ const AuthSlice = createSlice({
       })
       .addCase(userRegister.fulfilled, (state, action) => {
         state.userRegister.status = "success";
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+        if (action.payload.user.roles[0].name == "client") {
+          state.token = action.payload.token;
+          state.user = action.payload.user;
+        }
 
         console.log("Register Fulfilled:", action);
       })
@@ -145,7 +151,7 @@ const AuthSlice = createSlice({
         state.userLogout_Status = "success";
         state.user = null;
 
-        Cookies.remove("authToken")
+        Cookies.remove("authToken");
         Cookies.remove("authUser");
 
         console.log("User Logout Fulfilled:", action);
@@ -158,5 +164,5 @@ const AuthSlice = createSlice({
   },
 });
 
-export const {clearAuth} = AuthSlice.actions;
+export const { clearAuth } = AuthSlice.actions;
 export default AuthSlice.reducer;

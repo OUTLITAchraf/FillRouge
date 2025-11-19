@@ -99,4 +99,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/admin/category/{id}/restore', [CategoryController::class, 'restore']);
 
     Route::post('/admin/user/{id}/force-delete', [UserController::class, 'forceDelete']);
+    Route::post('/admin/service/{service}/force-delete',[ServiceController::class, 'forceDelete']);
+
 });

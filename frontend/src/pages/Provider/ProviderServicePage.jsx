@@ -15,10 +15,12 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createService,
+  deleteService,
   fetchServices,
   updateService,
 } from "../../features/ServiceSlice";
@@ -62,14 +64,20 @@ const updateServiceSchema = yup.object().shape({
 });
 
 export default function ProviderServiceDashboard() {
-  const [showModal, setShowModal] = useState(false);
   const {
     categories,
     services: { data, status },
     createServiceStatus,
     updateServiceStatus,
+    deleteServiceStatus,
   } = useSelector((state) => state.services);
   const dispatch = useDispatch();
+
+  const [showModal, setShowModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    service: null,
+  });
 
   const {
     register,
@@ -105,7 +113,6 @@ export default function ProviderServiceDashboard() {
     try {
       let result;
       if (formDataValues?.id) {
-        
         result = await dispatch(
           updateService({ id: formDataValues.id, formData })
         ).unwrap();
@@ -133,9 +140,23 @@ export default function ProviderServiceDashboard() {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteService(deleteModal.service.id)).unwrap();
+      setDeleteModal({ open: false, service: null });
+      toast.success("Service Deleted Successfully");
+
+      dispatch(fetchServices());
+    } catch (error) {
+      console.log("Error :", error);
+      setDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
   const openModal = () => {
     if (data?.data?.[0]) {
-      // Editing existing service
       reset({
         id: data?.data?.[0].id,
         title: data?.data?.[0].title,
@@ -144,7 +165,6 @@ export default function ProviderServiceDashboard() {
         category_id: data?.data?.[0].category_id,
       });
     } else {
-      // Adding new service
       reset({
         id: null,
         title: "",
@@ -159,6 +179,14 @@ export default function ProviderServiceDashboard() {
   const closeModal = () => {
     setShowModal(false);
     reset();
+  };
+
+  const openDeleteModal = (service) => {
+    setDeleteModal({ open: true, service });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ open: false, service: null });
   };
 
   const getStatusColor = (status) => {
@@ -238,13 +266,23 @@ export default function ProviderServiceDashboard() {
                       </span>
                     </div>
                   </div>
-                  <button
-                    onClick={openModal}
-                    className="px-4 py-2 rounded-lg text-white font-semibold transition-colors flex items-center gap-2 bg-[#2ECC71] hover:bg-[#27AE60]"
-                  >
-                    <Edit size={18} />
-                    Update Service
-                  </button>
+
+                  <div className="flex flex-col lg:flex-row gap-2">
+                    <button
+                      onClick={openModal}
+                      className="px-4 py-2 rounded-lg text-white font-semibold transition-colors flex items-center gap-2 bg-[#2ECC71] hover:bg-[#27AE60]"
+                    >
+                      <Edit size={18} />
+                      Update
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(data?.data?.[0])}
+                      className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                    >
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -466,6 +504,51 @@ export default function ProviderServiceDashboard() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Delete Service
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to delete{" "}
+                  <strong>"{deleteModal.service?.title}"</strong>?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeDeleteModal}
+                disabled={deleteServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {deleteServiceStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Deleting...
+                  </span>
+                ) : (
+                  "Delete Service"
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

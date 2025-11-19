@@ -85,6 +85,48 @@ export const updateService = createAsyncThunk(
   }
 );
 
+export const deleteService = createAsyncThunk(
+  "services/deleteService",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.delete(`/delete-service/${id}`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const restoreService = createAsyncThunk(
+  "services/restoreService",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`admin/service/${id}/restore`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const forceDeleteService = createAsyncThunk(
+  "services/forceDeleteService",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/admin/service/${id}/force-delete`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const addReview = createAsyncThunk(
   "service/addReview",
   async ({ rating, comment, service_id }) => {
@@ -264,6 +306,9 @@ const ServiceSlice = createSlice({
     createServiceStatus: "idle",
     updateServiceStatus: "idle",
     updateStatusServiceStatus: "idle",
+    deleteServiceStatus: "idle",
+    restoreServiceStatus: "idle",
+    forceDeleteServiceStatus: "idle",
     reviews: {
       data: [],
       status: "idle",
@@ -377,6 +422,48 @@ const ServiceSlice = createSlice({
         state.updateStatusServiceStatus = "failed";
 
         console.log("Update Status Service Rejected :", action);
+      });
+
+    builder
+      .addCase(deleteService.pending, (state, action) => {
+        state.deleteServiceStatus = "loading";
+        console.log("Delete Service Pending :", action);
+      })
+      .addCase(deleteService.fulfilled, (state, action) => {
+        state.deleteServiceStatus = "success";
+        console.log("Delete Service Fulfilled :", action.payload);
+      })
+      .addCase(deleteService.rejected, (state, action) => {
+        state.deleteServiceStatus = "failed";
+        console.log("Delete Service Rejected :", action);
+      });
+
+    builder
+      .addCase(restoreService.pending, (state, action) => {
+        state.restoreServiceStatus = "loading";
+        console.log("Delete Service Pending :", action);
+      })
+      .addCase(restoreService.fulfilled, (state, action) => {
+        state.restoreServiceStatus = "success";
+        console.log("Delete Service Fulfilled :", action.payload);
+      })
+      .addCase(restoreService.rejected, (state, action) => {
+        state.restoreServiceStatus = "failed";
+        console.log("Delete Service Rejected :", action);
+      });
+
+    builder
+      .addCase(forceDeleteService.pending, (state, action) => {
+        state.forceDeleteServiceStatus = "loading";
+        console.log("Force Delete Service Pending :", action);
+      })
+      .addCase(forceDeleteService.fulfilled, (state, action) => {
+        state.forceDeleteServiceStatus = "success";
+        console.log("Force Delete Service Fulfilled :", action.payload);
+      })
+      .addCase(forceDeleteService.rejected, (state, action) => {
+        state.forceDeleteServiceStatus = "failed";
+        console.log("Force Delete Service Rejected :", action);
       });
 
     builder

@@ -17,27 +17,41 @@ import {
   Loader2,
   Filter,
   Search,
+  Trash2,
+  RefreshCcw,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchServices,
+  forceDeleteService,
+  restoreService,
   updateStatusService,
 } from "../../features/ServiceSlice";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 
 export default function AdminServicesPage() {
+  const dispatch = useDispatch();
+  const { data, status } = useSelector((state) => state.services.services);
+  const { updateStatusServiceStatus, restoreServiceStatus, forceDeleteServiceStatus } = useSelector((state) => state.services);
+
   const [selectedService, setSelectedService] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [showModal, setShowModal] = useState(false);
   const [showStatusConfirme, setShowStatusConfirme] = useState({
     open: false,
     service: {},
     status: "",
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const dispatch = useDispatch();
-  const { data, status } = useSelector((state) => state.services.services);
-  const { updateStatusServiceStatus } = useSelector((state) => state.services);
+  const [restoreModal, setRestoreModal] = useState({
+    open: false,
+    service: null,
+  });
+  const [forceDeleteModal, setForceDeleteModal] = useState({
+    open: false,
+    service: null,
+  });
 
   const [searchParams, setSearchParams] = useSearchParams("");
   const [searchedProvider, setSearchedProvider] = useState("");
@@ -89,6 +103,36 @@ export default function AdminServicesPage() {
     });
   };
 
+  const handleRestore = async () => {
+    try {
+      await dispatch(restoreService(restoreModal.service.id)).unwrap();
+      setRestoreModal({ open: false, service: null });
+      toast.success("Service Restored Successfully");
+
+      dispatch(fetchServices());
+    } catch (error) {
+      console.log("Error :", error);
+      setRestoreModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
+  const handleForceDelete = async () => {
+    try {
+      await dispatch(forceDeleteService(forceDeleteModal.service.id)).unwrap();
+      setForceDeleteModal({ open: false, service: null });
+      toast.success("Service Force Deleted Successfully");
+
+      dispatch(fetchServices());
+    } catch (error) {
+      console.log("Error :", error);
+      setForceDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
   const handleStatusConfirm = async () => {
     try {
       const service_id = showStatusConfirme.service.id;
@@ -117,6 +161,22 @@ export default function AdminServicesPage() {
   const viewDetails = (service) => {
     setSelectedService(service);
     setShowModal(true);
+  };
+
+  const openRestoreModal = (service) => {
+    setRestoreModal({ open: true, service });
+  };
+
+  const closeRestoreModal = () => {
+    setRestoreModal({ open: false, service: null });
+  };
+
+  const openForceDeleteModal = (service) => {
+    setForceDeleteModal({ open: true, service });
+  };
+
+  const closeForceDeleteModal = () => {
+    setForceDeleteModal({ open: false, service: null });
   };
 
   const getStatusCount = (status) => {
@@ -249,7 +309,6 @@ export default function AdminServicesPage() {
                 </label>
                 <div className="relative">
                   <Search
-
                     size={20}
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   />
@@ -444,7 +503,7 @@ export default function AdminServicesPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="flex gap-2 px-6 py-4">
                           <button
                             onClick={() => viewDetails(service)}
                             className="px-3 py-2 text-sm text-white rounded-lg transition-colors flex items-center gap-2"
@@ -453,6 +512,24 @@ export default function AdminServicesPage() {
                             <Eye size={16} />
                             View
                           </button>
+                          {service.deleted_at && (
+                            <>
+                              <button
+                                onClick={() => openRestoreModal(service)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#ffc300] hover:bg-[#ee9b00] text-white"
+                              >
+                                <RefreshCcw size={16} />
+                                Restore
+                              </button>
+                              <button
+                                onClick={() => openForceDeleteModal(service)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                Force
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );
@@ -533,6 +610,15 @@ export default function AdminServicesPage() {
                       Service Information
                     </h4>
                     <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Service ID</p>
+                        <p
+                          className="font-semibold"
+                          style={{ color: "#2C3E50" }}
+                        >
+                          #{selectedService.id}
+                        </p>
+                      </div>
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Title</p>
                         <p
@@ -711,6 +797,96 @@ export default function AdminServicesPage() {
                   </span>
                 ) : (
                   "Confirm"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {restoreModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#ffc300]/10 flex items-center justify-center flex-shrink-0">
+                <RefreshCcw size={24} className="text-[#ffc300]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Restore Service
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to restore{" "}
+                  <strong>"{restoreModal.service?.title}"</strong>?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeRestoreModal}
+                disabled={restoreServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRestore}
+                disabled={restoreServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#ffc300] hover:bg-[#ee9b00] disabled:opacity-50"
+              >
+                {restoreServiceStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Restoring...
+                  </span>
+                ) : (
+                  "Restore Service"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {forceDeleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Force Delete Service
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to force delete this{" "}
+                  <strong>"{forceDeleteModal.service?.title}"</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeForceDeleteModal}
+                disabled={forceDeleteServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForceDelete}
+                disabled={forceDeleteServiceStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {forceDeleteServiceStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Force Deleting...
+                  </span>
+                ) : (
+                  "Force Delete Service"
                 )}
               </button>
             </div>

@@ -75,6 +75,8 @@ class ServiceController extends Controller
             $query->where('provider_id', $user->id);
         } elseif (!$user?->hasRole('admin')) {
             $query->where('status', 'approved');
+        } else {
+            $query->withTrashed();
         }
 
         if ($request->filled('category_name')) {
@@ -384,6 +386,15 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Service restored successfully',
             'service' => $service
+        ], 201);
+    }
+
+    public function forceDelete($id){
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->forceDelete();
+
+        return response()->json([
+            "message" => "Service permanently deleted successfully"
         ], 201);
     }
 

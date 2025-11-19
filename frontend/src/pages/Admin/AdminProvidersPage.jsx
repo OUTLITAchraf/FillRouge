@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteUser,
-  fetchClients,
   fetchProviders,
   forceDeleteUser,
   restoreUser,

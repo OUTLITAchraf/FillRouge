@@ -87,14 +87,16 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::patch('/admin/provider/update-status/{provider}', [UserController::class, 'updateStatus']);
     Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
 
-    Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);
-    Route::post('/admin/service/{id}/restore', [ServiceController::class, 'restore']);
-    Route::post('/admin/review/{id}/restore', [ReviewController::class, 'restore']);
-    Route::post('/admin/category/{id}/restore', [CategoryController::class, 'restore']);
-
     Route::post('/admin/create-category', [CategoryController::class, 'store']);
     Route::put('/admin/update-category/{category}', [CategoryController::class, 'update']);
     Route::delete('/admin/delete-category/{category}', [CategoryController::class, 'destroy']);
 
     Route::patch('/admin/service/update-status/{service}', [ServiceController::class, 'updateStatus']);
+
+    Route::post('/admin/user/{id}/restore', [UserController::class, 'restore']);
+    Route::post('/admin/service/{id}/restore', [ServiceController::class, 'restore']);
+    Route::post('/admin/review/{id}/restore', [ReviewController::class, 'restore']);
+    Route::post('/admin/category/{id}/restore', [CategoryController::class, 'restore']);
+
+    Route::post('/admin/user/{id}/force-delete', [UserController::class, 'forceDelete']);
 });

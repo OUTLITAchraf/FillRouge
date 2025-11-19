@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, fetchProviders, updateStatusProvider } from "../../features/UserSlice";
+import {
+  deleteUser,
+  fetchClients,
+  fetchProviders,
+  forceDeleteUser,
+  restoreUser,
+  updateStatusProvider,
+} from "../../features/UserSlice";
 import {
   Users,
   Mail,
@@ -19,6 +26,7 @@ import {
   Filter,
   Search,
   Trash2,
+  RefreshCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
@@ -26,9 +34,12 @@ import { useSearchParams } from "react-router-dom";
 export default function AdminProvidersPage() {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.users.providers);
-  const { updateStatusProvider_Status, deleteUserStatus } = useSelector(
-    (state) => state.users
-  );
+  const {
+    updateStatusProvider_Status,
+    deleteUserStatus,
+    restoreUserStatus,
+    forceDeleteUserStatus,
+  } = useSelector((state) => state.users);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProvider, setSelectedProvider] = useState(null);
@@ -41,6 +52,14 @@ export default function AdminProvidersPage() {
   });
 
   const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    provider: null,
+  });
+  const [restoreModal, setRestoreModal] = useState({
+    open: false,
+    provider: null,
+  });
+  const [forceDeleteModal, setForceDeleteModal] = useState({
     open: false,
     provider: null,
   });
@@ -120,6 +139,36 @@ export default function AdminProvidersPage() {
     }
   };
 
+  const handleRestore = async () => {
+    try {
+      await dispatch(restoreUser(restoreModal.provider.id)).unwrap();
+      setRestoreModal({ open: false, provider: null });
+      toast.success("Provider Restored Successfully");
+
+      dispatch(fetchProviders());
+    } catch (error) {
+      console.log("Error :", error);
+      setRestoreModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
+  const handleForceDelete = async () => {
+    try {
+      await dispatch(forceDeleteUser(forceDeleteModal.provider.id)).unwrap();
+      setForceDeleteModal({ open: false, provider: null });
+      toast.success("Provider Force Deleted Successfully");
+
+      dispatch(fetchProviders());
+    } catch (error) {
+      console.log("Error :", error);
+      setForceDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
   const handleChangeStatus = (provider, newStatus) => {
     setShowStatusConfirme({
       open: true,
@@ -147,6 +196,22 @@ export default function AdminProvidersPage() {
 
   const closeDeleteModal = () => {
     setDeleteModal({ open: false, provider: null });
+  };
+
+  const openRestoreModal = (provider) => {
+    setRestoreModal({ open: true, provider });
+  };
+
+  const closeRestoreModal = () => {
+    setRestoreModal({ open: false, provider: null });
+  };
+
+  const openForceDeleteModal = (provider) => {
+    setForceDeleteModal({ open: true, provider });
+  };
+
+  const closeForceDeleteModal = () => {
+    setForceDeleteModal({ open: false, provider: null });
   };
 
   const getStatusColor = (status) => {
@@ -452,13 +517,34 @@ export default function AdminProvidersPage() {
                             <Eye size={16} />
                             View
                           </button>
-                          <button
-                            onClick={() => openDeleteModal(provider)}
-                            className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
-                          >
-                            <Trash2 size={16} />
-                            <p>Delete</p>
-                          </button>
+                          {provider.deleted_at ? (
+                            <>
+                              <button
+                                onClick={() => openRestoreModal(provider)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#ffc300] hover:bg-[#ee9b00] text-white"
+                              >
+                                <RefreshCcw size={16} />
+                                <p>Restore</p>
+                              </button>
+                              <button
+                                onClick={() => openForceDeleteModal(provider)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Force Delete</p>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => openDeleteModal(provider)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Delete</p>
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );
@@ -725,6 +811,96 @@ export default function AdminProvidersPage() {
                   </span>
                 ) : (
                   "Delete Provider"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {restoreModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#ffc300]/10 flex items-center justify-center flex-shrink-0">
+                <RefreshCcw size={24} className="text-[#ffc300]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Restore Provider
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to restore{" "}
+                  <strong>"{restoreModal.provider?.name}"</strong>?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeRestoreModal}
+                disabled={restoreUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRestore}
+                disabled={restoreUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#ffc300] hover:bg-[#ee9b00] disabled:opacity-50"
+              >
+                {restoreUserStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Restoring...
+                  </span>
+                ) : (
+                  "Restore Provider"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {forceDeleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Force Delete Provider
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to force delete this{" "}
+                  <strong>"{forceDeleteModal.provider?.name}"</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeForceDeleteModal}
+                disabled={forceDeleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForceDelete}
+                disabled={forceDeleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {forceDeleteUserStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Force Deleting...
+                  </span>
+                ) : (
+                  "Force Delete Provider"
                 )}
               </button>
             </div>

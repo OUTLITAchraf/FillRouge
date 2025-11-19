@@ -194,4 +194,13 @@ class UserController extends Controller
             'user' => $user
         ], 201);
     }
+
+    public function forceDelete($id)
+    {
+        $user = User::withTrashed()->findOrFail($id);
+        $user->forceDelete();
+        return response()->json([
+            'message' => 'User permanently deleted successfully',
+        ], 201);
+    }
 }

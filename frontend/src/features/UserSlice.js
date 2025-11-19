@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../api/api";
 
 export const fetchProviders = createAsyncThunk(
-  "providers/fetchProviders",
+  "users/fetchProviders",
   async (filters = {}, { rejectWithValue }) => {
     try {
       let response = await api.get("/admin/providers", {
@@ -19,7 +19,7 @@ export const fetchProviders = createAsyncThunk(
 );
 
 export const updateStatusProvider = createAsyncThunk(
-  "providers/updateStatusProvider",
+  "users/updateStatusProvider",
   async ({ status, provider_id }, { rejectWithValue }) => {
     try {
       let response = await api.patch(
@@ -37,7 +37,7 @@ export const updateStatusProvider = createAsyncThunk(
 );
 
 export const fetchClients = createAsyncThunk(
-  "providers/fetchClients",
+  "users/fetchClients",
   async (filters = {}, { rejectWithValue }) => {
     try {
       let response = await api.get("/admin/clients", {
@@ -54,10 +54,38 @@ export const fetchClients = createAsyncThunk(
 );
 
 export const deleteUser = createAsyncThunk(
-  "services/deleteUser",
+  "users/deleteUser",
   async (id, { rejectWithValue }) => {
     try {
       let response = await api.delete(`/admin/delete-user/${id}`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const restoreUser = createAsyncThunk(
+  "users/restoreUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`admin/user/${id}/restore`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const forceDeleteUser = createAsyncThunk(
+  "users/forceDeleteUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/admin/user/${id}/force-delete`);
       console.log("Response :", response);
       return response.data;
     } catch (error) {
@@ -80,6 +108,8 @@ const UserSlice = createSlice({
     },
     updateStatusProvider_Status: "idle",
     deleteUserStatus: "idle",
+    restoreUserStatus: "idle",
+    forceDeleteUserStatus: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -144,6 +174,34 @@ const UserSlice = createSlice({
       .addCase(deleteUser.rejected, (state, action) => {
         state.deleteUserStatus = "failed";
         console.log("Delete User Rejected :", action);
+      });
+
+    builder
+      .addCase(restoreUser.pending, (state, action) => {
+        state.restoreUserStatus = "loading";
+        console.log("Delete User Pending :", action);
+      })
+      .addCase(restoreUser.fulfilled, (state, action) => {
+        state.restoreUserStatus = "success";
+        console.log("Delete User Fulfilled :", action.payload);
+      })
+      .addCase(restoreUser.rejected, (state, action) => {
+        state.restoreUserStatus = "failed";
+        console.log("Delete User Rejected :", action);
+      });
+
+    builder
+      .addCase(forceDeleteUser.pending, (state, action) => {
+        state.forceDeleteUserStatus = "loading";
+        console.log("Force Delete User Pending :", action);
+      })
+      .addCase(forceDeleteUser.fulfilled, (state, action) => {
+        state.forceDeleteUserStatus = "success";
+        console.log("Force Delete User Fulfilled :", action.payload);
+      })
+      .addCase(forceDeleteUser.rejected, (state, action) => {
+        state.forceDeleteUserStatus = "failed";
+        console.log("Force Delete User Rejected :", action);
       });
   },
 });

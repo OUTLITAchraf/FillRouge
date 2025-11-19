@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, fetchClients } from "../../features/UserSlice";
+import {
+  deleteUser,
+  fetchClients,
+  forceDeleteUser,
+  restoreUser,
+} from "../../features/UserSlice";
 import {
   Mail,
   Phone,
@@ -18,6 +23,7 @@ import {
   Filter,
   Search,
   Trash2,
+  RefreshCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
@@ -25,13 +31,24 @@ import { useSearchParams } from "react-router-dom";
 export default function AdminClientsPage() {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.users.clients);
-  const { deleteUserStatus } = useSelector((state) => state.users);
+  const { deleteUserStatus, restoreUserStatus, forceDeleteUserStatus } = useSelector(
+    (state) => state.users
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedClient, setSelectedClient] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    client: null,
+  });
+
+  const [restoreModal, setRestoreModal] = useState({
+    open: false,
+    client: null,
+  });
+  const [forceDeleteModal, setForceDeleteModal] = useState({
     open: false,
     client: null,
   });
@@ -88,6 +105,36 @@ export default function AdminClientsPage() {
     }
   };
 
+  const handleRestore = async () => {
+    try {
+      await dispatch(restoreUser(restoreModal.client.id)).unwrap();
+      setRestoreModal({ open: false, client: null });
+      toast.success("Client Restored Successfully");
+
+      dispatch(fetchClients());
+    } catch (error) {
+      console.log("Error :", error);
+      setRestoreModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
+  const handleForceDelete = async () => {
+    try {
+      await dispatch(forceDeleteUser(forceDeleteModal.client.id)).unwrap();
+      setForceDeleteModal({ open: false, client: null });
+      toast.success("Client Force Deleted Successfully");
+
+      dispatch(fetchClients());
+    } catch (error) {
+      console.log("Error :", error);
+      setForceDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
   const viewDetails = (client) => {
     setSelectedClient(client);
     setShowModal(true);
@@ -99,6 +146,22 @@ export default function AdminClientsPage() {
 
   const closeDeleteModal = () => {
     setDeleteModal({ open: false, client: null });
+  };
+
+  const openRestoreModal = (client) => {
+    setRestoreModal({ open: true, client });
+  };
+
+  const closeRestoreModal = () => {
+    setRestoreModal({ open: false, client: null });
+  };
+
+  const openForceDeleteModal = (client) => {
+    setForceDeleteModal({ open: true, client });
+  };
+
+  const closeForceDeleteModal = () => {
+    setForceDeleteModal({ open: false, client: null });
   };
 
   if (status === "loading") {
@@ -242,13 +305,34 @@ export default function AdminClientsPage() {
                             <Eye size={16} />
                             View
                           </button>
-                          <button
-                            onClick={() => openDeleteModal(client)}
-                            className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
-                          >
-                            <Trash2 size={16} />
-                            <p>Delete</p>
-                          </button>
+                          {client.deleted_at ? (
+                            <>
+                              <button
+                                onClick={() => openRestoreModal(client)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#ffc300] hover:bg-[#ee9b00] text-white"
+                              >
+                                <RefreshCcw size={16} />
+                                <p>Restore</p>
+                              </button>
+                              <button
+                                onClick={() => openForceDeleteModal(client)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Force Delete</p>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => openDeleteModal(client)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Delete</p>
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );
@@ -419,6 +503,96 @@ export default function AdminClientsPage() {
                   </span>
                 ) : (
                   "Delete Client"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {restoreModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#ffc300]/10 flex items-center justify-center flex-shrink-0">
+                <RefreshCcw size={24} className="text-[#ffc300]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Restore Client
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to restore{" "}
+                  <strong>"{restoreModal.client?.name}"</strong>?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeRestoreModal}
+                disabled={restoreUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRestore}
+                disabled={restoreUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#ffc300] hover:bg-[#ee9b00] disabled:opacity-50"
+              >
+                {restoreUserStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Restoring...
+                  </span>
+                ) : (
+                  "Restore Client"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {forceDeleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Force Delete Client
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to force delete this{" "}
+                  <strong>"{forceDeleteModal.client?.name}"</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeForceDeleteModal}
+                disabled={forceDeleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForceDelete}
+                disabled={forceDeleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {forceDeleteUserStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Force Deleting...
+                  </span>
+                ) : (
+                  "Force Delete Client"
                 )}
               </button>
             </div>

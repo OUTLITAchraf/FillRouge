@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status',['pending','approved','rejected'])->default('pending');
             $table->string('image')->nullable();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('city_id')->constrained()->cascadeOnDelete();
             $table->foreignId('provider_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();

@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call(LaratrustSeeder::class);
 
         $this->call(CategorySeeder::class);
+        
+        $this->call(CitiesTableSeeder::class);
 
         $this->call(AdminSeeder::class);
 

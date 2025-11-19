@@ -53,6 +53,10 @@ class Service extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    public function city(){
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
     public function provider()
     {
         return $this->belongsTo(User::class, 'provider_id');

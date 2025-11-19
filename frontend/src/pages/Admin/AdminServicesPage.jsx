@@ -15,6 +15,8 @@ import {
   ChevronLeft,
   X,
   Loader2,
+  Filter,
+  Search,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,6 +24,7 @@ import {
   updateStatusService,
 } from "../../features/ServiceSlice";
 import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 export default function AdminServicesPage() {
   const [selectedService, setSelectedService] = useState(null);
@@ -36,14 +39,41 @@ export default function AdminServicesPage() {
   const { data, status } = useSelector((state) => state.services.services);
   const { updateStatusServiceStatus } = useSelector((state) => state.services);
 
-  console.log(data);
-  console.log(status);
+  const [searchParams, setSearchParams] = useSearchParams("");
+  const [searchedProvider, setSearchedProvider] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const providerNameParams = searchParams.get("provider_name") || "";
+  const statusParams = searchParams.get("status") || "";
+
+  useEffect(() => {
+    setSearchedProvider(providerNameParams);
+    setSelectedStatus(statusParams);
+  }, []);
 
   useEffect(() => {
     const filters = {};
+    if (providerNameParams) filters.provider_name = providerNameParams;
+    if (statusParams) filters.status = statusParams;
     filters.page = currentPage;
     dispatch(fetchServices(filters));
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage, providerNameParams, statusParams]);
+
+  const handleFilters = () => {
+    const params = {};
+    if (searchedProvider) params.provider_name = searchedProvider;
+    if (selectedStatus) params.status = selectedStatus;
+
+    params.page = 1;
+    setSearchParams(params);
+  };
+
+  const handleClearFilters = () => {
+    setSearchedProvider("");
+    setSelectedStatus("");
+    setCurrentPage(1);
+
+    setSearchParams({ page: 1 });
+  };
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= data?.last_page) {
@@ -203,6 +233,72 @@ export default function AdminServicesPage() {
             </div>
           </div>
 
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Filter size={20} className="text-[#2ECC71]" />
+              <h2 className="text-lg font-semibold text-[#2C3E50]">
+                Filter Services
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Search by Client Name */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+                  Search by Client Name
+                </label>
+                <div className="relative">
+                  <Search
+
+                    size={20}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter client name..."
+                    value={searchedProvider}
+                    onChange={(e) => setSearchedProvider(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                  />
+                </div>
+              </div>
+
+              {/* Filter by Status */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+                  Filter by Status
+                </label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Filter Action Buttons */}
+            <div className="mt-4 flex gap-3 justify-end">
+              <button
+                onClick={handleFilters}
+                className="px-6 py-2 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors"
+              >
+                Apply Filters
+              </button>
+              <button
+                onClick={handleClearFilters}
+                className="px-6 py-2 bg-[#ECF0F1] text-[#2C3E50] rounded-lg font-semibold hover:bg-[#BDC3C7] transition-colors flex items-center gap-2"
+              >
+                <X size={16} />
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
           {/* Services Table */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="overflow-x-auto">
@@ -241,7 +337,12 @@ export default function AdminServicesPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={service.image_url ? service.image_url : "https://placehold.co/600x400?text=Service"+service.id}
+                              src={
+                                service.image_url
+                                  ? service.image_url
+                                  : "https://placehold.co/600x400?text=Service" +
+                                    service.id
+                              }
                               alt={service.title}
                               className="w-16 h-16 object-cover rounded-lg"
                             />
@@ -365,10 +466,11 @@ export default function AdminServicesPage() {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={!data?.prev_page_url}
-              className={`flex items-center gap-2 px-3 py-2 rounded ${!data?.prev_page_url
+              className={`flex items-center gap-2 px-3 py-2 rounded ${
+                !data?.prev_page_url
                   ? "opacity-50 cursor-not-allowed"
                   : "bg-[#2C3E50] text-white"
-                }`}
+              }`}
             >
               <ChevronLeft size={18} /> Previous
             </button>
@@ -380,10 +482,11 @@ export default function AdminServicesPage() {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={!data?.next_page_url}
-              className={`flex items-center gap-2 px-3 py-2 rounded ${!data?.next_page_url
+              className={`flex items-center gap-2 px-3 py-2 rounded ${
+                !data?.next_page_url
                   ? "opacity-50 cursor-not-allowed"
                   : "bg-[#2C3E50] text-white"
-                }`}
+              }`}
             >
               Next <ChevronRight size={18} />
             </button>
@@ -409,7 +512,12 @@ export default function AdminServicesPage() {
 
             <div className="p-6">
               <img
-                src={selectedService.image_url?selectedService.image_url:"https://placehold.co/600x400?text=Service"+selectedService.id}
+                src={
+                  selectedService.image_url
+                    ? selectedService.image_url
+                    : "https://placehold.co/600x400?text=Service" +
+                      selectedService.id
+                }
                 alt={selectedService.title}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />

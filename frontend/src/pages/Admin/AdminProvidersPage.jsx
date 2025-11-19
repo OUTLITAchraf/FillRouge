@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProviders, updateStatusProvider } from "../../features/UserSlice";
+import { deleteUser, fetchProviders, updateStatusProvider } from "../../features/UserSlice";
 import {
   Users,
   Mail,
@@ -16,16 +16,23 @@ import {
   ShoppingBag,
   X,
   Loader2,
+  Filter,
+  Search,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
 
 export default function AdminProvidersPage() {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.users.providers);
-  const { updateStatusProvider_Status } = useSelector((state) => state.users);
+  const { updateStatusProvider_Status, deleteUserStatus } = useSelector(
+    (state) => state.users
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProvider, setSelectedProvider] = useState(null);
+
   const [showModal, setShowModal] = useState(false);
   const [showStatusConfirme, setShowStatusConfirme] = useState({
     open: false,
@@ -33,11 +40,53 @@ export default function AdminProvidersPage() {
     status: "",
   });
 
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    provider: null,
+  });
+
+  const [searchedProvider, setSearchedProvider] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams("");
+  const providerNameParams = searchParams.get("provider_name") || "";
+  const statusParams = searchParams.get("status") || "";
+
+  useEffect(() => {
+    setSearchedProvider(providerNameParams);
+    setSelectedStatus(statusParams);
+  }, []);
+
   useEffect(() => {
     const filters = {};
+    if (providerNameParams) filters.provider_name = providerNameParams;
+    if (statusParams) filters.status = statusParams;
     filters.page = currentPage;
     dispatch(fetchProviders(filters));
-  }, [dispatch, currentPage]);
+  }, [dispatch, currentPage, providerNameParams, statusParams]);
+
+  const handleFilters = () => {
+    const params = {};
+    if (searchedProvider) params.provider_name = searchedProvider;
+    if (selectedStatus) params.status = selectedStatus;
+
+    params.page = 1;
+
+    setSearchParams(params);
+  };
+
+  const handleClearFilters = () => {
+    setSearchedProvider("");
+    setSelectedStatus("");
+    setCurrentPage(1);
+    setSearchParams({ page: 1 });
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= data?.last_page) {
+      setCurrentPage(page);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleStatusConfirm = async () => {
     try {
@@ -56,12 +105,48 @@ export default function AdminProvidersPage() {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteUser(deleteModal.provider.id)).unwrap();
+      setDeleteModal({ open: false, provider: null });
+      toast.success("Provider Deleted Successfully");
+
+      dispatch(fetchProviders());
+    } catch (error) {
+      console.log("Error :", error);
+      setDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
   const handleChangeStatus = (provider, newStatus) => {
     setShowStatusConfirme({
       open: true,
       provider,
       status: newStatus,
     });
+  };
+
+  const cancelleChangeStatus = () => {
+    setShowStatusConfirme({
+      open: false,
+      provider: {},
+      status: "",
+    });
+  };
+
+  const viewDetails = (provider) => {
+    setSelectedProvider(provider);
+    setShowModal(true);
+  };
+
+  const openDeleteModal = (provider) => {
+    setDeleteModal({ open: true, provider });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ open: false, provider: null });
   };
 
   const getStatusColor = (status) => {
@@ -85,26 +170,6 @@ export default function AdminProvidersPage() {
   const getStatusCount = (status) => {
     if (status === "all") return data?.data?.length;
     return data?.data?.filter((provider) => provider.status === status).length;
-  };
-
-  const cancelleChangeStatus = () => {
-    setShowStatusConfirme({
-      open: false,
-      provider: {},
-      status: "",
-    });
-  };
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= data?.last_page) {
-      setCurrentPage(page);
-    }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const viewDetails = (provider) => {
-    setSelectedProvider(provider);
-    setShowModal(true);
   };
 
   if (status === "loading") {
@@ -195,6 +260,70 @@ export default function AdminProvidersPage() {
               <p className="text-3xl font-bold" style={{ color: "#E74C3C" }}>
                 {getStatusCount("rejected")}
               </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Filter size={20} className="text-[#2ECC71]" />
+              <h2 className="text-lg font-semibold text-[#2C3E50]">
+                Filter Providers
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+                  Search by Provider Name
+                </label>
+                <div className="relative">
+                  <Search
+                    size={20}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter provider name..."
+                    value={searchedProvider}
+                    onChange={(e) => setSearchedProvider(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                  />
+                </div>
+              </div>
+
+              {/* Filter by Status */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-[#2C3E50]">
+                  Filter by Status
+                </label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Filter Action Buttons */}
+            <div className="mt-4 flex gap-3 justify-end">
+              <button
+                onClick={handleFilters}
+                className="px-6 py-2 bg-[#2ECC71] text-white rounded-lg font-semibold hover:bg-[#27AE60] transition-colors"
+              >
+                Apply Filters
+              </button>
+              <button
+                onClick={handleClearFilters}
+                className="px-6 py-2 bg-[#ECF0F1] text-[#2C3E50] rounded-lg font-semibold hover:bg-[#BDC3C7] transition-colors flex items-center gap-2"
+              >
+                <X size={16} />
+                Clear Filters
+              </button>
             </div>
           </div>
 
@@ -315,13 +444,20 @@ export default function AdminProvidersPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="flex gap-2 px-6 py-4">
                           <button
                             onClick={() => viewDetails(provider)}
                             className="px-3 py-2 text-sm bg-[#3498DB] text-white rounded-lg transition-colors flex items-center gap-2 hover:bg-[#2980B9]"
                           >
                             <Eye size={16} />
                             View
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(provider)}
+                            className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                          >
+                            <Trash2 size={16} />
+                            <p>Delete</p>
                           </button>
                         </td>
                       </tr>
@@ -458,7 +594,7 @@ export default function AdminProvidersPage() {
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Service</p>
                     <p className="font-semibold" style={{ color: "#2C3E50" }}>
-                      {selectedProvider.service.title ||
+                      {selectedProvider?.service?.title ||
                         "Don't have service yet"}
                     </p>
                   </div>
@@ -528,7 +664,7 @@ export default function AdminProvidersPage() {
             <p className="mb-6">
               Are you sure you want to{" "}
               <strong>{showStatusConfirme.status}</strong> this provider{" "}
-              <strong>{showStatusConfirme.provider.name}</strong>?
+              <strong>{showStatusConfirme?.provider?.name}</strong>?
             </p>
             <div className="flex justify-end gap-2">
               <button
@@ -543,6 +679,52 @@ export default function AdminProvidersPage() {
                   </span>
                 ) : (
                   "Confirm"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Delete Provider
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to delete{" "}
+                  <strong>"{deleteModal.provider?.name}"</strong>? but you can
+                  restore him later
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeDeleteModal}
+                disabled={deleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteUserStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {deleteUserStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Deleting...
+                  </span>
+                ) : (
+                  "Delete Provider"
                 )}
               </button>
             </div>

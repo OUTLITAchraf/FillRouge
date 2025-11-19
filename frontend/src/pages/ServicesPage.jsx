@@ -50,7 +50,6 @@ function ServicesPage() {
   const minP = searchParams.get("min_price") || "";
   const maxP = searchParams.get("max_price") || "";
 
-  // this code runs one time and aakes values from URL params and fill inputs values with these values
   useEffect(() => {
     setSearchQuery(providerName);
     setSelectedCategory(categoryName);
@@ -58,7 +57,6 @@ function ServicesPage() {
     setMaxPrice(maxP);
   }, []);
 
-  // this code runs when dependens change
   useEffect(() => {
     const filters = {};
 

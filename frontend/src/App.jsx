@@ -12,9 +12,8 @@ import ProviderReservationsPage from "./pages/Provider/ProviderReservationsPage"
 import DashboardLayout from "./Layouts/DashboardLayout";
 import ProviderReviewsPage from "./pages/Provider/ProviderReviewsPage";
 import AdminDasboardPage from "./pages/Admin/AdminDasboardPage";
-import AdminUsersPage from "./pages/Admin/AdminUsersPage";
+import AdminClientsPage from "./pages/Admin/AdminClientsPage";
 import AdminServicesPage from "./pages/Admin/AdminServicesPage";
-import AdminReviewsPage from "./pages/Admin/AdminReviewsPage";
 import AdminCategoriesPage from "./pages/Admin/AdminCategoriesPage";
 import ProviderServicePage from "./pages/Provider/ProviderServicePage";
 import FAQPage from "./pages/FAQPage";
@@ -67,10 +66,9 @@ function App() {
             <Route path="/admin" element={<DashboardLayout />}>
               <Route path="dashboard" element={<AdminDasboardPage />} />
               <Route path="providers" element={<AdminProvidersPage />} />
-              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="clients" element={<AdminClientsPage />} />
               <Route path="categories" element={<AdminCategoriesPage />} />
               <Route path="services" element={<AdminServicesPage />} />
-              <Route path="reviews" element={<AdminReviewsPage />} />
             </Route>
           </Route>
         </Routes>

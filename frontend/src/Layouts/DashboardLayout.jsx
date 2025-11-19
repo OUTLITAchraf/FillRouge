@@ -45,10 +45,9 @@ export default function DashboardLayout() {
       ? [
         { label: "Dashboard", icon: Home, path: "/admin/dashboard" },
         { label: "Providers", icon: Users, path: "/admin/providers" },
-        { label: "Users", icon: Users, path: "/admin/users" },
+        { label: "Clients", icon: Users, path: "/admin/clients" },
         { label: "Categories", icon: Layers, path: "/admin/categories" },
         { label: "Services", icon: Briefcase, path: "/admin/services" },
-        { label: "Reviews", icon: Star, path: "/admin/reviews" },
       ]
       : [
         { label: "Dashboard", icon: Home, path: "/provider/dashboard" },

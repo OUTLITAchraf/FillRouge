@@ -34,9 +34,19 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function getProviders()
+    public function getProviders(Request $request)
     {
-        $providers = User::whereHasRole('provider')->orderByDesc('created_at')->with('service')->paginate(10);
+        $query = User::whereHasRole('provider')->withTrashed();
+
+        if ($request->filled('provider_name')) {
+            $query->where('name', 'like', "%{$request->provider_name}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $providers = $query->orderByDesc('created_at')->with('service')->paginate(10);
         return response()->json([
             "message" => "Providers Retrieved Successfully",
             "providers" => $providers,
@@ -62,12 +72,18 @@ class UserController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-        public function getUsers()
+    public function getClients(Request $request)
     {
-        $users = User::whereHasRole('client')->orderByDesc('created_at')->paginate(10);
+        $query = User::whereHasRole('client')->withTrashed();
+
+        if ($request->filled('client_name')) {
+            $query->where('name', 'like', "%{$request->client_name}%");
+        }
+
+        $clients = $query->orderByDesc('created_at')->paginate(10);
         return response()->json([
-            "message" => "Users Retrieved Successfully",
-            "users" => $users,
+            "message" => "Clients Retrieved Successfully",
+            "clients" => $clients,
         ], 201);
     }
 

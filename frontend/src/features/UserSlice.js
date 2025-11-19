@@ -6,7 +6,7 @@ export const fetchProviders = createAsyncThunk(
   async (filters = {}, { rejectWithValue }) => {
     try {
       let response = await api.get("/admin/providers", {
-        params: filters
+        params: filters,
       });
       console.log("Response :", response.data);
 
@@ -36,6 +36,37 @@ export const updateStatusProvider = createAsyncThunk(
   }
 );
 
+export const fetchClients = createAsyncThunk(
+  "providers/fetchClients",
+  async (filters = {}, { rejectWithValue }) => {
+    try {
+      let response = await api.get("/admin/clients", {
+        params: filters,
+      });
+      console.log("Response :", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "services/deleteUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.delete(`/admin/delete-user/${id}`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 const UserSlice = createSlice({
   name: "users",
   initialState: {
@@ -43,7 +74,12 @@ const UserSlice = createSlice({
       data: [],
       status: "idle",
     },
+    clients: {
+      data: [],
+      status: "idle",
+    },
     updateStatusProvider_Status: "idle",
+    deleteUserStatus: "idle",
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -64,6 +100,22 @@ const UserSlice = createSlice({
       });
 
     builder
+      .addCase(fetchClients.pending, (state, action) => {
+        state.clients.status = "loading";
+        console.log("Fetch Clients Pending :", action);
+      })
+      .addCase(fetchClients.fulfilled, (state, action) => {
+        state.clients.status = "success";
+        state.clients.data = action.payload.clients;
+
+        console.log("Fetch Clients Fulfilled :", action.payload);
+      })
+      .addCase(fetchClients.rejected, (state, action) => {
+        state.clients.status = "failed";
+        console.log("Fetch Clients Rejected :", action);
+      });
+
+    builder
       .addCase(updateStatusProvider.pending, (state, action) => {
         state.updateStatusProvider_Status = "loading";
 
@@ -78,6 +130,20 @@ const UserSlice = createSlice({
         state.updateStatusProvider_Status = "failed";
 
         console.log("Update Status Provider Rejected :", action);
+      });
+
+    builder
+      .addCase(deleteUser.pending, (state, action) => {
+        state.deleteUserStatus = "loading";
+        console.log("Delete User Pending :", action);
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.deleteUserStatus = "success";
+        console.log("Delete User Fulfilled :", action.payload);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.deleteUserStatus = "failed";
+        console.log("Delete User Rejected :", action);
       });
   },
 });

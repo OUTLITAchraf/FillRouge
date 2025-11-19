@@ -83,7 +83,7 @@ Route::middleware(['auth:sanctum', 'role:provider'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     Route::get('/admin/providers', [UserController::class, 'getProviders']);
-    Route::get('/admin/users', [UserController::class, 'getUsers']);
+    Route::get('/admin/clients', [UserController::class, 'getClients']);
     Route::patch('/admin/provider/update-status/{provider}', [UserController::class, 'updateStatus']);
     Route::delete('/admin/delete-user/{user}', [UserController::class, 'destroy']);
 

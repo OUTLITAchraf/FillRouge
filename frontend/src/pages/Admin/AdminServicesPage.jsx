@@ -214,7 +214,7 @@ export default function AdminServicesPage() {
     <>
       <div
         style={{ backgroundColor: "#ECF0F1" }}
-        className="min-h-screen p-4 lg:p-8"
+        className="min-h-screen p-4 lg:p-4"
       >
         <div className="max-w-7xl mx-auto">
           {/* Header */}

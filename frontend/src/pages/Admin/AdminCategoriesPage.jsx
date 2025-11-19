@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Tag, Plus, Edit, Trash2, X, Loader2, FolderOpen } from "lucide-react";
+import { Tag, Plus, Edit, Trash2, X, Loader2, FolderOpen, RefreshCcw } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { createCategory, deleteCategory, fetchCategories, updateCategory } from "../../features/ServiceSlice";
+import {
+  createCategory,
+  deleteCategory,
+  fetchCategories,
+  forceDeleteCategory,
+  restoreCategory,
+  updateCategory,
+} from "../../features/ServiceSlice";
 import { toast } from "sonner";
 
 // Validation schema
@@ -20,14 +27,31 @@ const categorySchema = yup.object().shape({
 });
 
 export default function AdminCategoriesPage() {
-  const { categories, createCategoryStatus, updateCategoryStatus, deleteCategoryStatus, fetchCategoriesStatus } =
-    useSelector((state) => state.services);
+  const {
+    categories,
+    fetchCategoriesStatus,
+    createCategoryStatus,
+    updateCategoryStatus,
+    deleteCategoryStatus,
+    restoreCategoryStatus,
+    forceDeleteCategoryStatus,
+  } = useSelector((state) => state.services);
   const dispatch = useDispatch();
+
   const [showModal, setShowModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState({
     open: false,
     category: null,
   });
+  const [restoreModal, setRestoreModal] = useState({
+    open: false,
+    category: null,
+  });
+  const [forceDeleteModal, setForceDeleteModal] = useState({
+    open: false,
+    category: null,
+  });
+
   const [editingCategory, setEditingCategory] = useState(null);
 
   const {
@@ -68,18 +92,16 @@ export default function AdminCategoriesPage() {
   const onSubmit = async (data) => {
     if (editingCategory) {
       try {
-
         await dispatch(updateCategory(data)).unwrap();
-        setShowModal(false)
-        toast.success("Category Updated Successfully")
+        setShowModal(false);
+        toast.success("Category Updated Successfully");
 
-        dispatch(fetchCategories())
+        dispatch(fetchCategories());
       } catch (error) {
         console.log("Error :", error);
-        setShowModal(true)
+        setShowModal(true);
 
-        toast.error("Request Failed!!!")
-
+        toast.error("Request Failed!!!");
       }
     } else {
       try {
@@ -104,24 +126,69 @@ export default function AdminCategoriesPage() {
     setDeleteModal({ open: true, category });
   };
 
-  const closeDeleteModal = () => {
-    setDeleteModal({ open: false, category: null });
-  };
-
   const handleDelete = async () => {
     try {
       await dispatch(deleteCategory(deleteModal.category.id)).unwrap();
       setDeleteModal({ open: false, category: null });
       toast.success("Category Deleted Successfully");
 
-      dispatch(fetchCategories())
-
+      dispatch(fetchCategories());
     } catch (error) {
       console.log("Error :", error);
-      setDeleteModal({ open: true })
+      setDeleteModal({ open: true });
 
-      toast.error("Request Failed")
+      toast.error("Request Failed");
     }
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ open: false, category: null });
+  };
+
+  const openRestoreModal = (category) => {
+    setRestoreModal({ open: true, category });
+  };
+
+  const handleRestore = async () => {
+    try {
+      await dispatch(restoreCategory(restoreModal.category.id)).unwrap();
+      setRestoreModal({ open: false, category: null });
+      toast.success("Category Restored Successfully");
+
+      dispatch(fetchCategories());
+    } catch (error) {
+      console.log("Error :", error);
+      setRestoreModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
+  const closeRestoreModal = () => {
+    setRestoreModal({ open: false, category: null });
+  };
+
+  const openForceDeleteModal = (category) => {
+    setForceDeleteModal({ open: true, category });
+  };
+
+  const handleForceDelete = async () => {
+    try {
+      await dispatch(forceDeleteCategory(forceDeleteModal.category.id)).unwrap();
+      setForceDeleteModal({ open: false, category: null });
+      toast.success("Category Force Deleted Successfully");
+
+      dispatch(fetchCategories());
+    } catch (error) {
+      console.log("Error :", error);
+      setForceDeleteModal({ open: true });
+
+      toast.error("Request Failed");
+    }
+  };
+
+  const closeForceDeleteModal = () => {
+    setForceDeleteModal({ open: false, category: null });
   };
 
   if (fetchCategoriesStatus == "loading") {
@@ -202,13 +269,34 @@ export default function AdminCategoriesPage() {
                             <Edit size={16} />
                             <p>Edit</p>
                           </button>
-                          <button
-                            onClick={() => openDeleteModal(category)}
-                            className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
-                          >
-                            <Trash2 size={16} />
-                            <p>Delete</p>
-                          </button>
+                          {category.deleted_at ? (
+                            <>
+                              <button
+                                onClick={() => openRestoreModal(category)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#ffc300] hover:bg-[#ee9b00] text-white"
+                              >
+                                <RefreshCcw size={16} />
+                                <p>Restore</p>
+                              </button>
+                              <button
+                                onClick={() => openForceDeleteModal(category)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Force Delete</p>
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => openDeleteModal(category)}
+                                className="flex items-center gap-2 p-2 rounded-lg transition-colors bg-[#E74C3C] hover:bg-[#C0392B] text-white"
+                              >
+                                <Trash2 size={16} />
+                                <p>Delete</p>
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -291,13 +379,17 @@ export default function AdminCategoriesPage() {
                   </button>
                   <button
                     type="submit"
-                    disabled={createCategoryStatus == "loading" || updateCategoryStatus == "loading"}
+                    disabled={
+                      createCategoryStatus == "loading" ||
+                      updateCategoryStatus == "loading"
+                    }
                     className={`flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors disabled:opacity-50 ${editingCategory
-                      ? "bg-[#2ECC71] hover:bg-[#27AE60]"
-                      : "bg-[#E67E22] hover:bg-[#D35400]"
+                        ? "bg-[#2ECC71] hover:bg-[#27AE60]"
+                        : "bg-[#E67E22] hover:bg-[#D35400]"
                       }`}
                   >
-                    {createCategoryStatus == "loading" || updateCategoryStatus == "loading" ? (
+                    {createCategoryStatus == "loading" ||
+                      updateCategoryStatus == "loading" ? (
                       <span className="flex items-center justify-center gap-2">
                         <Loader2 className="animate-spin" size={20} />
                         {editingCategory ? "Updating..." : "Adding..."}
@@ -329,7 +421,8 @@ export default function AdminCategoriesPage() {
                 </h3>
                 <p className="text-gray-600">
                   Are you sure you want to delete{" "}
-                  <strong>"{deleteModal.category?.display_name}"</strong>? but you can restore him later
+                  <strong>"{deleteModal.category?.display_name}"</strong>? but
+                  you can restore him later
                 </p>
               </div>
             </div>
@@ -354,6 +447,96 @@ export default function AdminCategoriesPage() {
                   </span>
                 ) : (
                   "Delete Category"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {restoreModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#ffc300]/10 flex items-center justify-center flex-shrink-0">
+                <RefreshCcw size={24} className="text-[#ffc300]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Restore Category
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to restore{" "}
+                  <strong>"{restoreModal.category?.display_name}"</strong>?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeRestoreModal}
+                disabled={restoreCategoryStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRestore}
+                disabled={restoreCategoryStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#ffc300] hover:bg-[#ee9b00] disabled:opacity-50"
+              >
+                {restoreCategoryStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Restoring...
+                  </span>
+                ) : (
+                  "Restore Category"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {forceDeleteModal.open && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full p-6">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-full bg-[#E74C3C]/10 flex items-center justify-center flex-shrink-0">
+                <Trash2 size={24} className="text-[#E74C3C]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-[#2C3E50]">
+                  Force Delete Category
+                </h3>
+                <p className="text-gray-600">
+                  Are you sure you want to force delete this{" "}
+                  <strong>"{forceDeleteModal.category?.display_name}"</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeForceDeleteModal}
+                disabled={forceDeleteCategoryStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold transition-colors bg-[#ECF0F1] text-[#2C3E50] hover:bg-[#BDC3C7] disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleForceDelete}
+                disabled={forceDeleteCategoryStatus == "loading"}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-colors bg-[#E74C3C] hover:bg-[#C0392B] disabled:opacity-50"
+              >
+                {forceDeleteCategoryStatus == "loading" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="animate-spin" size={20} />
+                    Force Deleting...
+                  </span>
+                ) : (
+                  "Force Delete Category"
                 )}
               </button>
             </div>

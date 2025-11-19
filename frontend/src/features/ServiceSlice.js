@@ -272,6 +272,34 @@ export const deleteCategory = createAsyncThunk(
   }
 );
 
+export const restoreCategory = createAsyncThunk(
+  "services/restoreCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/admin/category/${id}/restore`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const forceDeleteCategory = createAsyncThunk(
+  "services/forceDeleteCategory",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/admin/category/${id}/force-delete`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const fetchReviews = createAsyncThunk(
   "services/fetchReviews",
   async (rating, { rejectWithValue }) => {
@@ -295,6 +323,8 @@ const ServiceSlice = createSlice({
     createCategoryStatus: "idle",
     updateCategoryStatus: "idle",
     deleteCategoryStatus: "idle",
+    restoreCategoryStatus: "idle",
+    forceDeleteCategoryStatus: "idle",
     services: {
       data: [],
       status: "idle",
@@ -626,6 +656,34 @@ const ServiceSlice = createSlice({
       .addCase(deleteCategory.rejected, (state, action) => {
         state.deleteCategoryStatus = "failed";
         console.log("Delete Category Rejected :", action);
+      });
+
+    builder
+      .addCase(restoreCategory.pending, (state, action) => {
+        state.restoreCategoryStatus = "loading";
+        console.log("Restore Category Pending :", action);
+      })
+      .addCase(restoreCategory.fulfilled, (state, action) => {
+        state.restoreCategoryStatus = "success";
+        console.log("Restore Category Fulfilled :", action.payload);
+      })
+      .addCase(restoreCategory.rejected, (state, action) => {
+        state.restoreCategoryStatus = "failed";
+        console.log("Restore Category Rejected :", action);
+      });
+
+    builder
+      .addCase(forceDeleteCategory.pending, (state, action) => {
+        state.forceDeleteCategoryStatus = "loading";
+        console.log("ForceDelete Category Pending :", action);
+      })
+      .addCase(forceDeleteCategory.fulfilled, (state, action) => {
+        state.forceDeleteCategoryStatus = "success";
+        console.log("ForceDelete Category Fulfilled :", action.payload);
+      })
+      .addCase(forceDeleteCategory.rejected, (state, action) => {
+        state.forceDeleteCategoryStatus = "failed";
+        console.log("ForceDelete Category Rejected :", action);
       });
   },
 });

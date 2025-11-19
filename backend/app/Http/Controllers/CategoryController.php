@@ -30,7 +30,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderByDesc('created_at')->get();
+        $categories = Category::withTrashed()->orderByDesc('created_at')->get();
         return response()->json([
             "message" => "Categories Fetched Successfully",
             "categories" => $categories
@@ -180,6 +180,17 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Category restored successfully',
+            'category' => $category
+        ], 201);
+    }
+
+    public function forceDelete($id)
+    {
+        $category = Category::withTrashed()->findOrFail($id);
+        $category->forceDelete();
+
+        return response()->json([
+            'message' => 'Category permanently deleted successfully',
             'category' => $category
         ], 201);
     }

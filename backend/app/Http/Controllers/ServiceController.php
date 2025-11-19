@@ -378,27 +378,6 @@ class ServiceController extends Controller
         }
     }
 
-    public function restore($id)
-    {
-        $service = Service::withTrashed()->findOrFail($id);
-        $service->restore();
-
-        return response()->json([
-            'message' => 'Service restored successfully',
-            'service' => $service
-        ], 201);
-    }
-
-    public function forceDelete($id){
-        $service = Service::withTrashed()->findOrFail($id);
-        $service->forceDelete();
-
-        return response()->json([
-            "message" => "Service permanently deleted successfully"
-        ], 201);
-    }
-
-
     /**
      * @OA\Patch(
      *     path="/admin/service/update-status/{service}",
@@ -454,33 +433,24 @@ class ServiceController extends Controller
         ], 201);
     }
 
-    public function bycategory(Category $category)
+        public function restore($id)
     {
-        $services = Service::where('category_id', $category->id)->get();
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->restore();
 
         return response()->json([
-            'message' => 'Services With Filter Fetched Successfully',
-            'services' => $services->load('provider')
+            'message' => 'Service restored successfully',
+            'service' => $service
         ], 201);
     }
 
-    public function searchByProvider(Request $request)
-    {
-        $providerName = $request->input('provider_name');
-
-        $service = Service::whereHas('provider', function ($query) use ($providerName) {
-            $query->where('name', 'like', '%' . $providerName . '%');
-        })->get();
-
-        if ($service->isEmpty()) {
-            return response()->json([
-                'message' => 'There no service by this provider'
-            ], 404);
-        }
+    public function forceDelete($id){
+        $service = Service::withTrashed()->findOrFail($id);
+        $service->forceDelete();
 
         return response()->json([
-            'message' => 'Search An Service By Provider Completed Successfully',
-            'service' => $service->load('provider')
+            "message" => "Service permanently deleted successfully"
         ], 201);
     }
+
 }

@@ -100,5 +100,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
     Route::post('/admin/user/{id}/force-delete', [UserController::class, 'forceDelete']);
     Route::post('/admin/service/{service}/force-delete',[ServiceController::class, 'forceDelete']);
+    Route::post('/admin/category/{category}/force-delete',[CategoryController::class, 'forceDelete']);
 
 });

@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 export default function ProviderDasboardPage() {
   const { user } = useSelector((state) => state.auth);
   const { data, status } = useSelector((state) => state.services.services);
+  const fullAdress = `${user?.address}, ${data?.data?.[0].city?.name}` 
 
 
   const calculateAverageRating = () => {
@@ -63,7 +64,7 @@ export default function ProviderDasboardPage() {
               <ProfileField
                 icon={<MapPin color="#2ECC71" />}
                 label="Address"
-                value={user.address}
+                value={fullAdress}
               />
             </div>
           </div>

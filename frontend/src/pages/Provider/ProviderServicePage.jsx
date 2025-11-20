@@ -42,6 +42,7 @@ const createServiceSchema = yup.object().shape({
     .positive("Price must be positive")
     .typeError("Price must be a number"),
   category_id: yup.string().required("Category is required"),
+  city_id: yup.string().required("City is required"),
   image: yup.mixed().required("Image is required"),
 });
 
@@ -59,13 +60,13 @@ const updateServiceSchema = yup.object().shape({
     .required("Price is required")
     .positive("Price must be positive")
     .typeError("Price must be a number"),
-  category_id: yup.string(),
-  image: yup.mixed().nullable(), // Make image optional for updates
+  image: yup.mixed().nullable(),
 });
 
 export default function ProviderServiceDashboard() {
   const {
     categories,
+    cities,
     services: { data, status },
     createServiceStatus,
     updateServiceStatus,
@@ -77,7 +78,7 @@ export default function ProviderServiceDashboard() {
   const [deleteModal, setDeleteModal] = useState({
     open: false,
     service: null,
-  });
+  });  
 
   const {
     register,
@@ -85,7 +86,6 @@ export default function ProviderServiceDashboard() {
     formState: { errors },
     reset,
   } = useForm({
-    // Use different schema based on whether editing or creating
     resolver: yupResolver(
       data?.data?.[0] ? updateServiceSchema : createServiceSchema
     ),
@@ -95,6 +95,7 @@ export default function ProviderServiceDashboard() {
       description: "",
       price: "",
       category_id: "",
+      city_id: "",
     },
   });
 
@@ -119,7 +120,9 @@ export default function ProviderServiceDashboard() {
         console.log("Result of dispatch update service :", result);
         toast.success("Service Updated Successfully");
       } else {
+        
         formData.append("category_id", formDataValues.category_id);
+        formData.append("city_id", formDataValues.city_id);
 
         result = await dispatch(createService(formData)).unwrap();
         console.log("Result of dispatch create service :", result);
@@ -163,6 +166,7 @@ export default function ProviderServiceDashboard() {
         description: data?.data?.[0].description,
         price: data?.data?.[0].price,
         category_id: data?.data?.[0].category_id,
+        city_id: data?.data?.[0].city_id,
       });
     } else {
       reset({
@@ -171,6 +175,7 @@ export default function ProviderServiceDashboard() {
         description: "",
         price: "",
         category_id: "",
+        city_id: "",
       });
     }
     setShowModal(true);
@@ -396,7 +401,7 @@ export default function ProviderServiceDashboard() {
                 {/* Price and Category Row */}
                 <div
                   className={`grid grid-cols-1 ${
-                    !data?.data?.[0] ? "md:grid-cols-2 gap-4" : ""
+                    !data?.data?.[0] ? "md:grid-cols-3 gap-4" : ""
                   }`}
                 >
                   {/* Price */}
@@ -421,30 +426,54 @@ export default function ProviderServiceDashboard() {
                   </div>
 
                   {/* Category */}
-                  {!data?.data?.[0] ? (
-                    <div>
-                      <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
-                        <Tag size={18} className="text-[#2ECC71]" />
-                        Category
-                      </label>
-                      <select
-                        {...register("category_id")}
-                        className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
-                      >
-                        <option value="">Select a category</option>
-                        {categories?.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.display_name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.category_id && (
-                        <p className="text-[#E74C3C] text-sm mt-1">
-                          {errors.category_id.message}
-                        </p>
-                      )}
-                    </div>
-                  ) : null}
+                  {!data?.data?.[0] && (
+                    <>
+                      <div>
+                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                          <Tag size={18} className="text-[#2ECC71]" />
+                          Category
+                        </label>
+                        <select
+                          {...register("category_id")}
+                          className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                        >
+                          <option value="">Select a category</option>
+                          {categories?.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.display_name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.category_id && (
+                          <p className="text-[#E74C3C] text-sm mt-1">
+                            {errors.category_id.message}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="text-sm font-semibold mb-2 flex items-center gap-2 text-[#2C3E50]">
+                          <Tag size={18} className="text-[#2ECC71]" />
+                          City
+                        </label>
+                        <select
+                          {...register("city_id")}
+                          className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-[#2ECC71] transition-colors text-[#2C3E50]"
+                        >
+                          <option value="">Select a city</option>
+                          {cities?.map((city) => (
+                            <option key={city.id} value={city.id}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.city_id && (
+                          <p className="text-[#E74C3C] text-sm mt-1">
+                            {errors.city_id.message}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Image */}

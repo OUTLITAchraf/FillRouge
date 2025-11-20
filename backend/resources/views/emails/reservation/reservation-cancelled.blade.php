@@ -256,7 +256,7 @@
             <!-- CTA Button -->
             <div class="cta-container">
                 {{-- Assuming a route to the client's reservations dashboard --}}
-                <a href="{{ config('app.url') }}/client/dashboard/reservations" class="cta-button">View My
+                <a href="{{ config('app.url') }}/user/reservation" class="cta-button">View My
                     Reservations</a>
             </div>
 

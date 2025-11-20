@@ -239,7 +239,7 @@
                 <!-- CTA Button - Review Route -->
                 <div class="cta-container" style="margin: 0;">
                     {{-- Assuming a route to leave a review for the service/reservation --}}
-                    <a href="{{ config('app.url') }}/client/dashboard/reservations/{{ $reservation->id }}/review" class="cta-button" style="padding: 12px 30px;">Leave a Review Now</a>
+                    <a href="{{ config('app.url') }}/service/{{ $reservation->service->id }}" class="cta-button" style="padding: 12px 30px;">Leave a Review Now</a>
                 </div>
             </div>
             

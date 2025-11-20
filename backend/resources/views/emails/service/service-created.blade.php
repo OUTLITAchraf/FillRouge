@@ -218,7 +218,7 @@
             </table>
 
             <div class="cta-container">
-                <a href="{{ url('/admin/services') }}" class="cta-button">
+                <a href="{{ config('app.url') }}/admin/services" class="cta-button">
                     Review and Approve Service
                 </a>
             </div>

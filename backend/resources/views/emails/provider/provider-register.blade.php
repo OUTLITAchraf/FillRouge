@@ -226,7 +226,7 @@
 
             <div class="cta-container">
                 {{-- Replace with your actual admin route to view the provider's profile/approval page --}}
-                <a href="{{ url('/admin/providers/' . $provider->id . '/review') }}" class="cta-button">
+                <a href="{{ config('app.url') }}/admin/providers" class="cta-button">
                     Review and Approve Provider
                 </a>
             </div>

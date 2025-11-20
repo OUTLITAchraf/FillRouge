@@ -222,7 +222,7 @@
             <!-- CTA Button -->
             <div class="cta-container">
                 {{-- Assuming a route to edit the service --}}
-                <a href="{{ config('app.url') }}/provider/dashboard/services/{{ $service->id }}/edit" class="cta-button">Edit Your Service</a>
+                <a href="{{ config('app.url') }}/provider/service" class="cta-button">Edit Your Service</a>
             </div>
             
             

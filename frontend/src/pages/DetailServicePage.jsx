@@ -269,7 +269,7 @@ export default function ServiceDetailPage() {
                     <span className="font-semibold text-[#2C3E50]">
                       Address:
                     </span>{" "}
-                    {data?.provider?.address}
+                    {data?.provider?.address}, {data?.city?.name}
                   </span>
                 </div>
 

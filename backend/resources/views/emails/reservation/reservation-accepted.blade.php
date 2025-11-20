@@ -187,7 +187,8 @@
             <div class="greeting">Hello {{ $client->name }},</div>
 
             <p class="message">
-                Great news! The provider has **<strong>accepted</strong>** your reservation request. All the details for your booking are
+                Great news! The provider has **<strong>accepted</strong>** your reservation request. All the details for
+                your booking are
                 confirmed and listed below.
             </p>
 
@@ -231,9 +232,7 @@
 
             <!-- CTA Button -->
             <div class="cta-container">
-                {{-- Assuming a route to view the reservation details --}}
-                <a href="{{ config('app.url') }}/client/dashboard/reservations/{{ $reservation->id }}"
-                    class="cta-button">View Reservation Details</a>
+                <a href="{{ config('app.url') }}/user/reservations" class="cta-button">View Reservation Details</a>
             </div>
 
             <p class="message" style="margin-top: 25px;">

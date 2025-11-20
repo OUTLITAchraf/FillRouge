@@ -169,7 +169,7 @@ class ServiceController extends Controller
         Log::info('Provider is working :',[$isWorking]);
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
-            'service' => $service->load('category', 'provider', 'reviews.user')->setAttribute('hasReserved', $hasReserved)->setAttribute('hasReviewed', $hasReviewed)->setAttribute('isWorking', $isWorking)
+            'service' => $service->load('category', 'city', 'provider', 'reviews.client')->setAttribute('hasReserved', $hasReserved)->setAttribute('hasReviewed', $hasReviewed)->setAttribute('isWorking', $isWorking)
         ], 201);
     }
 
@@ -207,11 +207,13 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Data of service :',[$request->all()]);
         $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
+            'city_id' => 'required|exists:cities,id',
             'image' => 'required|image|mimes:jpg,jpeg,png'
         ]);
 
@@ -239,6 +241,7 @@ class ServiceController extends Controller
                     'status' => 'pending',
                     'image' => $imagePath,
                     'category_id' => $request->category_id,
+                    'city_id' => $request->city_id,
                     'provider_id' => $providerId
                 ]);
 
@@ -246,7 +249,7 @@ class ServiceController extends Controller
                     'service_id' => $service->id
                 ]);
 
-                $service->with(['provider', 'category']);
+                $service->with(['provider', 'category', 'city']);
 
                 return $service;
             });

@@ -18,6 +18,7 @@ class Service extends Model
         'status',
         'image',
         'category_id',
+        'city_id',
         'provider_id'
     ];
 

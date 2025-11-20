@@ -205,7 +205,7 @@
             <!-- CTA Button -->
             <div class="cta-container">
                 {{-- Assuming a route to view the live service --}}
-                <a href="{{ config('app.url') }}/services/{{ $service->id }}" class="cta-button">View Your Live Service</a>
+                <a href="{{ config('app.url') }}/provider/service" class="cta-button">View Your Live Service</a>
             </div>
             
             <!-- Features Box -->

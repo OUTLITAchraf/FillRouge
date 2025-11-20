@@ -16,7 +16,7 @@ class ReviewSeeder extends Seeder
 
         foreach ($clients as $client) {
             // Review 2–4 random services
-            $servicesToReview = $services->random(rand(2, 10));
+            $servicesToReview = $services->random(rand(2, 8));
 
             foreach ($servicesToReview as $service) {
                 Review::create([

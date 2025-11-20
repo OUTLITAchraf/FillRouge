@@ -69,7 +69,7 @@ class ServiceController extends Controller
 
         $this->authorize('viewAny', Service::class);
 
-        $query = Service::query()->with(['provider', 'category', 'reservations', 'reviews.client']);
+        $query = Service::query()->with(['provider', 'category', 'city', 'reservations', 'reviews.client']);
 
         if ($user?->hasRole('provider')) {
             $query->where('provider_id', $user->id);
@@ -82,6 +82,12 @@ class ServiceController extends Controller
         if ($request->filled('category_name')) {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('name', $request->category_name);
+            });
+        }
+
+        if ($request->filled('city_name')) {
+            $query->whereHas('city', function ($q) use ($request) {
+                $q->where('name', $request->city_name);
             });
         }
 

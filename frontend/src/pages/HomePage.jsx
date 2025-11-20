@@ -37,16 +37,34 @@ const categoryIcons = {
 };
 
 function HomePage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [searchProviderName, setSearchProviderName] = useState("");
   const navigate = useNavigate();
-  const { categories, fetchCategoriesStatus } = useSelector(
+  const { categories, cities, fetchCategoriesStatus } = useSelector(
     (state) => state.services
   );
+  
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/services?provider_name=${encodeURIComponent(searchQuery)}`);
+    if (searchProviderName.trim() && selectedCity) {
+      navigate(
+        `/services?provider_name=${encodeURIComponent(
+          searchProviderName
+        )}&city_name=${selectedCity}`
+      );
+    } else if (searchProviderName) {
+      navigate(
+        `/services?provider_name=${encodeURIComponent(
+          searchProviderName
+        )}`
+      );
+    } else if (selectedCity) {
+      navigate(
+        `/services?city_name=${selectedCity}`
+      );
+    } else {
+      navigate("/services");
     }
   };
 
@@ -94,11 +112,32 @@ function HomePage() {
                     <input
                       type="text"
                       placeholder="Search by provider name..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={searchProviderName}
+                      onChange={(e) =>
+                        setSearchProviderName(e.target.value )
+                      }
                       className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:border-[#2ECC71] focus:outline-none focus:ring-2 focus:ring-green-100 transition-all text-gray-700"
                     />
                   </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="flex flex-row items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                    <MapPin size={13} className="text-[#2ECC71]" />
+                    Cities
+                  </label>
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#2ECC71] focus:outline-none"
+                  >
+                    <option value="">All Cities</option>
+                    {cities?.map((cit) => (
+                      <option key={cit.id} value={cit.name}>
+                        {cit.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Search Button */}

@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServiceController;
@@ -54,6 +55,7 @@ Route::get('/services/category/{category}', [ServiceController::class, 'bycatego
 Route::get('/search-service', [ServiceController::class, 'searchByProvider']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/cities', [CityController::class, 'index']);
 
 
 Route::middleware('auth:sanctum')->group(function () {

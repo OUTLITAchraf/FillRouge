@@ -16,7 +16,7 @@ class ReservationSeeder extends Seeder
 
         foreach ($clients as $client) {
             // Reserve 3–5 random services
-            $servicesToReserve = $services->random(rand(3, 11));
+            $servicesToReserve = $services->random(rand(3, 8));
 
             foreach ($servicesToReserve as $service) {
                 Reservation::create([

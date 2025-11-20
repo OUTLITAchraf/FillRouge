@@ -3,7 +3,7 @@ import { ChevronDown, Calendar, LogOut, Loader2, Menu, X } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../features/AuthSlice";
-import { fetchCategories } from "../features/ServiceSlice";
+import { fetchCategories, fetchCities } from "../features/ServiceSlice";
 
 function UserLayout() {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -15,6 +15,7 @@ function UserLayout() {
 
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchCities());
   }, [dispatch]);
 
   const handleLogoute = async () => {

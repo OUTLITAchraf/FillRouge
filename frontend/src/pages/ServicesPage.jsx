@@ -14,6 +14,7 @@ import {
   Wrench,
   Baby,
   GraduationCap,
+  MapPin,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchServices } from "../features/ServiceSlice";
@@ -35,24 +36,27 @@ function ServicesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { categories } = useSelector((state) => state.services);
+  const { categories, cities } = useSelector((state) => state.services);
   const { data, status } = useSelector((state) => state.services.services);
 
   const dispatch = useDispatch();
 
   const providerName = searchParams.get("provider_name");
   const categoryName = searchParams.get("category_name");
+  const cityName = searchParams.get("city_name");
   const minP = searchParams.get("min_price") || "";
   const maxP = searchParams.get("max_price") || "";
 
   useEffect(() => {
     setSearchQuery(providerName);
     setSelectedCategory(categoryName);
+    setSelectedCity(cityName);
     setMinPrice(minP);
     setMaxPrice(maxP);
   }, []);
@@ -62,13 +66,14 @@ function ServicesPage() {
 
     if (providerName) filters.provider_name = providerName;
     if (categoryName) filters.category_name = categoryName;
+    if (cityName) filters.city_name = cityName;
     if (minP) filters.min_price = minP;
     if (maxP) filters.max_price = maxP;
 
     filters.page = currentPage;
 
     dispatch(fetchServices(filters));
-  }, [dispatch, providerName, categoryName, minP, maxP, currentPage]);
+  }, [dispatch, providerName, categoryName, minP, maxP, currentPage, cityName]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -77,7 +82,6 @@ function ServicesPage() {
 
     if (searchQuery) params.provider_name = searchQuery;
 
-    // reset page to 1
     params.page = 1;
 
     setSearchParams(params);
@@ -87,6 +91,7 @@ function ServicesPage() {
     const params = {};
 
     if (selectedCategory) params.category_name = selectedCategory;
+    if (selectedCity) params.city_name = selectedCity;
     if (minPrice) params.min_price = minPrice;
     if (maxPrice) params.max_price = maxPrice;
     if (providerName) params.provider_name = providerName;
@@ -99,6 +104,7 @@ function ServicesPage() {
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
+    setSelectedCity("");
     setMinPrice("");
     setMaxPrice("");
 
@@ -116,9 +122,7 @@ function ServicesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Search and Filters */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        {/* Search Bar */}
         <form onSubmit={handleSearch} className="mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
@@ -148,11 +152,9 @@ function ServicesPage() {
           </div>
         </form>
 
-        {/* Filters */}
         {showFilters && (
           <div className="border-t border-gray-200 pt-6 mt-6">
-            <div className="grid md:grid-cols-3 gap-4">
-              {/* Category Filter */}
+            <div className="grid md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Category
@@ -171,7 +173,24 @@ function ServicesPage() {
                 </select>
               </div>
 
-              {/* Min Price */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Cities
+                </label>
+                <select
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#2ECC71] focus:outline-none"
+                >
+                  <option value="">All Cities</option>
+                  {cities?.map((cit) => (
+                    <option key={cit.id} value={cit.name}>
+                      {cit.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Min Price (DH)
@@ -185,7 +204,6 @@ function ServicesPage() {
                 />
               </div>
 
-              {/* Max Price */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Max Price (DH)
@@ -218,7 +236,6 @@ function ServicesPage() {
         )}
       </div>
 
-      {/* Services Grid */}
       {status == "loading" ? (
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2ECC71]"></div>
@@ -246,7 +263,6 @@ function ServicesPage() {
                   to={`/service/${service.id}`}
                   className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-transparent hover:border-[#2ECC71]"
                 >
-                  {/* Service Image */}
                   <div className="relative h-48 bg-gray-200">
                     <img
                       src={service.image_url}
@@ -261,13 +277,11 @@ function ServicesPage() {
                     </div>
                   </div>
 
-                  {/* Service Content */}
                   <div className="p-4">
                     <h3 className="font-bold text-lg text-gray-800 mb-2 line-clamp-1">
                       {service.title}
                     </h3>
 
-                    {/* Provider Info */}
                     <div className="flex items-center gap-2 mb-3">
                       <div className="w-8 h-8 bg-linear-to-br from-[#2ECC71] to-[#27AE60] rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {getInitials(service.provider.name)}
@@ -279,7 +293,14 @@ function ServicesPage() {
                       </div>
                     </div>
 
-                    {/* Price */}
+                    <div className="flex items-center mb-3">
+                      <MapPin size={20} className="text-[#2ECC71]" /> 
+
+                      <p className="text-sm font-medium text-gray-700 truncate ml-2">
+                        {service.city.name}
+                      </p>
+                    </div>
+
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                       <div className="flex items-center gap-1 text-[#2ECC71]">
                         <DollarSign className="w-5 h-5" />
@@ -291,7 +312,8 @@ function ServicesPage() {
                       {service.is_reserved ? (
                         <button
                           disabled
-                          className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed">
+                          className="px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed"
+                        >
                           Booked
                         </button>
                       ) : (
@@ -306,7 +328,6 @@ function ServicesPage() {
             })}
           </div>
 
-          {/* Pagination */}
           {data.data && data.last_page > 1 && (
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
@@ -328,10 +349,11 @@ function ServicesPage() {
                     setCurrentPage(index + 1);
                     setSearchParams({ page: index + 1 });
                   }}
-                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${currentPage === index + 1
-                    ? "bg-[#2ECC71] text-white"
-                    : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
-                    }`}
+                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
+                    currentPage === index + 1
+                      ? "bg-[#2ECC71] text-white"
+                      : "border-2 border-gray-200 hover:border-[#2ECC71] hover:text-[#2ECC71]"
+                  }`}
                 >
                   {index + 1}
                 </button>

@@ -15,15 +15,17 @@ class ServiceSeeder extends Seeder
             ->get();
 
         $categories = \App\Models\Category::pluck('id')->toArray();
+        $cities = \App\Models\City::pluck('id')->toArray();
 
         foreach ($providers as $provider) {
             Service::create([
                 'title'       => fake()->sentence(3),
                 'description' => fake()->paragraph(),
                 'price'       => fake()->numberBetween(100, 1000),
-                'status'      => fake()->randomElement(['pending', 'approved', 'rejected']),
+                'status'      => 'approved',
                 'image'       => "https://placehold.co/600x400?text=Service+" . $provider->id,
                 'category_id' => fake()->randomElement($categories),
+                'city_id' => fake()->randomElement($cities),
                 'provider_id' => $provider->id,
             ]);
         }

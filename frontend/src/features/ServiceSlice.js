@@ -15,6 +15,20 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+export const fetchCities = createAsyncThunk(
+  "services/fetchCities",
+  async (_, { rejectWithValue }) => {
+    try {
+      let response = await api.get("/cities");
+      console.log("Response :", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const fetchServices = createAsyncThunk(
   "services/fetchServices",
   async (filters = {}, { rejectWithValue }) => {
@@ -320,6 +334,8 @@ const ServiceSlice = createSlice({
   initialState: {
     fetchCategoriesStatus: "idle",
     categories: null,
+    fetchCitiesStatus: "idle",
+    cities: null,
     createCategoryStatus: "idle",
     updateCategoryStatus: "idle",
     deleteCategoryStatus: "idle",
@@ -373,6 +389,26 @@ const ServiceSlice = createSlice({
         state.categories = null;
 
         console.log("Fetch Categories Rejected :", action);
+      });
+
+    builder
+      .addCase(fetchCities.pending, (state, action) => {
+        state.fetchCitiesStatus = "loading";
+        state.cities = null;
+
+        console.log("Fetch Cities Pending :", action);
+      })
+      .addCase(fetchCities.fulfilled, (state, action) => {
+        state.fetchCitiesStatus = "success";
+        state.cities = action.payload.cities;
+
+        console.log("Fetch Cities Fulfilled :", action.payload);
+      })
+      .addCase(fetchCities.rejected, (state, action) => {
+        state.fetchCitiesStatus = "failed";
+        state.cities = null;
+
+        console.log("Fetch Cities Rejected :", action);
       });
 
     builder

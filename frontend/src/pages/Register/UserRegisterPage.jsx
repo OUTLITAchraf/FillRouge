@@ -19,6 +19,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userRegister } from "../../features/AuthSlice";
+import Lottie from "lottie-react";
+import UserRegisterAnimation from "../../assets/animations/UserRegisterAnimation.json";
 
 const userSchema = yup
   .object({
@@ -88,11 +90,10 @@ const UserRegisterPage = () => {
     const response = await dispatch(userRegister(formData));
 
     console.log(response);
-    
 
     if (response.meta.requestStatus === "rejected") {
       if (response.payload.errors) {
-        setGeneralError(null)
+        setGeneralError(null);
         const userRegisterErrors = response.payload.errors;
 
         Object.entries(userRegisterErrors).forEach(([field, messages]) => {
@@ -102,7 +103,7 @@ const UserRegisterPage = () => {
           });
         });
       } else {
-        setGeneralError("Register failed due to an unknown error.")
+        setGeneralError("Register failed due to an unknown error.");
       }
     } else {
       navigate("/");
@@ -133,86 +134,30 @@ const UserRegisterPage = () => {
     <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
-        className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block"
+        className="fixed top-6 left-6 z-10 p-3 flex gap-2 items-center text-xl bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors"
         aria-label="Return to Home"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
+        <Home size={25} />
+        Home
       </Link>
 
       {/* 1. Info Section */}
-      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:flex-shrink-0">
-        <div className="max-w-xl mx-auto">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
-              <Home className="w-10 h-10" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 mb-8 justify-center md:justify-start lg:justify-center">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Create Your Free Account
-              </h2>
-              <p className="text-green-100 text-lg">
-                Start booking services instantly
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />{" "}
-              {/* Sizing Change */}
-              <h3 className="font-semibold text-base mb-1">
-                Find Local Professionals
-              </h3>{" "}
-              {/* Sizing Change */}
-              <p className="text-xs opacity-90">
-                Easily search and connect with service providers near you.
-              </p>{" "}
-              {/* Sizing Change */}
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CalendarCheck className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />{" "}
-              {/* Sizing Change */}
-              <h3 className="font-semibold text-base mb-1">
-                Manage Your Bookings
-              </h3>{" "}
-              {/* Sizing Change */}
-              <p className="text-xs opacity-90">
-                Keep track of all your appointments in one place.
-              </p>{" "}
-              {/* Sizing Change */}
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <Star className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />{" "}
-              {/* Sizing Change */}
-              <h3 className="font-semibold text-base mb-1">
-                Read Real Reviews
-              </h3>{" "}
-              {/* Sizing Change */}
-              <p className="text-xs opacity-90">
-                Make informed choices based on other users' feedback.
-              </p>{" "}
-              {/* Sizing Change */}
-            </div>
+      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-25 lg:px-8 lg:w-1/2">
+        <div className="items-center justify-center mb-[-40px]">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Create Your Free Account
+            </h2>
+            <p className="text-green-100 text-lg">
+              Start booking services instantly.
+            </p>
           </div>
         </div>
+        <Lottie
+          animationData={UserRegisterAnimation}
+          loop={true}
+          className="w-[380px] h-[380px] lg:w-[600px] lg:h-[600px] ml-10"
+        />
       </div>
 
       {/* 2. Registration Form Container */}
@@ -221,7 +166,7 @@ const UserRegisterPage = () => {
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">
-                Create User Account
+                Create Client Account
               </h1>
               <p className="text-gray-600">
                 Fill in your details to get started
@@ -527,7 +472,7 @@ const UserRegisterPage = () => {
                     Creating Account...
                   </span>
                 ) : (
-                  "Create User Account"
+                  "Create Client Account"
                 )}
               </button>
 

@@ -12,10 +12,15 @@ import {
   Key,
   Shield,
   Activity,
+  Fullscreen,
+  ChevronLeft,
+  Home,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userLogin } from "../features/AuthSlice";
+import Lottie from "lottie-react";
+import Login from "../assets/animations/Login.json";
 
 const loginSchema = yup
   .object({
@@ -69,78 +74,28 @@ const LoginPage = () => {
     <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
-        className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block"
+        className="fixed top-6 left-6 z-10 p-3 flex gap-2 items-center text-xl bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors"
         aria-label="Return to Home"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
+        <Home size={25} />
+        Home
       </Link>
 
       {/* 1. Info Section (Left Sidebar) - Adjusted Padding */}
-      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full">
-        <div className="max-w-xl mx-auto">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
-              <LogIn className="w-10 h-10" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 mb-8 justify-center lg:justify-center">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">Welcome Back!</h2>
-              <p className="text-green-100 text-lg">
-                Log in to manage your profile, services, or bookings.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
-            {/* Benefit 1 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <Key className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">Secure Access</h3>
-              <p className="text-xs opacity-90">
-                Your data is protected with industry-standard encryption.
-              </p>
-            </div>
-
-            {/* Benefit 2 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <Shield className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">
-                Centralized Management
-              </h3>
-              <p className="text-xs opacity-90">
-                Access your dedicated dashboard to manage appointments,
-                projects, or requests.
-              </p>
-            </div>
-
-            {/* Benefit 3 */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <Activity className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">
-                Real-Time Notifications
-              </h3>
-              <p className="text-xs opacity-90">
-                Stay informed with instant updates regarding your account
-                activity.
-              </p>
-            </div>
+      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-22 lg:px-8 lg:w-1/2">
+        <div className="items-center justify-center mb-[-40px]">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold">Welcome Back!</h2>
+            <p className="text-green-100 text-lg">
+              Log in to manage your services, or bookings.
+            </p>
           </div>
         </div>
+        <Lottie
+          animationData={Login}
+          loop={true}
+          className="w-[380px] h-[380px] lg:w-[600px] lg:h-[600px] ml-10"
+        />
       </div>
 
       <div className="flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:flex-grow">

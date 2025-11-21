@@ -14,10 +14,13 @@ import {
   AlertCircle,
   Briefcase,
   Clock,
+  Home,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userRegister } from "../../features/AuthSlice";
+import Lottie from "lottie-react";
+import ProviderRegisterAnimation from "../../assets/animations/ProviderRegisterAnimation.json";
 
 // Validation Schema
 const providerSchema = yup
@@ -131,80 +134,33 @@ const ProviderRegisterPage = () => {
     <div className="h-screen flex flex-col lg:flex-row bg-linear-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
       <Link
         to="/"
-        className="fixed top-6 left-6 z-10 p-3 bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors hidden lg:block" // Hidden on small screens, fixed on large
+        className="fixed top-6 left-6 z-10 p-3 flex gap-2 items-center text-xl bg-white/20 backdrop-blur-sm text-white rounded-full shadow-lg hover:bg-white/30 transition-colors"
         aria-label="Return to Home"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
+        <Home size={25} />
+        Home
       </Link>
 
-      {/* 1. Info Section */}
-      <div className="bg-linear-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl lg:w-1/2 lg:flex lg:flex-col lg:items-center lg:justify-center lg:h-full lg:shrink-0">
-        <div className="max-w-xl mx-auto">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center">
-              <Briefcase className="w-10 h-10" />
-            </div>
-          </div>
 
-          <div className="flex items-center gap-4 mb-8 justify-center md:justify-start lg:justify-center">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Join as a Service Provider
-              </h2>
-              <p className="text-green-100 text-lg">
-                Start your journey with Fidarek
-              </p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 lg:grid-cols-1 gap-4 max-w-4xl mx-auto lg:max-w-none">
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">
-                Get More Customers
-              </h3>
-              <p className="text-xs opacity-90">
-                Reach thousands of potential clients looking for your services
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">
-                Manage Your Business
-              </h3>
-              <p className="text-sm opacity-90">
-                Easy dashboard to handle bookings and track your earnings
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center md:text-left hover:bg-white/20 transition-all lg:text-center">
-              <CheckCircle2 className="w-8 h-8 mb-2 mx-auto md:mx-0 lg:mx-auto" />
-              <h3 className="font-semibold text-base mb-1">
-                Build Your Reputation
-              </h3>
-              <p className="text-sm opacity-90">
-                Earn reviews and ratings to grow your business
-              </p>
-            </div>
+      <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-25 lg:px-8 lg:w-1/2">
+        <div className="mb-10">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Join as a Service Provider
+            </h2>
+            <p className="text-green-100 text-lg">
+              Start your journey with Fidarek
+            </p>
           </div>
         </div>
+        <Lottie
+          animationData={ProviderRegisterAnimation}
+          loop={true}
+          className="w-[380px] h-[380px] lg:w-[500px] lg:h-[500px] ml-25"
+        />
       </div>
 
-      {/* 2. Registration Form Container (Right Side) */}
+
       <div className="py-8 px-4 sm:px-6 lg:px-8 lg:w-1/2 lg:overflow-y-auto lg:h-full lg:grow">
         <div className="max-w-2xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10">
@@ -228,7 +184,7 @@ const ProviderRegisterPage = () => {
               </div>
             )}
 
-            {/* Important Notice */}
+      
             <div className="mb-6 bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg">
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -246,7 +202,7 @@ const ProviderRegisterPage = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              {/* Full Name */}
+        
               <div>
                 <label
                   htmlFor="name"
@@ -282,7 +238,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Email */}
+        
               <div>
                 <label
                   htmlFor="email"
@@ -318,7 +274,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Address */}
+        
               <div>
                 <label
                   htmlFor="address"
@@ -354,7 +310,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Phone */}
+        
               <div>
                 <label
                   htmlFor="phone"
@@ -390,7 +346,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Password */}
+        
               <div>
                 <label
                   htmlFor="password"
@@ -430,7 +386,7 @@ const ProviderRegisterPage = () => {
                   </button>
                 </div>
 
-                {/* Password Strength Indicator */}
+          
                 {password && (
                   <div className="mt-2">
                     <div className="flex items-center gap-2 mb-1">
@@ -457,7 +413,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Confirm Password */}
+        
               <div>
                 <label
                   htmlFor="password_confirmation"
@@ -506,7 +462,7 @@ const ProviderRegisterPage = () => {
                 )}
               </div>
 
-              {/* Submit Button */}
+        
               <button
                 type="submit"
                 disabled={status == "loading"}
@@ -537,7 +493,7 @@ const ProviderRegisterPage = () => {
                 )}
               </button>
 
-              {/* Sign In Link */}
+        
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   Already have an account?{" "}

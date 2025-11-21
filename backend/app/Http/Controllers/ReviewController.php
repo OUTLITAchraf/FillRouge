@@ -39,6 +39,17 @@ class ReviewController extends Controller
             $query->where('rating', $request->rating);
         }
 
+        if ($request->filled('client_name')) {
+            $query->whereHas('client', function ($q) use ($request) {
+                $q->where('name','like',"%{$request->client_name}%");
+            });
+        }
+
+        if ($user->hasRole('admin')) {
+            $query->withTrashed();
+            $reviews = $query->orderByDesc('deleted_at')->with(['service.provider', 'service.category'])->paginate(10);
+        }
+
         $reviews = $query->orderByDesc('created_at')->paginate(10);
 
         $allReviews = Review::query();
@@ -233,6 +244,17 @@ class ReviewController extends Controller
 
         return response()->json([
             'message' => 'Review restored successfully',
+            'review' => $review
+        ], 201);
+    }
+
+    public function forceDelete($id)
+    {
+        $review = Review::withTrashed()->findOrFail($id);
+        $review->forceDelete();
+
+        return response()->json([
+            'message' => 'Review permanently deleted successfully',
             'review' => $review
         ], 201);
     }

@@ -26,6 +26,7 @@ import GuestRoute from "./components/ProtectedRoutes/GuestRoute";
 import AdminRoute from "./components/ProtectedRoutes/AdminRoute";
 import ProviderRoute from "./components/ProtectedRoutes/ProviderRoute";
 import UserRoute from "./components/ProtectedRoutes/UserRoute";
+import AdminReviewPage from "./pages/Admin/AdminReviewPage";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
               <Route path="clients" element={<AdminClientsPage />} />
               <Route path="categories" element={<AdminCategoriesPage />} />
               <Route path="services" element={<AdminServicesPage />} />
+              <Route path="reviews" element={<AdminReviewPage />} />
             </Route>
           </Route>
         </Routes>

@@ -316,14 +316,28 @@ export const forceDeleteCategory = createAsyncThunk(
 
 export const fetchReviews = createAsyncThunk(
   "services/fetchReviews",
-  async (rating, { rejectWithValue }) => {
+  async (filter = {}, { rejectWithValue }) => {
     try {
       let response = await api.get("/reviews", {
-        params: rating,
+        params: filter,
       });
       console.log("Response Review :", response);
       return response.data;
     } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const forceDeleteReview = createAsyncThunk(
+  "services/forceDeleteReview",
+  async (id, { rejectWithValue }) => {
+    try {
+      let response = await api.post(`/admin/review/${id}/force-delete`);
+      console.log("Response :", response);
+      return response.data;
+    } catch (error) {
+      console.log("Error :", error);
       return rejectWithValue(error);
     }
   }
@@ -362,6 +376,7 @@ const ServiceSlice = createSlice({
     addReviewStatus: "idle",
     updateReviewStatus: "idle",
     deleteReviewStatus: "idle",
+    forceDeleteReviewStatus: "idle",
     reservationStatus: "idle",
     reservations: {
       data: [],
@@ -720,6 +735,20 @@ const ServiceSlice = createSlice({
       .addCase(forceDeleteCategory.rejected, (state, action) => {
         state.forceDeleteCategoryStatus = "failed";
         console.log("ForceDelete Category Rejected :", action);
+      });
+
+    builder
+      .addCase(forceDeleteReview.pending, (state, action) => {
+        state.forceDeleteReviewStatus = "loading";
+        console.log("Force Delete Review Pending :", action);
+      })
+      .addCase(forceDeleteReview.fulfilled, (state, action) => {
+        state.forceDeleteReviewStatus = "success";
+        console.log("Force Delete Review Fulfilled :", action.payload);
+      })
+      .addCase(forceDeleteReview.rejected, (state, action) => {
+        state.forceDeleteReviewStatus = "failed";
+        console.log("Force Delete Review Rejected :", action);
       });
   },
 });

@@ -14,6 +14,6 @@ class ServiceModelFillableTest extends TestCase
     {
         $service = new Service();
         $expectedFillable = ['title', 'description', 'price', 'status', 'image', 'category_id', 'city_id', 'provider_id'];
-        $this->assertEquals($expectedFillable,$service->getFillable(),'The fillable attributes of Service model are not correct');
+        $this->assertEquals($expectedFillable, $service->getFillable(), 'The fillable attributes of Service model are not correct');
     }
 }

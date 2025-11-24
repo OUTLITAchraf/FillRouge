@@ -558,6 +558,156 @@
                 ]
             }
         },
+        "/admin/category/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Restore a deleted category",
+                "description": "Restore a soft-deleted category (Admin only)",
+                "operationId": "restoreCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Category restored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category restored successfully"
+                                        },
+                                        "category": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/category/{category}/force-delete": {
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Permanently delete a category",
+                "description": "Permanently delete a soft-deleted category (Admin only)",
+                "operationId": "forceDeleteCategory",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "description": "Category ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Category permanently deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category permanently deleted successfully"
+                                        },
+                                        "category": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/cities": {
+            "get": {
+                "tags": [
+                    "Cities"
+                ],
+                "summary": "Get all cities",
+                "description": "Retrieve a list of all available cities",
+                "operationId": "getCities",
+                "responses": {
+                    "200": {
+                        "description": "Cities fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cities fetched successfully"
+                                        },
+                                        "cities": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "New York"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/reservations": {
             "get": {
                 "tags": [
@@ -762,16 +912,36 @@
                 ]
             }
         },
-        "/admin/reviews": {
+        "/reviews": {
             "get": {
                 "tags": [
                     "Reviews"
                 ],
-                "summary": "Get all reviews",
-                "description": "Retrieve all reviews Admin only",
+                "summary": "Get user reviews",
+                "description": "Retrieve reviews for authenticated user (Client or Provider)",
                 "operationId": "getReviews",
+                "parameters": [
+                    {
+                        "name": "rating",
+                        "in": "query",
+                        "description": "Filter by rating",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "client_name",
+                        "in": "query",
+                        "description": "Filter by client name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Reviews fetched successfully",
                         "content": {
                             "application/json": {
@@ -786,14 +956,36 @@
                                             "items": {
                                                 "type": "object"
                                             }
+                                        },
+                                        "statistics": {
+                                            "properties": {
+                                                "total_reviews": {
+                                                    "type": "integer"
+                                                },
+                                                "average_rating": {
+                                                    "type": "number"
+                                                },
+                                                "rating_distribution": {
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/service/{service}/add-review": {
@@ -1005,6 +1197,112 @@
                 ]
             }
         },
+        "/admin/review/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Restore a deleted review",
+                "description": "Restore a soft-deleted review (Admin only)",
+                "operationId": "restoreReview",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Review ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Review restored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review restored successfully"
+                                        },
+                                        "review": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Review not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/review/{review}/force-delete": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Permanently delete a review",
+                "description": "Permanently delete a soft-deleted review (Admin only)",
+                "operationId": "forceDeleteReview",
+                "parameters": [
+                    {
+                        "name": "review",
+                        "in": "path",
+                        "description": "Review ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Review permanently deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review permanently deleted successfully"
+                                        },
+                                        "review": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Review not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/services": {
             "get": {
                 "tags": [
@@ -1074,19 +1372,19 @@
                 }
             }
         },
-        "/service/{service}": {
+        "/services/category/{category}": {
             "get": {
                 "tags": [
                     "Services"
                 ],
-                "summary": "Get service details",
-                "description": "Retrieve details of a specific service",
-                "operationId": "getService",
+                "summary": "Get services by category",
+                "description": "Retrieve services filtered by category",
+                "operationId": "getServicesByCategory",
                 "parameters": [
                     {
-                        "name": "service",
+                        "name": "category",
                         "in": "path",
-                        "description": "Service ID",
+                        "description": "Category ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1094,18 +1392,21 @@
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Service details fetched successfully",
+                    "200": {
+                        "description": "Services fetched successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Service Detail Fetched Successfully"
+                                            "example": "Services Fetched Successfully"
                                         },
-                                        "service": {
-                                            "type": "object"
+                                        "services": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
                                         }
                                     },
                                     "type": "object"
@@ -1114,7 +1415,52 @@
                         }
                     },
                     "404": {
-                        "description": "Service not found"
+                        "description": "Category not found"
+                    }
+                }
+            }
+        },
+        "/search-service": {
+            "get": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Search services by provider",
+                "description": "Search for services by provider name",
+                "operationId": "searchServiceByProvider",
+                "parameters": [
+                    {
+                        "name": "provider_name",
+                        "in": "query",
+                        "description": "Provider name to search",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Services found successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Services Fetched Successfully"
+                                        },
+                                        "services": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -1406,6 +1752,109 @@
                 ]
             }
         },
+        "/admin/service/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Restore a deleted service",
+                "description": "Restore a soft-deleted service (Admin only)",
+                "operationId": "restoreService",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Service ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Service restored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Service restored successfully"
+                                        },
+                                        "service": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Service not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/service/{service}/force-delete": {
+            "post": {
+                "tags": [
+                    "Services"
+                ],
+                "summary": "Permanently delete a service",
+                "description": "Permanently delete a soft-deleted service (Admin only)",
+                "operationId": "forceDeleteService",
+                "parameters": [
+                    {
+                        "name": "service",
+                        "in": "path",
+                        "description": "Service ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Service permanently deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Service permanently deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Service not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/admin/providers": {
             "get": {
                 "tags": [
@@ -1445,26 +1894,37 @@
                 ]
             }
         },
-        "/admin/users": {
+        "/admin/clients": {
             "get": {
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get all users",
+                "summary": "Get all clients",
                 "description": "Retrieve paginated list of clients (Admin only)",
-                "operationId": "getUsers",
+                "operationId": "getClients",
+                "parameters": [
+                    {
+                        "name": "client_name",
+                        "in": "query",
+                        "description": "Filter by client name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
-                    "201": {
-                        "description": "Users retrieved successfully",
+                    "200": {
+                        "description": "Clients retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Users Retrieved Successfully"
+                                            "example": "Clients Retrieved Successfully"
                                         },
-                                        "users": {
+                                        "clients": {
                                             "type": "object"
                                         }
                                     },
@@ -1612,6 +2072,109 @@
                     }
                 ]
             }
+        },
+        "/admin/user/{id}/restore": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Restore a deleted user",
+                "description": "Restore a soft-deleted user (Admin only)",
+                "operationId": "restoreUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User restored successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User restored successfully"
+                                        },
+                                        "user": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/user/{id}/force-delete": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Permanently delete a user",
+                "description": "Permanently delete a soft-deleted user (Admin only)",
+                "operationId": "forceDeleteUser",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User permanently deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User permanently deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1648,6 +2211,10 @@
         {
             "name": "Users",
             "description": "API Endpoints for managing users and providers"
+        },
+        {
+            "name": "Cities",
+            "description": "Cities"
         }
     ]
 }

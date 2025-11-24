@@ -55,18 +55,25 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/admin/users",
-     *     summary="Get all users",
+     *     path="/admin/clients",
+     *     summary="Get all clients",
      *     description="Retrieve paginated list of clients (Admin only)",
-     *     operationId="getUsers",
+     *     operationId="getClients",
      *     tags={"Users"},
      *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="client_name",
+     *         in="query",
+     *         description="Filter by client name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="Users retrieved successfully",
+     *         response=200,
+     *         description="Clients retrieved successfully",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Users Retrieved Successfully"),
-     *             @OA\Property(property="users", type="object")
+     *             @OA\Property(property="message", type="string", example="Clients Retrieved Successfully"),
+     *             @OA\Property(property="clients", type="object")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthorized")
@@ -185,6 +192,33 @@ class UserController extends Controller
     }
 
 
+    /**
+     * @OA\Post(
+     *     path="/admin/user/{id}/restore",
+     *     summary="Restore a deleted user",
+     *     description="Restore a soft-deleted user (Admin only)",
+     *     operationId="restoreUser",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User restored successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User restored successfully"),
+     *             @OA\Property(property="user", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="User not found")
+     * )
+     */
     public function restore($id)
     {
         $user = User::withTrashed()->findOrFail($id);
@@ -195,6 +229,32 @@ class UserController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/user/{id}/force-delete",
+     *     summary="Permanently delete a user",
+     *     description="Permanently delete a soft-deleted user (Admin only)",
+     *     operationId="forceDeleteUser",
+     *     tags={"Users"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User permanently deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="User permanently deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="User not found")
+     * )
+     */
     public function forceDelete($id)
     {
         $user = User::withTrashed()->findOrFail($id);

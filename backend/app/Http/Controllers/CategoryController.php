@@ -173,6 +173,33 @@ class CategoryController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/category/{id}/restore",
+     *     summary="Restore a deleted category",
+     *     description="Restore a soft-deleted category (Admin only)",
+     *     operationId="restoreCategory",
+     *     tags={"Categories"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Category ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Category restored successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category restored successfully"),
+     *             @OA\Property(property="category", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Category not found")
+     * )
+     */
     public function restore($id)
     {
         $category = Category::withTrashed()->findOrFail($id);
@@ -184,6 +211,33 @@ class CategoryController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/category/{category}/force-delete",
+     *     summary="Permanently delete a category",
+     *     description="Permanently delete a soft-deleted category (Admin only)",
+     *     operationId="forceDeleteCategory",
+     *     tags={"Categories"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         description="Category ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Category permanently deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Category permanently deleted successfully"),
+     *             @OA\Property(property="category", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Category not found")
+     * )
+     */
     public function forceDelete($id)
     {
         $category = Category::withTrashed()->findOrFail($id);

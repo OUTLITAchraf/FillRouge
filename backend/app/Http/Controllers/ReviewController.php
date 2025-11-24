@@ -10,19 +10,40 @@ class ReviewController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/admin/reviews",
-     *     summary="Get all reviews",
-     *     description="Retrieve all reviews Admin only",
+     *     path="/reviews",
+     *     summary="Get user reviews",
+     *     description="Retrieve reviews for authenticated user (Client or Provider)",
      *     operationId="getReviews",
      *     tags={"Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="rating",
+     *         in="query",
+     *         description="Filter by rating",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="client_name",
+     *         in="query",
+     *         description="Filter by client name",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
-     *         response=201,
+     *         response=200,
      *         description="Reviews fetched successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Review Fetched Successfully"),
-     *             @OA\Property(property="reviews", type="array", @OA\Items(type="object"))
+     *             @OA\Property(property="reviews", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="statistics", type="object",
+     *                 @OA\Property(property="total_reviews", type="integer"),
+     *                 @OA\Property(property="average_rating", type="number"),
+     *                 @OA\Property(property="rating_distribution", type="object")
+     *             )
      *         )
-     *     )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
     public function index(Request $request)
@@ -237,6 +258,33 @@ class ReviewController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/review/{id}/restore",
+     *     summary="Restore a deleted review",
+     *     description="Restore a soft-deleted review (Admin only)",
+     *     operationId="restoreReview",
+     *     tags={"Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Review ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Review restored successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review restored successfully"),
+     *             @OA\Property(property="review", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Review not found")
+     * )
+     */
     public function restore($id)
     {
         $review = Review::withTrashed()->findOrFail($id);
@@ -248,6 +296,33 @@ class ReviewController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/review/{review}/force-delete",
+     *     summary="Permanently delete a review",
+     *     description="Permanently delete a soft-deleted review (Admin only)",
+     *     operationId="forceDeleteReview",
+     *     tags={"Reviews"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="review",
+     *         in="path",
+     *         description="Review ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Review permanently deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Review permanently deleted successfully"),
+     *             @OA\Property(property="review", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Review not found")
+     * )
+     */
     public function forceDelete($id)
     {
         $review = Review::withTrashed()->findOrFail($id);

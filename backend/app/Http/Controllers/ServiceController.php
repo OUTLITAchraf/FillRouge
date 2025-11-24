@@ -151,6 +151,87 @@ class ServiceController extends Controller
      *     @OA\Response(response=404, description="Service not found")
      * )
      */
+    /**
+     * @OA\Get(
+     *     path="/services/category/{category}",
+     *     summary="Get services by category",
+     *     description="Retrieve services filtered by category",
+     *     operationId="getServicesByCategory",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         description="Category ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Services fetched successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Services Fetched Successfully"),
+     *             @OA\Property(property="services", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Category not found")
+     * )
+     */
+    public function bycategory(Category $category)
+    {
+        $services = Service::where('category_id', $category->id)
+            ->where('status', 'approved')
+            ->with(['provider', 'category', 'city', 'reviews.client'])
+            ->paginate(12);
+
+        return response()->json([
+            'message' => 'Services Fetched Successfully',
+            'services' => $services,
+        ], 200);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/search-service",
+     *     summary="Search services by provider",
+     *     description="Search for services by provider name",
+     *     operationId="searchServiceByProvider",
+     *     tags={"Services"},
+     *     @OA\Parameter(
+     *         name="provider_name",
+     *         in="query",
+     *         description="Provider name to search",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Services found successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Services Fetched Successfully"),
+     *             @OA\Property(property="services", type="array", @OA\Items(type="object"))
+     *         )
+     *     )
+     * )
+     */
+    public function searchByProvider(Request $request)
+    {
+        $query = Service::query()->with(['provider', 'category', 'city', 'reviews.client']);
+
+        if ($request->filled('provider_name')) {
+            $query->whereHas('provider', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->provider_name}%");
+            });
+        }
+
+        $query->where('status', 'approved');
+        $services = $query->paginate(12);
+
+        return response()->json([
+            'message' => 'Services Fetched Successfully',
+            'services' => $services,
+        ], 200);
+    }
+
     public function show(Service $service)
     {
         $this->authorize('view', $service);
@@ -442,7 +523,34 @@ class ServiceController extends Controller
         ], 201);
     }
 
-        public function restore($id)
+    /**
+     * @OA\Post(
+     *     path="/admin/service/{id}/restore",
+     *     summary="Restore a deleted service",
+     *     description="Restore a soft-deleted service (Admin only)",
+     *     operationId="restoreService",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service restored successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service restored successfully"),
+     *             @OA\Property(property="service", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
+    public function restore($id)
     {
         $service = Service::withTrashed()->findOrFail($id);
         $service->restore();
@@ -453,6 +561,32 @@ class ServiceController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/admin/service/{service}/force-delete",
+     *     summary="Permanently delete a service",
+     *     description="Permanently delete a soft-deleted service (Admin only)",
+     *     operationId="forceDeleteService",
+     *     tags={"Services"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="service",
+     *         in="path",
+     *         description="Service ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Service permanently deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Service permanently deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=404, description="Service not found")
+     * )
+     */
     public function forceDelete($id){
         $service = Service::withTrashed()->findOrFail($id);
         $service->forceDelete();

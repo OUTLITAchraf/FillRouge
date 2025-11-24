@@ -73,7 +73,7 @@ class ReservationController extends Controller
             'message' => 'Reservation Fetched Successfully',
             'reservations' => $reservations,
             'user' => $user
-        ], 201);
+        ], 200);
     }
 
 

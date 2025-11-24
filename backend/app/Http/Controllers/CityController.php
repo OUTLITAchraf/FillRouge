@@ -11,6 +11,6 @@ class CityController extends Controller
         return response()->json([
             "message" => "Cities fetched successfully",
             "cities" => $cities
-        ], 201);
+        ], 200);
     }
 }

@@ -50,7 +50,7 @@ class UserController extends Controller
         return response()->json([
             "message" => "Providers Retrieved Successfully",
             "providers" => $providers,
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -84,7 +84,7 @@ class UserController extends Controller
         return response()->json([
             "message" => "Clients Retrieved Successfully",
             "clients" => $clients,
-        ], 201);
+        ], 200);
     }
 
     /**

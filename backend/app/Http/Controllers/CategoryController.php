@@ -34,7 +34,7 @@ class CategoryController extends Controller
         return response()->json([
             "message" => "Categories Fetched Successfully",
             "categories" => $categories
-        ], 201);
+        ], 200);
     }
     /**
      * @OA\Post(

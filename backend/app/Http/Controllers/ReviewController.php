@@ -76,7 +76,7 @@ class ReviewController extends Controller
                 'average_rating' => $averageRating,
                 'rating_distribution' => $ratingDistribution
             ]
-        ], 201);
+        ], 200);
     }
     /**
      * @OA\Post(

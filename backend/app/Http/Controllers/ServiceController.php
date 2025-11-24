@@ -123,7 +123,7 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Services Fetched Successfully',
             'services' => $services,
-        ], 201);
+        ], 200);
     }
 
     /**
@@ -170,7 +170,7 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Service Detail Fetched Successfully',
             'service' => $service->load('category', 'city', 'provider', 'reviews.client')->setAttribute('hasReserved', $hasReserved)->setAttribute('hasReviewed', $hasReviewed)->setAttribute('isWorking', $isWorking)
-        ], 201);
+        ], 200);
     }
 
 

@@ -215,7 +215,7 @@ export default function AdminCategoriesPage() {
             </div>
             <button
               onClick={openAddModal}
-              className="px-6 py-3 rounded-lg text-white font-semibold transition-colors flex items-center gap-2 bg-[#E67E22] hover:bg-[#D35400]"
+              className="px-2 py-2 text-sm lg:text-base lg:px-6 lg:py-3 rounded-lg text-white font-semibold transition-colors flex items-center lg:gap-2 bg-[#E67E22] hover:bg-[#D35400]"
             >
               <Plus size={20} />
               Add Category

@@ -74,13 +74,11 @@ const ProviderRegisterPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setError,
   } = useForm({
     resolver: yupResolver(providerSchema),
   });
 
-  const password = watch("password");
 
   const onSubmit = async (data) => {
     const formData = {
@@ -109,26 +107,6 @@ const ProviderRegisterPage = () => {
     }
   };
 
-  // Password strength indicator
-  const getPasswordStrength = (pass) => {
-    if (!pass) return { strength: 0, label: "", color: "" };
-
-    let strength = 0;
-    if (pass.length >= 8) strength++;
-    if (/[a-z]/.test(pass)) strength++;
-    if (/[A-Z]/.test(pass)) strength++;
-    if (/\d/.test(pass)) strength++;
-    if (/[^a-zA-Z\d]/.test(pass)) strength++;
-
-    if (strength <= 2) return { strength, label: "Weak", color: "bg-red-500" };
-    if (strength === 3)
-      return { strength, label: "Fair", color: "bg-yellow-500" };
-    if (strength === 4)
-      return { strength, label: "Good", color: "bg-blue-500" };
-    return { strength, label: "Strong", color: "bg-green-500" };
-  };
-
-  const passwordStrength = getPasswordStrength(password);
 
   return (
     <div className="h-screen flex flex-col lg:flex-row bg-linear-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
@@ -143,7 +121,7 @@ const ProviderRegisterPage = () => {
 
 
       <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-25 lg:px-8 lg:w-1/2">
-        <div className="mb-10">
+        <div className="mb-10 mt-10 lg:mt-0">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold">
               Join as a Service Provider
@@ -156,7 +134,7 @@ const ProviderRegisterPage = () => {
         <Lottie
           animationData={ProviderRegisterAnimation}
           loop={true}
-          className="w-[380px] h-[380px] lg:w-[500px] lg:h-[500px] ml-25"
+          className="w-[360px] h-[360px] lg:w-[420px] lg:h-[420px] lg:ml-25"
         />
       </div>
 
@@ -385,25 +363,6 @@ const ProviderRegisterPage = () => {
                     )}
                   </button>
                 </div>
-
-          
-                {password && (
-                  <div className="mt-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-300 ${passwordStrength.color}`}
-                          style={{
-                            width: `${(passwordStrength.strength / 5) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs font-semibold text-gray-600">
-                        {passwordStrength.label}
-                      </span>
-                    </div>
-                  </div>
-                )}
 
                 {errors.password && (
                   <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">

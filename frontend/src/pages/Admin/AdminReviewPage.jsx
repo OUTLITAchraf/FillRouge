@@ -214,8 +214,8 @@ export default function AdminReviewsPage() {
 
                                             {/* Service Info */}
                                             <div className="flex items-center gap-4 mb-3 text-sm text-gray-600">
-                                                <div className="flex items-center gap-1">
-                                                    <User className="w-4 h-4" />
+                                                <div className="flex items-center gap-2 lg:gap-1">
+                                                    <User className="w-10 lg:w-4 lg:h-4" />
                                                     <span>
                                                         Provider:{" "}
                                                         <span className="font-medium text-gray-900">

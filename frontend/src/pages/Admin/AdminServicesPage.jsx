@@ -33,7 +33,11 @@ import { useSearchParams } from "react-router-dom";
 export default function AdminServicesPage() {
   const dispatch = useDispatch();
   const { data, status } = useSelector((state) => state.services.services);
-  const { updateStatusServiceStatus, restoreServiceStatus, forceDeleteServiceStatus } = useSelector((state) => state.services);
+  const {
+    updateStatusServiceStatus,
+    restoreServiceStatus,
+    forceDeleteServiceStatus,
+  } = useSelector((state) => state.services);
 
   const [selectedService, setSelectedService] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -396,12 +400,7 @@ export default function AdminServicesPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={
-                                service.image_url
-                                  ? service.image_url
-                                  : "https://placehold.co/600x400?text=Service" +
-                                    service.id
-                              }
+                              src={service.image_url}
                               alt={service.title}
                               className="w-16 h-16 object-cover rounded-lg"
                             />
@@ -690,7 +689,8 @@ export default function AdminServicesPage() {
                         <div>
                           <p className="text-sm text-gray-500">Address</p>
                           <p className="text-gray-700">
-                            {selectedService.provider.address}, {selectedService.city.name}
+                            {selectedService.provider.address},{" "}
+                            {selectedService.city.name}
                           </p>
                         </div>
                       </div>

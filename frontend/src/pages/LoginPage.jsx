@@ -83,7 +83,7 @@ const LoginPage = () => {
 
       {/* 1. Info Section (Left Sidebar) - Adjusted Padding */}
       <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-22 lg:px-8 lg:w-1/2">
-        <div className="items-center justify-center mb-[-40px]">
+        <div className="items-center justify-center mb-[-40px] mt-10 lg:mt-0">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold">Welcome Back!</h2>
             <p className="text-green-100 text-lg">
@@ -94,7 +94,7 @@ const LoginPage = () => {
         <Lottie
           animationData={Login}
           loop={true}
-          className="w-[380px] h-[380px] lg:w-[600px] lg:h-[600px] ml-10"
+          className="w-[380px] h-[380px] lg:w-[550px] lg:h-[550px] lg:ml-10"
         />
       </div>
 
@@ -203,16 +203,6 @@ const LoginPage = () => {
                     <span>{errors.password.message}</span>
                   </div>
                 )}
-              </div>
-
-              {/* Forgot Password Link */}
-              <div className="text-right">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm font-semibold text-gray-600 hover:text-[#27AE60] transition-colors"
-                >
-                  Forgot Password?
-                </Link>
               </div>
 
               {/* Submit Button */}

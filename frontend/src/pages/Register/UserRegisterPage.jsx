@@ -48,11 +48,7 @@ const userSchema = yup
     password: yup
       .string()
       .required("Password is required")
-      .min(8, "Password must be at least 8 characters")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-      ),
+      .min(8, "Password must be at least 8 characters"),
     password_confirmation: yup
       .string()
       .required("Please confirm your password")
@@ -73,13 +69,11 @@ const UserRegisterPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
     setError,
   } = useForm({
     resolver: yupResolver(userSchema),
   });
 
-  const password = watch("password");
 
   const onSubmit = async (data) => {
     const formData = {
@@ -110,25 +104,6 @@ const UserRegisterPage = () => {
     }
   };
 
-  const getPasswordStrength = (pass) => {
-    if (!pass) return { strength: 0, label: "", color: "" };
-
-    let strength = 0;
-    if (pass.length >= 8) strength++;
-    if (/[a-z]/.test(pass)) strength++;
-    if (/[A-Z]/.test(pass)) strength++;
-    if (/\d/.test(pass)) strength++;
-    if (/[^a-zA-Z\d]/.test(pass)) strength++;
-
-    if (strength <= 2) return { strength, label: "Weak", color: "bg-red-500" };
-    if (strength === 3)
-      return { strength, label: "Fair", color: "bg-yellow-500" };
-    if (strength === 4)
-      return { strength, label: "Good", color: "bg-blue-500" };
-    return { strength, label: "Strong", color: "bg-green-500" };
-  };
-
-  const passwordStrength = getPasswordStrength(password);
 
   return (
     <div className="h-screen flex flex-col lg:flex-row bg-gradient-to-br from-green-50 via-white to-green-50 overflow-y-auto lg:overflow-hidden">
@@ -143,7 +118,7 @@ const UserRegisterPage = () => {
 
       {/* 1. Info Section */}
       <div className="bg-gradient-to-br from-[#2ECC71] to-[#27AE60] text-white py-12 px-4 sm:px-6 lg:py-25 lg:px-8 lg:w-1/2">
-        <div className="items-center justify-center mb-[-40px]">
+        <div className="items-center justify-center mb-[-40px] mt-10 lg:mt-0">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold">
               Create Your Free Account
@@ -156,7 +131,7 @@ const UserRegisterPage = () => {
         <Lottie
           animationData={UserRegisterAnimation}
           loop={true}
-          className="w-[380px] h-[380px] lg:w-[600px] lg:h-[600px] ml-10"
+          className="w-[380px] h-[380px] lg:w-[550px] lg:h-[550px] lg:ml-10"
         />
       </div>
 
@@ -368,25 +343,6 @@ const UserRegisterPage = () => {
                     )}
                   </button>
                 </div>
-
-                {/* Password Strength Indicator */}
-                {password && (
-                  <div className="mt-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-300 ${passwordStrength.color}`}
-                          style={{
-                            width: `${(passwordStrength.strength / 5) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-xs font-semibold text-gray-600">
-                        {passwordStrength.label}
-                      </span>
-                    </div>
-                  </div>
-                )}
 
                 {errors.password && (
                   <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">
